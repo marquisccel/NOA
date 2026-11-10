@@ -13,6 +13,13 @@ class PerformanceCalculator
     /** Ambang sampling minimum (R8 / F3.3): 5 persen populasi hidup. */
     public const SAMPLING_MIN_PERSEN = 5.0;
 
+    public const RUMUS_IP_STANDAR = 'standar';
+
+    /** Rumus IP yang tersedia: nama => keterangan untuk antarmuka. */
+    public const RUMUS_IP = [
+        self::RUMUS_IP_STANDAR => 'Standar PRD: (daya hidup % × ABW kg) / (FCR × umur panen) × 100',
+    ];
+
     /** R4: pakan dicatat dalam sak, dikonversi memakai bobot_sak_kg milik siklus. */
     public function sakKeKg(float $sak, float $bobotSakKg): float
     {
@@ -59,14 +66,27 @@ class PerformanceCalculator
         return $totalEkor > 0 ? $totalEkorUmur / $totalEkor : null;
     }
 
-    /** IP = (liveability % x ABW kg) / (FCR x umur panen hari) x 100. */
-    public function indeksPerforma(float $liveabilityPersen, ?float $abwKg, ?float $fcr, ?float $umurPanen): ?float
+    /**
+     * IP = (liveability % x ABW kg) / (FCR x umur panen hari) x 100.
+     *
+     * Rumus IP berbeda antar perusahaan inti, jadi dipilih lewat nama (disimpan per siklus) dan
+     * tidak ditanam sebagai satu-satunya konstanta. Rumus lain ditambahkan di RUMUS_IP dan sini.
+     *
+     * @throws \InvalidArgumentException bila nama rumus tidak dikenal
+     */
+    public function indeksPerforma(float $liveabilityPersen, ?float $abwKg, ?float $fcr, ?float $umurPanen, string $rumus = self::RUMUS_IP_STANDAR): ?float
     {
+        if (! array_key_exists($rumus, self::RUMUS_IP)) {
+            throw new \InvalidArgumentException("Rumus IP tidak dikenal: {$rumus}");
+        }
+
         if ($abwKg === null || $fcr === null || $umurPanen === null || $fcr * $umurPanen <= 0) {
             return null;
         }
 
-        return ($liveabilityPersen * $abwKg) / ($fcr * $umurPanen) * 100;
+        return match ($rumus) {
+            self::RUMUS_IP_STANDAR => ($liveabilityPersen * $abwKg) / ($fcr * $umurPanen) * 100,
+        };
     }
 
     /** F2.7: feed intake kumulatif per ekor (gram) = total pakan terpakai / ayam hidup. */

@@ -23,6 +23,7 @@ class Siklus extends Model
             'tanggal_panen' => 'date',
             'tanggal_rechick' => 'date',
             'bobot_sak_kg' => 'decimal:2',
+            'pakan_retur_sak' => 'decimal:2',
         ];
     }
 
