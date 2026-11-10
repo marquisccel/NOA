@@ -133,6 +133,26 @@
     }
 }
 
+@layer components {
+    /* Tabel data desain NOA: kepala abu-hijau, baris selang-seling, garis tipis. */
+    .tabel {
+        @apply w-full text-left text-sm;
+    }
+
+    .tabel thead th {
+        @apply h-10 whitespace-nowrap border-b border-[#E1E6E2] bg-[#EDF1EE] px-4 text-[11px] font-bold uppercase tracking-[0.8px] text-ink-muted;
+    }
+
+    .tabel tbody td,
+    .tabel tbody th {
+        @apply border-t border-[#E1E6E2] px-4 py-3 align-middle font-normal;
+    }
+
+    .tabel tbody tr:nth-child(even) {
+        background-color: #f9fbf9;
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }

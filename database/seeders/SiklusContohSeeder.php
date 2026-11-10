@@ -53,7 +53,7 @@ class SiklusContohSeeder extends Seeder
             'nama_farm' => 'Kandang Contoh Tulungagung',
             'alamat' => 'Kabupaten Tulungagung, Jawa Timur',
             'kapasitas' => 4000,
-            'tipe' => 'closed house',
+            'tipe' => Kandang::TIPE_CLOSED_HOUSE,
         ]);
 
         $masuk = CarbonImmutable::parse('2026-09-20');

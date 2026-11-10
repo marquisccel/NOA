@@ -36,6 +36,50 @@ class Siklus extends Model
 
     public const STATUSES = [self::STATUS_BERJALAN, self::STATUS_SELESAI, self::STATUS_DIHENTIKAN];
 
+    /** Label dan warna badge status. "Selesai" tampil sebagai "Ditutup" seperti di desain. */
+    public function labelStatus(): string
+    {
+        return ['berjalan' => 'Berjalan', 'selesai' => 'Ditutup', 'dihentikan' => 'Dihentikan'][$this->status] ?? ucfirst($this->status);
+    }
+
+    public function varianStatus(): string
+    {
+        return ['berjalan' => 'success', 'selesai' => 'neutral', 'dihentikan' => 'danger'][$this->status] ?? 'neutral';
+    }
+
+    /** Hari umur ayam pada tanggal tertentu (tanggal masuk = hari ke-1), minimal 1. */
+    public function umurHari(?\Carbon\CarbonInterface $pada = null): int
+    {
+        $pada = ($pada ?? now())->copy()->startOfDay();
+
+        return max(1, (int) $this->tanggal_masuk->copy()->startOfDay()->diffInDays($pada) + 1);
+    }
+
+    /** Populasi kini = populasi awal dikurangi seluruh deplesi (mati dan afkir) tercatat. */
+    public function populasiKini(): int
+    {
+        return $this->populasi - (int) $this->recordings()->sum('deplesi_harian');
+    }
+
+    /**
+     * Nomor siklus di kandangnya ("Siklus 7"): urutan menurut tanggal masuk, dihitung bukan disimpan.
+     *
+     * @param  iterable<int>  $kandangIds
+     * @return array<int, int> id siklus => nomor
+     */
+    public static function nomorMap(iterable $kandangIds): array
+    {
+        $peta = [];
+
+        static::whereIn('kandang_id', collect($kandangIds)->all())
+            ->orderBy('kandang_id')->orderBy('tanggal_masuk')->orderBy('id')
+            ->get(['id', 'kandang_id'])
+            ->groupBy('kandang_id')
+            ->each(fn ($daftar) => $daftar->values()->each(fn ($s, $i) => $peta[$s->id] = $i + 1));
+
+        return $peta;
+    }
+
     /** R12: siklus selesai dikunci dari penyuntingan recording. */
     public function isTerkunci(): bool
     {

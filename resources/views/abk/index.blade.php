@@ -1,43 +1,85 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Akun ABK</h2>
-        <p class="mt-1 text-base text-gray-700">Anak kandang (ABK) hanya bisa mengisi recording harian. Mereka tidak melihat kontrak, biaya, panen, atau rekonsiliasi RHPP.</p>
-    </x-slot>
+@php use App\Support\Format as F; @endphp
 
-    <div class="py-8">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <section>
-                <h3 class="mb-3 text-lg font-semibold text-gray-900">Tambah akun ABK</h3>
-                <form method="POST" action="{{ route('abk.store') }}" class="bg-white shadow-sm sm:rounded-lg p-6 space-y-6">
-                    @csrf
-                    <x-field name="name" label="Nama" required autocomplete="off" />
-                    <x-field name="email" label="Email (untuk masuk)" type="email" required autocomplete="off" />
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        <x-field name="password" label="Kata sandi" type="password" required autocomplete="new-password" hint="Minimal 8 karakter." />
-                        <x-field name="password_confirmation" label="Ulangi kata sandi" type="password" required autocomplete="new-password" />
+<x-app-layout title="Pengguna & Akses" :crumbs="[['Beranda', route('dashboard')], ['Pengguna & Akses']]">
+    <x-page>
+        <x-page-header title="Akun ABK" subtitle="Kelola akun Anak Buah Kandang dan siklus yang boleh mereka akses.">
+            <x-slot name="actions">
+                <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK</x-button>
+            </x-slot>
+        </x-page-header>
+
+        @if ($total === 0)
+            <x-empty-state icon="users" title="Belum ada akun ABK"
+                text="Buat akun untuk anak buah kandang agar mereka bisa mencatat pakan, ayam mati, dan ayam afkir pada siklus yang ditugaskan.">
+                <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK pertama</x-button>
+            </x-empty-state>
+        @else
+            <section class="rounded-[16px] border border-line bg-surface" aria-label="Daftar akun ABK">
+                <form method="GET" action="{{ route('abk.index') }}" class="flex flex-wrap items-center gap-2.5 p-3 sm:p-4">
+                    <div class="relative min-w-0 flex-1 sm:max-w-xs">
+                        <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
+                        <input type="search" name="q" value="{{ $q }}" placeholder="Cari nama atau email" aria-label="Cari nama atau email"
+                               class="block min-h-11 w-full rounded-md border-line-control bg-surface pl-9 text-base placeholder:text-ink-muted focus:border-brand focus:ring-1 focus:ring-brand">
                     </div>
-                    <x-primary-button class="min-h-11 text-sm">Buat akun ABK</x-primary-button>
+                    <x-button variant="secondary" class="min-h-11">Cari</x-button>
+                    <p class="ms-auto text-[13px] text-ink-secondary" role="status">{{ $total }} akun ABK · {{ $aktif }} aktif</p>
                 </form>
+
+                @if ($abk->isEmpty())
+                    <p class="border-t border-line-subtle px-5 py-10 text-center text-sm text-ink-secondary">Tidak ada akun ABK dengan “{{ $q }}”.</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="tabel">
+                            <caption class="sr-only">Daftar akun ABK, penugasan, dan statusnya</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nama ABK</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Kandang · Siklus ditugaskan</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"><span class="sr-only">Aksi</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($abk as $a)
+                                    @php $s = $a->siklusDitugaskan; @endphp
+                                    <tr>
+                                        <th scope="row">
+                                            <span class="flex items-center gap-2.5">
+                                                <span class="grid size-8 shrink-0 place-items-center rounded-full bg-tint text-xs font-bold text-ink-brand" aria-hidden="true">{{ $a->inisial() }}</span>
+                                                <span class="font-bold">{{ $a->name }}</span>
+                                            </span>
+                                        </th>
+                                        <td class="text-ink-secondary">{{ $a->email }}</td>
+                                        <td>{{ $s ? $s->kandang->nama_farm.' · Siklus '.($nomor[$s->id] ?? 1) : '— (belum ditugaskan)' }}</td>
+                                        <td><x-badge :variant="$a->aktif ? 'success' : 'neutral'" :dot="true">{{ $a->aktif ? 'Aktif' : 'Nonaktif' }}</x-badge></td>
+                                        <td class="whitespace-nowrap text-right">
+                                            <a href="{{ route('abk.edit', $a) }}" class="inline-flex min-h-11 items-center px-2 text-[13px] font-semibold text-ink-brand hover:underline">Ubah</a>
+                                            @if ($a->aktif)
+                                                <button type="button" x-data x-on:click="$dispatch('open-modal', 'nonaktif-{{ $a->id }}')" class="inline-flex min-h-11 items-center px-2 text-[13px] font-semibold text-danger-text hover:underline">Nonaktifkan</button>
+                                            @else
+                                                <form method="POST" action="{{ route('abk.status', $a) }}" class="inline">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="aktif" value="1">
+                                                    <button class="inline-flex min-h-11 items-center px-2 text-[13px] font-semibold text-ink-brand hover:underline">Aktifkan</button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+                <p class="border-t border-line-subtle p-4 text-xs leading-[18px] text-ink-muted sm:px-5">
+                    ABK hanya dapat melihat konteks siklus yang ditugaskan dan mencatat pakan, ayam mati, dan ayam afkir. Kontrak, biaya, panen, dan rekonsiliasi tidak terlihat oleh ABK.
+                </p>
             </section>
 
-            <section class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">ABK Anda</h3>
-                @if ($abk->isEmpty())
-                    <p class="mt-2 text-base text-gray-600">Belum ada akun ABK.</p>
-                @else
-                    <ul class="mt-4 divide-y divide-gray-200">
-                        @foreach ($abk as $a)
-                            <li class="py-3 flex flex-wrap items-center justify-between gap-2 text-base">
-                                <span>{{ $a->name }} <span class="text-gray-600">· {{ $a->email }}</span></span>
-                                <form method="POST" action="{{ route('abk.destroy', $a) }}" onsubmit="return confirm('Cabut akun ABK ini? Ia tidak bisa masuk lagi.')">
-                                    @csrf @method('DELETE')
-                                    <button class="min-h-11 text-base text-red-700 underline">Cabut akses</button>
-                                </form>
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </section>
-        </div>
-    </div>
+            @foreach ($abk->where('aktif', true) as $a)
+                @include('abk.partials.dialog-nonaktif', ['a' => $a])
+            @endforeach
+        @endif
+    </x-page>
 </x-app-layout>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbkController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OvkController;
@@ -16,9 +17,7 @@ use Illuminate\Support\Facades\Route;
 // Satu pintu masuk: tamu ke halaman masuk, pengguna yang sudah masuk ke dashboard.
 Route::get('/', fn () => redirect()->route(auth()->check() ? 'dashboard' : 'login'));
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 // Recording harian: peternak dan ABK miliknya (F8.2). Hak akses dijaga kebijakan, bukan middleware peran.
 Route::middleware('auth')->group(function () {
@@ -33,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
 // Kontrak, biaya, panen, dan rekonsiliasi memuat angka komersial: hanya peternak (R13).
 Route::middleware(['auth', 'peternak'])->group(function () {
+    Route::get('kandang/{kandang}/riwayat', [KandangController::class, 'riwayat'])->name('kandang.riwayat');
     Route::resource('kandang', KandangController::class)->parameters(['kandang' => 'kandang']);
     Route::resource('siklus', SiklusController::class)->parameters(['siklus' => 'siklus']);
     Route::patch('siklus/{siklus}/selesai', [SiklusController::class, 'selesai'])->name('siklus.selesai');
@@ -73,14 +73,17 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('kandang/{kandang}/perbandingan', [LaporanController::class, 'perbandingan'])->name('laporan.perbandingan');
 
     Route::get('abk', [AbkController::class, 'index'])->name('abk.index');
+    Route::get('abk/create', [AbkController::class, 'create'])->name('abk.create');
     Route::post('abk', [AbkController::class, 'store'])->name('abk.store');
-    Route::delete('abk/{abk}', [AbkController::class, 'destroy'])->name('abk.destroy');
+    Route::get('abk/{abk}/edit', [AbkController::class, 'edit'])->name('abk.edit');
+    Route::put('abk/{abk}', [AbkController::class, 'update'])->name('abk.update');
+    Route::post('abk/{abk}/reset-sandi', [AbkController::class, 'resetSandi'])->name('abk.reset');
+    Route::patch('abk/{abk}/status', [AbkController::class, 'status'])->name('abk.status');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

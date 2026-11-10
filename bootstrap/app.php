@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['peternak' => \App\Http\Middleware\EnsurePeternak::class]);
+        $middleware->web(append: [\App\Http\Middleware\EnsureAkunAktif::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

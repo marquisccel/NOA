@@ -11,8 +11,7 @@ class RecordingHarianPolicy
     /** Peternak pemilik dan ABK miliknya boleh melihat dan mengisi (F8.2). */
     public function view(User $user, RecordingHarian $recording): bool
     {
-        return ($user->isPeternak() || $user->isAbk())
-            && $user->idPemilikData() === $recording->siklus->kandang->user_id;
+        return $this->bisaCatat($user, $recording->siklus);
     }
 
     /** Sunting hanya bila baris belum diparaf (R11) dan siklus belum selesai (R12). */
@@ -38,8 +37,11 @@ class RecordingHarianPolicy
     /** Entri baru hanya pada siklus yang belum selesai (R12). */
     public function create(User $user, Siklus $siklus): bool
     {
-        return ($user->isPeternak() || $user->isAbk())
-            && $user->idPemilikData() === $siklus->kandang->user_id
-            && ! $siklus->isTerkunci();
+        return $this->bisaCatat($user, $siklus) && ! $siklus->isTerkunci();
+    }
+
+    private function bisaCatat(User $user, Siklus $siklus): bool
+    {
+        return app(SiklusPolicy::class)->catat($user, $siklus);
     }
 }

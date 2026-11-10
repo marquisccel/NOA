@@ -69,7 +69,7 @@ class KandangSiklusTest extends TestCase
     public function test_peternak_menambah_kandang(): void
     {
         $this->actingAs($this->peternak)
-            ->post(route('kandang.store'), ['nama_farm' => 'Farm Baru', 'kapasitas' => 5000, 'tipe' => 'closed house'])
+            ->post(route('kandang.store'), ['nama_farm' => 'Farm Baru', 'alamat' => 'Desa Uji, Kec. Uji', 'kapasitas' => 5000, 'tipe' => 'closed_house'])
             ->assertRedirect();
 
         $this->assertDatabaseHas('kandang', ['nama_farm' => 'Farm Baru', 'user_id' => $this->peternak->id]);

@@ -33,10 +33,19 @@ class SiklusPolicy
         return $this->view($user, $siklus);
     }
 
-    /** Boleh melihat dan mengisi recording harian: peternak pemilik, atau ABK milik peternak itu (F8.2). */
+    /**
+     * Boleh melihat dan mengisi recording harian: peternak pemilik, atau ABK aktif yang
+     * ditugaskan ke siklus ini dan dimiliki peternak yang sama (F8.2).
+     */
     public function catat(User $user, Siklus $siklus): bool
     {
-        return ($user->isPeternak() || $user->isAbk())
-            && $user->idPemilikData() === $siklus->kandang->user_id;
+        if ($user->isPeternak()) {
+            return $siklus->kandang->user_id === $user->id;
+        }
+
+        return $user->isAbk()
+            && $user->aktif
+            && $user->siklus_id === $siklus->id
+            && $user->peternak_id === $siklus->kandang->user_id;
     }
 }

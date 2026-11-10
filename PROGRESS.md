@@ -188,3 +188,14 @@ php artisan test
 Akun contoh (seeder): `peternak@noa.test` dan `abk@noa.test` (ABK milik peternak itu), kata sandi `password`.
 Peternak membuat akun ABK baru di menu ABK.
 Uji memakai database `noa_test` (buat sekali: `docker exec noa-pgsql psql -U noa -d postgres -c "CREATE DATABASE noa_test OWNER noa;"`).
+
+## UI Fase 2 (sebagian, belum diverifikasi visual)
+
+Sudah dikode, 251 tes lulus, BELUM dibuka di browser dan BELUM ada tes baru untuk layar ini:
+- Dashboard peternak (KPI, siklus aktif, aktivitas terbaru), dashboard ABK, penomoran siklus
+- Kandang: daftar + cari/filter, form (alamat dan tipe wajib), detail, riwayat, dialog buka siklus
+- Pengguna & Akses: ABK per siklus, nonaktif/aktif, atur ulang kata sandi, halaman 403
+- Pengaturan profil dan kata sandi; hapus akun sendiri dihapus
+- Migrasi: users.aktif, users.siklus_id, kandang.tipe (open_house/closed_house)
+
+Belum: tes baru UI Fase 2, cek visual vs desain, penyesuaian.

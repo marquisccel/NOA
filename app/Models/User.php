@@ -39,6 +39,12 @@ class User extends Authenticatable
         return $this->belongsTo(self::class, 'peternak_id');
     }
 
+    /** Siklus yang ditugaskan ke akun ABK ini. */
+    public function siklusDitugaskan(): BelongsTo
+    {
+        return $this->belongsTo(Siklus::class, 'siklus_id');
+    }
+
     /** Akun ABK milik peternak ini (F8.2). */
     public function abk(): HasMany
     {
@@ -88,6 +94,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'aktif' => 'boolean',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

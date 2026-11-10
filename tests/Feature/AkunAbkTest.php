@@ -33,6 +33,8 @@ class AkunAbkTest extends TestCase
 
         $kandang = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Farm Rahasia Harga', 'kapasitas' => 4000]);
         $this->siklus = Siklus::create(['kandang_id' => $kandang->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 3000, 'bobot_sak_kg' => 50, 'status' => 'berjalan']);
+        // ABK hanya mencatat pada siklus yang ditugaskan padanya.
+        $this->abk->forceFill(['siklus_id' => $this->siklus->id])->save();
         KontrakSiklus::create([
             'siklus_id' => $this->siklus->id, 'harga_doc' => 7123, 'harga_pakan_sak' => 431777, 'harga_ovk' => 1500, 'harga_kontrak_ayam' => 20987, 'bonus_fcr' => true,
         ]);
@@ -80,10 +82,11 @@ class AkunAbkTest extends TestCase
 
     public function test_validasi_pembuatan_abk(): void
     {
-        $this->actingAs($this->peternak)->post(route('abk.store'), [])->assertSessionHasErrors(['name', 'email', 'password']);
-        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'abk-uji@noa.test', 'password' => 'rahasia-aman-1', 'password_confirmation' => 'rahasia-aman-1'])->assertSessionHasErrors('email');
-        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'x@noa.test', 'password' => 'rahasia-aman-1', 'password_confirmation' => 'beda'])->assertSessionHasErrors('password');
-        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'x@noa.test', 'password' => 'pendek', 'password_confirmation' => 'pendek'])->assertSessionHasErrors('password');
+        $this->actingAs($this->peternak)->post(route('abk.store'), [])->assertSessionHasErrors(['name' => 'Nama ABK wajib diisi.', 'email' => 'Email wajib diisi.', 'password' => 'Kata sandi awal wajib diisi.']);
+        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'abk-uji@noa.test', 'password' => 'rahasia-aman-1'])->assertSessionHasErrors(['email' => 'Email ini sudah dipakai akun lain.']);
+        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'andi@', 'password' => 'rahasia-aman-1'])->assertSessionHasErrors(['email' => 'Masukkan email yang valid.']);
+        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'x@noa.test', 'password' => 'pendek1'])->assertSessionHasErrors('password');
+        $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'X', 'email' => 'x@noa.test', 'password' => 'hurufsaja'])->assertSessionHasErrors('password');
     }
 
     public function test_pendaftaran_publik_tidak_bisa_memilih_peran(): void
@@ -100,18 +103,6 @@ class AkunAbkTest extends TestCase
         $this->assertNull($u->peternak_id);
     }
 
-    public function test_peternak_hanya_mencabut_abk_miliknya(): void
-    {
-        $lain = User::factory()->create();
-        $abkLain = User::factory()->abk($lain)->create();
-
-        $this->actingAs($this->peternak)->delete(route('abk.destroy', $abkLain))->assertForbidden();
-        $this->assertDatabaseHas('users', ['id' => $abkLain->id]);
-
-        $this->actingAs($this->peternak)->delete(route('abk.destroy', $this->abk))->assertRedirect(route('abk.index'));
-        $this->assertDatabaseMissing('users', ['id' => $this->abk->id]);
-    }
-
     public function test_daftar_abk_hanya_menampilkan_milik_sendiri(): void
     {
         User::factory()->abk(User::factory()->create())->create(['name' => 'ABK Orang Lain']);
@@ -124,7 +115,8 @@ class AkunAbkTest extends TestCase
     {
         $this->actingAs($this->abk)->get(route('abk.index'))->assertForbidden();
         $this->actingAs($this->abk)->post(route('abk.store'), ['name' => 'X', 'email' => 'x@noa.test', 'password' => 'rahasia-aman-1', 'password_confirmation' => 'rahasia-aman-1'])->assertForbidden();
-        $this->actingAs($this->abk)->delete(route('abk.destroy', $this->abk))->assertForbidden();
+        $this->actingAs($this->abk)->patch(route('abk.status', $this->abk), ['aktif' => 0])->assertForbidden();
+        $this->actingAs($this->abk)->put(route('abk.update', $this->abk), ['name' => 'Y', 'email' => 'y@noa.test'])->assertForbidden();
     }
 
     public function test_abk_wajib_punya_peternak_di_basis_data(): void
@@ -260,7 +252,7 @@ class AkunAbkTest extends TestCase
         $this->actingAs($this->abk)->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Farm Rahasia Harga')
-            ->assertSee('Entri harian')
+            ->assertSee('Buka Recording Harian')
             ->assertDontSee('Kandang Milik Orang Lain');
     }
 

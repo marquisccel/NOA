@@ -9,11 +9,12 @@
     'aux' => null,
     'revealable' => null,
     'senyap' => false,
+    'bag' => 'default',
 ])
 
 @php
     $kunci = str_replace(['[', ']'], ['.', ''], $name);
-    $pesan = $errors->get($kunci);
+    $pesan = $errors->getBag($bag)->get($kunci);
     $kataSandi = $type === 'password';
     $bisaDilihat = $revealable ?? $kataSandi;
     $idHint = $name.'-hint';
