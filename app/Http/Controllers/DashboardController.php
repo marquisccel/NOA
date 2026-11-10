@@ -30,6 +30,17 @@ class DashboardController extends Controller
             ]);
         }
 
+        if ($user->isPengawas()) {
+            $siklus = $user->aktif
+                ? Siklus::whereIn('id', $user->aksesPengawas()->aktif()->pluck('siklus_id'))->with('kandang.user')->orderByDesc('tanggal_masuk')->get()
+                : collect();
+            $nomor = Siklus::nomorMap($siklus->pluck('kandang_id')->unique());
+
+            return view('dashboard.pengawas', [
+                'daftar' => $siklus->map(fn (Siklus $s) => ['siklus' => $s, 'nomor' => $nomor[$s->id] ?? 1]),
+            ]);
+        }
+
         return view('dashboard.tanpa-akses');
     }
 

@@ -122,11 +122,11 @@ class UiFondasiTest extends TestCase
         }
     }
 
-    public function test_peran_belum_didukung_tidak_mendapat_menu(): void
+    public function test_pengawas_hanya_mendapat_menu_siklus_dibagikan(): void
     {
         $pengawas = User::factory()->create(['role' => User::ROLE_PENGAWAS]);
 
-        $this->assertSame([], Navigasi::grup($pengawas));
+        $this->assertSame(['Siklus Dibagikan'], array_column(Navigasi::grup($pengawas)[0]['items'], 'label'));
         $this->actingAs($pengawas)->get(route('dashboard'))->assertOk()->assertDontSee('Kandang &amp; Siklus', false);
     }
 

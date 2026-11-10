@@ -1,10 +1,13 @@
 @php
     $user = auth()->user();
     $abk = $user?->isAbk();
-    $judul = $abk ? 'Halaman ini tidak tersedia untuk akun ABK' : 'Halaman ini tidak tersedia untuk akun Anda';
-    $teks = $abk
+    $pengawas = $user?->isPengawas();
+    $judul = $pengawas ? 'Halaman ini tidak tersedia untuk Pengawas Inti' : ($abk ? 'Halaman ini tidak tersedia untuk akun ABK' : 'Halaman ini tidak tersedia untuk akun Anda');
+    $teks = $pengawas
+        ? 'Akun Pengawas hanya dapat melihat recording, sampling, OVK, dan panen pada siklus yang dibagikan peternak. Hubungi peternak bila membutuhkan akses lain.'
+        : ($abk
         ? 'Akun Anda hanya dapat membuka siklus yang ditugaskan dan Recording Harian. Hubungi pemilik kandang bila membutuhkan akses lain.'
-        : 'Anda tidak punya izin untuk membuka halaman ini. Kembali ke dashboard atau hubungi pemilik akun.';
+        : 'Anda tidak punya izin untuk membuka halaman ini. Kembali ke dashboard atau hubungi pemilik akun.');
     $tujuan = $abk && $user->siklus_id ? route('recording.index', $user->siklus_id) : route('dashboard');
     $tombol = $abk && $user->siklus_id ? 'Ke Recording Harian' : 'Ke Dashboard';
 @endphp

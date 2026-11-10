@@ -44,6 +44,12 @@ class UserFactory extends Factory
         ]);
     }
 
+    /** Akun Pengawas Inti (baca-saja); akses ke siklus diberikan lewat tabel akses_pengawas. */
+    public function pengawas(): static
+    {
+        return $this->state(fn (array $attributes) => ['role' => \App\Models\User::ROLE_PENGAWAS]);
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      */

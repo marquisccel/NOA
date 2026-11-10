@@ -51,6 +51,12 @@ class User extends Authenticatable
         return $this->hasMany(self::class, 'peternak_id');
     }
 
+    /** Akses hanya-baca (Pengawas Inti) pada siklus-siklus yang dibagikan. */
+    public function aksesPengawas(): HasMany
+    {
+        return $this->hasMany(AksesPengawas::class, 'pengawas_id');
+    }
+
     /** Id peternak pemilik data yang boleh dicatat akun ini: dirinya sendiri, atau peternak majikan ABK. */
     public function idPemilikData(): ?int
     {
@@ -79,6 +85,11 @@ class User extends Authenticatable
     public function isPeternak(): bool
     {
         return $this->role === self::ROLE_PETERNAK;
+    }
+
+    public function isPengawas(): bool
+    {
+        return $this->role === self::ROLE_PENGAWAS;
     }
 
     public function isAbk(): bool

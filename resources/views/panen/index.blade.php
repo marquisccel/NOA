@@ -13,7 +13,7 @@
     <x-page>
         <x-page-header title="Panen & BTPA" subtitle="Setiap tahap dicatat dengan nomor BTPA. * umur panen rata-rata berbobot jumlah ekor.">
             <x-slot name="actions">
-                @if ($adaTahap)<x-button variant="secondary" :href="route('panen.ringkasan', $siklus)">Ringkasan panen</x-button>@endif
+                @if ($adaTahap && ! $bacaSaja)<x-button variant="secondary" :href="route('panen.ringkasan', $siklus)">Ringkasan panen</x-button>@endif
                 @if ($bisaCatat)<x-button variant="secondary" :href="route('panen.create', $siklus)"><x-icon name="plus" class="size-4" /> Tambah tahap panen</x-button>@endif
                 @if ($bisaSelesai)<x-button type="button" x-data @click="$dispatch('open-modal', 'panen-selesai')">Tandai panen selesai</x-button>@endif
             </x-slot>
@@ -54,7 +54,7 @@
                                 <p>Periksa jumlah ekor panen atau catatan deplesi. NOA tidak menyeimbangkan angka otomatis.</p>
                             @endif
                         </div>
-                        <a href="{{ route('panen.selisih', $siklus) }}" class="inline-flex min-h-11 items-center font-semibold underline">Lihat rincian</a>
+                        @unless ($bacaSaja)<a href="{{ route('panen.selisih', $siklus) }}" class="inline-flex min-h-11 items-center font-semibold underline">Lihat rincian</a>@endunless
                     </div>
                 </x-alert>
             @endif
@@ -80,7 +80,7 @@
                                 <td class="text-right">{{ F::angka((float) $t->tonase_kg / $t->jumlah_ekor, 3) }} kg</td>
                                 <td class="font-semibold">{{ filled($t->nomor_btpa) ? $t->nomor_btpa : '–' }}</td>
                                 <td>
-                                    @if ($t->foto_btpa)
+                                    @if ($t->foto_btpa && ! $bacaSaja)
                                         <a href="{{ route('panen.foto', $t) }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center gap-1.5 font-semibold text-ink-brand hover:underline"><x-icon name="file-text" class="size-4" /> Lihat foto</a>
                                     @else
                                         <span class="text-ink-muted">Belum diunggah</span>

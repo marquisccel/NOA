@@ -25,7 +25,7 @@ Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI
 | 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Selesai |
 | 4 | Recording (desktop dan ponsel), Sampling, OVK | Selesai |
 | 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Selesai |
-| 6 | Peran Pengawas (baca-saja) dan akses per siklus | Belum |
+| 6 | Peran Pengawas (baca-saja) dan akses per siklus | Selesai |
 
 ### UI Fase 1 — Fondasi dan autentikasi (selesai)
 
@@ -265,3 +265,20 @@ Perubahan perilaku yang perlu dikonfirmasi:
 - Rute lama "Akhiri siklus" (selesai/dihentikan dalam satu langkah) dihapus; tautan "Bandingkan siklus" di Kandang mengarah ke laporan global dengan filter kandang
 - Menghapus RHPP tidak tersedia lagi (desain hanya "Ubah RHPP")
 - Pengawas Inti dan akses per siklus (Fase 6) belum ada; halaman Pengaturan dan Pengguna tidak berubah
+
+### UI Fase 6 — Pengawas Inti (baca-saja) dan akses per siklus (selesai)
+
+- [x] Tabel `akses_pengawas`: satu akses = satu siklus, dicabut dengan mengisi `dicabut_pada` (riwayat tetap ada); indeks unik parsial menjaga satu akses aktif per pengawas per siklus
+- [x] Halaman "Pengguna & Akses" punya dua tab: Akun ABK dan Akses Pengawas. Akses Pengawas: daftar (pengawas · inti, siklus dibagikan, tanggal diberikan, status Aktif atau Dicabut tanggal), form "Beri akses ke satu siklus", dialog konfirmasi "Cabut akses"; akses dapat diberikan lagi setelah dicabut
+- [x] Email yang belum punya akun dibuatkan akun Pengawas dengan kata sandi awal acak yang tampil sekali (seperti reset sandi ABK); email milik akun lain (peternak atau ABK) ditolak
+- [x] Pengawas masuk ke "Siklus Dibagikan" (daftar siklus yang aksesnya aktif); menu hanya satu item
+- [x] Halaman baca-saja untuk Pengawas: Recording, Sampling, OVK, Panen, dengan banner "Mode baca saja", tanpa tombol isi/ubah/paraf/unduh, tanpa biaya OVK, tanpa foto BTPA, tanpa ringkasan panen dan retur
+- [x] Kontrak, biaya, bonus, RHPP, rekonsiliasi, laporan, pengaturan siklus, dan semua rute tulis ditolak (403) untuk Pengawas; siklus lain yang tidak dibagikan juga 403; akses dicabut langsung menutup semua halaman; akun nonaktif keluar otomatis; halaman 403 khusus Pengawas
+- [x] Kebijakan baru `bacaSaja`, `lihatCatatan`, `lihatRecording`; rute sampling/OVK/panen index dipindah ke grup `auth` dan dijaga kebijakan (ABK tetap ditolak di sana)
+- [x] Seeder: `pengawas@noa.test` (kata sandi `password`) dengan akses ke siklus berjalan contoh
+- [x] Uji: 22 baru, total 399 lulus; dicek di browser (akses peternak dan layar Pengawas)
+
+Perubahan perilaku yang perlu dikonfirmasi:
+- Desain menyebut pembuatan akun Pengawas "belum ditentukan"; sementara dibuat otomatis saat peternak memberi akses ke email baru (nama dari bagian depan email, sandi awal tampil sekali). Perlu keputusan bila inti yang seharusnya membuat akunnya
+- Pengawas melihat siklus yang sudah ditutup (hanya-baca) selama aksesnya belum dicabut
+- Pengawas tidak bisa mengunduh CSV recording dan tidak melihat foto BTPA

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AksesPengawas;
 use App\Models\Kandang;
 use App\Models\PemberianOvk;
 use App\Models\RecordingHarian;
@@ -70,5 +71,13 @@ class SiklusBerjalanSeeder extends Seeder
         PemberianOvk::create(['siklus_id' => $siklus->id, 'tanggal' => $masuk->copy()->addDays(3), 'jenis' => 'vaksin', 'nama_produk' => 'ND-IB', 'dosis' => '1 dosis/ekor', 'biaya' => 150000]);
 
         $abk?->forceFill(['siklus_id' => $siklus->id])->save();
+
+        // Pengawas Inti contoh (baca-saja) dengan akses ke siklus berjalan ini.
+        $pengawas = (new User)->forceFill([
+            'name' => 'Pengawas Contoh', 'email' => 'pengawas@noa.test', 'password' => 'password',
+            'role' => User::ROLE_PENGAWAS, 'email_verified_at' => now(),
+        ]);
+        $pengawas->save();
+        AksesPengawas::create(['pengawas_id' => $pengawas->id, 'siklus_id' => $siklus->id, 'peternak_id' => $peternak->id]);
     }
 }

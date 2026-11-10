@@ -2,6 +2,7 @@
     use App\Support\Format as F;
 
     $peternak = auth()->user()->isPeternak();
+    $bacaSaja = auth()->user()->isPengawas();
     $ppl = $siklus->nama_ppl ?: 'PPL';
     $angka = fn ($n, $d = 1) => $n === null ? '–' : F::angka($n, $d);
     $persen = fn ($n) => $n === null ? '–' : F::angka($n, 2).'%';
@@ -14,7 +15,7 @@
         <x-page-header title="Recording harian"
             :subtitle="$siklus->isTerkunci() ? 'Siklus ditutup · semua baris hanya dapat dilihat' : 'Kolom STD dari tabel standar kemitraan · angka oranye = di atas standar'">
             <x-slot name="actions">
-                @unless (empty($daftar))<x-button variant="secondary" :href="route('recording.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>@endunless
+                @if (! empty($daftar) && ! auth()->user()->isPengawas())<x-button variant="secondary" :href="route('recording.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>@endif
                 @if ($bisaIsi)
                     <x-button :href="route('recording.create', $siklus)"><x-icon name="plus" class="size-4" /> Isi recording hari ini</x-button>
                 @endif
@@ -61,7 +62,7 @@
                         <tr>
                             <th scope="col">Hari</th><th scope="col">Tanggal</th><th scope="col" class="text-right">Pakan std</th><th scope="col" class="text-right">Pakan akt.</th>
                             <th scope="col" class="text-right">Ayam mati</th><th scope="col" class="text-right">Ayam afkir</th><th scope="col" class="text-right">Depl. std</th>
-                            <th scope="col" class="text-right">Depl. akt.</th><th scope="col" class="text-right">Stok pakan</th><th scope="col">Paraf PPL</th><th scope="col">Aksi</th>
+                            <th scope="col" class="text-right">Depl. akt.</th><th scope="col" class="text-right">Stok pakan</th><th scope="col">Paraf PPL</th>@unless ($bacaSaja)<th scope="col">Aksi</th>@endunless
                         </tr>
                     </thead>
                     <tbody>
@@ -88,11 +89,11 @@
                                         @if ($hariIniBaris)<x-badge variant="info">Hari ini</x-badge>
                                         @else<x-badge variant="warning">Belum diisi</x-badge>@endif
                                     </td>
-                                    <td>
+                                    @unless ($bacaSaja)<td>
                                         @if ($bisaIsi)
                                             <a href="{{ route('recording.create', [$siklus, 'tanggal' => $d['tanggal']->toDateString()]) }}" class="inline-flex min-h-11 items-center font-semibold text-ink-brand hover:underline">Isi</a>
                                         @endif
-                                    </td>
+                                    </td>@endunless
                                 </tr>
                             @else
                                 @php
@@ -136,7 +137,7 @@
                                             <x-badge variant="neutral">Belum diparaf</x-badge>
                                         @endif
                                     </td>
-                                    <td>
+                                    @unless ($bacaSaja)<td>
                                         @if ($r->diparaf_ppl)
                                             <span class="inline-flex items-center gap-1 text-[13px] text-ink-muted"><x-icon name="lock" class="size-3.5" /> Terkunci</span>
                                         @elseif (Gate::allows('update', $r))
@@ -144,7 +145,7 @@
                                         @else
                                             <span class="inline-flex items-center gap-1 text-[13px] text-ink-muted"><x-icon name="lock" class="size-3.5" /> Terkunci</span>
                                         @endif
-                                    </td>
+                                    </td>@endunless
                                 </tr>
                             @endif
                         @endforeach

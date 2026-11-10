@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbkController;
+use App\Http\Controllers\AksesPengawasController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
@@ -34,6 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('recording/{recording}/paraf', [RecordingController::class, 'paraf'])->name('recording.paraf');
 });
 
+// Halaman catatan baca-saja: peternak, atau Pengawas Inti yang diberi akses ke siklus (dijaga kebijakan, bukan peran).
+Route::middleware('auth')->group(function () {
+    Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
+    Route::get('siklus/{siklus}/panen', [PanenController::class, 'index'])->name('panen.index');
+    Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
+});
+
 // Kontrak, biaya, panen, dan rekonsiliasi memuat angka komersial: hanya peternak (R13).
 Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('kandang/{kandang}/riwayat', [KandangController::class, 'riwayat'])->name('kandang.riwayat');
@@ -61,14 +69,12 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('siklus/{siklus}/acuan', [SiklusAcuanController::class, 'acuan'])->name('siklus.acuan');
     Route::put('siklus/{siklus}/acuan', [SiklusAcuanController::class, 'simpanAcuan'])->name('siklus.acuan.simpan');
 
-    Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
     Route::get('siklus/{siklus}/sampling/baru', [SamplingController::class, 'create'])->name('sampling.create');
     Route::post('siklus/{siklus}/sampling', [SamplingController::class, 'store'])->name('sampling.store');
     Route::get('sampling/{sampling}/edit', [SamplingController::class, 'edit'])->name('sampling.edit');
     Route::put('sampling/{sampling}', [SamplingController::class, 'update'])->name('sampling.update');
     Route::delete('sampling/{sampling}', [SamplingController::class, 'destroy'])->name('sampling.destroy');
 
-    Route::get('siklus/{siklus}/panen', [PanenController::class, 'index'])->name('panen.index');
     Route::get('siklus/{siklus}/panen/baru', [PanenController::class, 'create'])->name('panen.create');
     Route::get('siklus/{siklus}/panen/ringkasan', [PanenController::class, 'ringkasan'])->name('panen.ringkasan');
     Route::get('siklus/{siklus}/panen/selisih', [PanenController::class, 'selisih'])->name('panen.selisih');
@@ -79,7 +85,6 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::delete('panen/{panen}', [PanenController::class, 'destroy'])->name('panen.destroy');
     Route::get('panen/{panen}/foto', [PanenController::class, 'foto'])->name('panen.foto');
 
-    Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
     Route::get('siklus/{siklus}/ovk/baru', [OvkController::class, 'create'])->name('ovk.create');
     Route::post('siklus/{siklus}/ovk', [OvkController::class, 'store'])->name('ovk.store');
     Route::get('ovk/{ovk}/edit', [OvkController::class, 'edit'])->name('ovk.edit');
@@ -104,6 +109,9 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::post('abk', [AbkController::class, 'store'])->name('abk.store');
     Route::get('abk/{abk}/edit', [AbkController::class, 'edit'])->name('abk.edit');
     Route::put('abk/{abk}', [AbkController::class, 'update'])->name('abk.update');
+    Route::get('akses-pengawas', [AksesPengawasController::class, 'index'])->name('akses.index');
+    Route::post('akses-pengawas', [AksesPengawasController::class, 'store'])->name('akses.store');
+    Route::delete('akses-pengawas/{akses}', [AksesPengawasController::class, 'cabut'])->name('akses.cabut');
     Route::post('abk/{abk}/reset-sandi', [AbkController::class, 'resetSandi'])->name('abk.reset');
     Route::patch('abk/{abk}/status', [AbkController::class, 'status'])->name('abk.status');
 });

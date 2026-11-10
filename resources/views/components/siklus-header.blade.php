@@ -4,7 +4,7 @@
     use App\Support\Format as F;
 
     $user = auth()->user();
-    $siklus->loadMissing('kandang');
+    $siklus->loadMissing('kandang.user');
     $nomor = \App\Models\Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1;
     $tab = [
         ['Ringkasan', 'siklus.show', ['siklus.show']],
@@ -40,7 +40,20 @@
         <x-alert variant="info">Siklus {{ $nomor }} sudah {{ $siklus->status === \App\Models\Siklus::STATUS_DIHENTIKAN ? 'dihentikan' : 'ditutup' }}. Semua data hanya dapat dilihat.</x-alert>
     @endif
 
-    @if ($user->isPeternak())
+    @if ($user->isPengawas())
+        <x-alert variant="info"><strong>Mode baca saja</strong> — siklus ini dibagikan oleh {{ $siklus->kandang->user->name }}. Anda dapat melihat recording, sampling, OVK, dan panen. Data tidak dapat diubah atau diparaf; kontrak, biaya, bonus, RHPP, dan rekonsiliasi tidak ditampilkan. Akses dapat dicabut peternak.</x-alert>
+        <nav aria-label="Tab siklus" class="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+            <ul class="flex gap-1.5 whitespace-nowrap">
+                @foreach (array_filter($tab, fn ($t) => in_array($t[1], ['recording.index', 'sampling.index', 'ovk.index', 'panen.index'], true)) as [$label, $rute, $pola])
+                    @php $aktif = request()->routeIs(...$pola); @endphp
+                    <li>
+                        <a href="{{ route($rute, $siklus) }}" @if ($aktif) aria-current="page" @endif
+                           class="inline-flex min-h-11 items-center rounded-[10px] border px-3.5 text-[13px] {{ $aktif ? 'border-line bg-surface font-bold text-ink-brand' : 'border-line-subtle font-medium text-ink-secondary hover:bg-state-hover' }}">{{ $label }}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
+    @elseif ($user->isPeternak())
         <nav aria-label="Tab siklus" class="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
             <ul class="flex gap-1.5 whitespace-nowrap">
                 @foreach ($tab as [$label, $rute, $pola])

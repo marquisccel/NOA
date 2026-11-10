@@ -2,11 +2,12 @@
 
 <x-app-layout title="Pengguna & Akses" :crumbs="[['Beranda', route('dashboard')], ['Pengguna & Akses']]">
     <x-page>
-        <x-page-header title="Akun ABK" subtitle="Kelola akun Anak Buah Kandang dan siklus yang boleh mereka akses.">
+        <x-page-header title="Pengguna & Akses" subtitle="Kelola akun ABK dan akses hanya-baca Pengawas Inti">
             <x-slot name="actions">
                 <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK</x-button>
             </x-slot>
         </x-page-header>
+        <x-tab-pengguna aktif="abk" />
 
         @if ($total === 0)
             <x-empty-state icon="users" title="Belum ada akun ABK"

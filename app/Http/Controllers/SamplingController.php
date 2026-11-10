@@ -17,7 +17,7 @@ class SamplingController extends Controller
 
     public function index(Siklus $siklus): View
     {
-        Gate::authorize('view', $siklus);
+        Gate::authorize('lihatCatatan', $siklus);
 
         $baris = $this->ringkasan->baris($siklus, $siklus->samplings()->get(), $siklus->standarHarian()->get());
         $hari = array_column($baris, 'hari_ke');

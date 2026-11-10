@@ -10,7 +10,7 @@
     :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['OVK']]">
     <x-page>
         <x-page-header title="Riwayat OVK"
-            :subtitle="$riwayat->count().' pemberian · total '.$rp($totalBiaya)">
+            :subtitle="$riwayat->count().' pemberian'.($bacaSaja ? '' : ' · total '.$rp($totalBiaya))">
             <x-slot name="actions">
                 <x-button variant="secondary" :href="route('recording.index', $siklus)">Lihat di Recording</x-button>
                 @if ($bisaCatat)
@@ -31,7 +31,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Hari</th><th scope="col">Tanggal</th><th scope="col">Jenis</th><th scope="col">Nama produk</th><th scope="col">Dosis</th>
-                            <th scope="col" class="text-right">Biaya</th><th scope="col">Penanda recording</th>@if ($bisaCatat)<th scope="col">Aksi</th>@endif
+                            @unless ($bacaSaja)<th scope="col" class="text-right">Biaya</th>@endunless<th scope="col">Penanda recording</th>@if ($bisaCatat)<th scope="col">Aksi</th>@endif
                         </tr>
                     </thead>
                     <tbody>
@@ -43,7 +43,7 @@
                                 <td><x-badge :variant="$varian[$o->jenis] ?? 'neutral'">{{ ucfirst($o->jenis) }}</x-badge></td>
                                 <td class="font-semibold">{{ $o->nama_produk }}</td>
                                 <td class="text-ink-secondary">{{ $o->dosis ?: '–' }}</td>
-                                <td class="whitespace-nowrap text-right font-semibold">{{ $rp($o->biaya) }}</td>
+                                @unless ($bacaSaja)<td class="whitespace-nowrap text-right font-semibold">{{ $rp($o->biaya) }}</td>@endunless
                                 <td>
                                     @if ($tanda)
                                         <span class="inline-flex items-center gap-1.5 text-[13px] text-ink-secondary"><x-icon name="check" class="size-3.5 text-success-text" /> {{ $tanda['waktu'] }} (hr {{ $tanda['hari'] }})</span>
@@ -59,13 +59,13 @@
                         <tr class="!bg-tint font-bold">
                             <td colspan="2">Total</td>
                             <td colspan="3">{{ $riwayat->count() }} pemberian</td>
-                            <td class="whitespace-nowrap text-right">{{ $rp($totalBiaya) }}</td>
+                            @unless ($bacaSaja)<td class="whitespace-nowrap text-right">{{ $rp($totalBiaya) }}</td>@endunless
                             <td colspan="{{ $bisaCatat ? 2 : 1 }}"></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <p class="text-xs text-ink-muted">Centang OVK pagi atau sore di Recording hanya penanda pemberian; detail produk dan biaya dicatat di halaman ini.</p>
+            @unless ($bacaSaja)<p class="text-xs text-ink-muted">Centang OVK pagi atau sore di Recording hanya penanda pemberian; detail produk dan biaya dicatat di halaman ini.</p>@endunless
         @endif
     </x-page>
 </x-app-layout>
