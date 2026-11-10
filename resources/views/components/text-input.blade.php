@@ -1,3 +1,7 @@
-@props(['disabled' => false])
+@props(['disabled' => false, 'invalid' => false])
 
-<input @disabled($disabled) {{ $attributes->merge(['class' => 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm']) }}>
+{{-- Teks 16 px (syarat PRD untuk isian di kandang) dan tinggi 46 px sesuai desain. --}}
+<input @disabled($disabled) {{ $attributes->merge(['class' => 'block w-full min-h-[46px] rounded-md bg-surface px-3.5 text-base text-ink placeholder:text-ink-muted focus:ring-1 disabled:bg-state-hover '
+    .($invalid
+        ? 'border-danger focus:border-danger focus:ring-danger'
+        : 'border-line-control focus:border-brand focus:ring-brand')]) }}>

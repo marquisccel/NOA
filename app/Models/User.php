@@ -51,6 +51,25 @@ class User extends Authenticatable
         return $this->isAbk() ? $this->peternak_id : $this->id;
     }
 
+    /** Nama peran seperti di desain (badge di topbar). */
+    public function labelPeran(): string
+    {
+        return match ($this->role) {
+            self::ROLE_PETERNAK => 'Peternak Plasma',
+            self::ROLE_ABK => 'ABK',
+            self::ROLE_PENGAWAS => 'Pengawas Inti',
+            default => ucfirst((string) $this->role),
+        };
+    }
+
+    /** Inisial untuk avatar: huruf pertama dua kata pertama nama. */
+    public function inisial(): string
+    {
+        $kata = preg_split('/\s+/', trim($this->name)) ?: [];
+
+        return mb_strtoupper(mb_substr($kata[0] ?? '?', 0, 1).mb_substr($kata[1] ?? '', 0, 1));
+    }
+
     public function isPeternak(): bool
     {
         return $this->role === self::ROLE_PETERNAK;
