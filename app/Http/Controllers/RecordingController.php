@@ -20,7 +20,7 @@ class RecordingController extends Controller
 
     public function index(Siklus $siklus): View
     {
-        Gate::authorize('view', $siklus);
+        Gate::authorize('catat', $siklus);
 
         $baris = $this->hitung($siklus);
         $mingguan = $this->ringkasan->mingguan($baris);

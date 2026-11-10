@@ -12,9 +12,10 @@ use Illuminate\Validation\Rule;
 
 class RecordingRequest extends FormRequest
 {
+    /** Peternak dan ABK boleh mengisi; kepemilikan siklus diperiksa kebijakan di controller. */
     public function authorize(): bool
     {
-        return $this->user()->isPeternak();
+        return $this->user()->isPeternak() || $this->user()->isAbk();
     }
 
     public function siklus(): Siklus
