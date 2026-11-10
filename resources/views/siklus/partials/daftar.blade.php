@@ -12,7 +12,10 @@
                     @isset($showKandang){{ $s->kandang->nama_farm }} · @endisset
                     Masuk {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · {{ number_format($s->populasi, 0, ',', '.') }} ekor
                 </a>
-                <span class="px-2 py-1 rounded-md bg-gray-100 text-gray-800 text-sm">{{ $label[$s->status] ?? $s->status }}</span>
+                <span class="flex items-center gap-3">
+                    <a href="{{ route('recording.index', $s) }}" class="text-indigo-700 underline min-h-11 inline-flex items-center">Recording</a>
+                    <span class="px-2 py-1 rounded-md bg-gray-100 text-gray-800 text-sm">{{ $label[$s->status] ?? $s->status }}</span>
+                </span>
             </li>
         @endforeach
     </ul>

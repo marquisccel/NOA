@@ -49,6 +49,12 @@
                 </p>
             </div>
 
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900">Recording harian</h3>
+                <p class="mt-2 text-base text-gray-700">Pakan terpakai, ayam mati, dan afkir tiap hari; angka berjalan dihitung tiap entri disimpan.</p>
+                <a href="{{ route('recording.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka recording harian</a>
+            </div>
+
             <div class="grid gap-6 sm:grid-cols-2">
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900">Tabel standar harian</h3>
