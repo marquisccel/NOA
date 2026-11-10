@@ -22,11 +22,16 @@ class RingkasanRecording
      * @param  Collection<int, RecordingHarian>  $recordings
      * @param  Collection<int, StandarHarian>  $standar
      * @param  Collection<int, ParameterUmur>  $parameter
+     * @param  Collection<int, \App\Models\SamplingBobot>|null  $samplings
      * @return array<int, array<string, mixed>> baris per hari umur, berurutan, kunci = hari_ke
      */
-    public function baris(Siklus $siklus, Collection $recordings, Collection $standar, Collection $parameter): array
+    public function baris(Siklus $siklus, Collection $recordings, Collection $standar, Collection $parameter, ?Collection $samplings = null): array
     {
         $standarPerHari = $standar->keyBy('hari_ke');
+        // Bobot dari sampling pada hari yang sama dipakai bila recording hari itu tidak mencatat bobot aktual.
+        $abwSampling = ($samplings ?? collect())
+            ->sortBy('id')
+            ->mapWithKeys(fn ($s) => [$s->hari_ke => $this->calc->abwSampling((float) $s->total_bobot_kg, $s->jumlah_sampel) * 1000]);
         $bobotBkg = (float) $siklus->bobot_sak_kg;
 
         $kumMasuk = 0.0;
@@ -41,7 +46,7 @@ class RingkasanRecording
 
             $hidup = $siklus->populasi - $kumDeplesi;
             $kumKg = $this->calc->sakKeKg($kumPakai, $bobotBkg);
-            $bobot = $r->bobot_aktual_gram !== null ? (float) $r->bobot_aktual_gram : null;
+            $bobot = $r->bobot_aktual_gram !== null ? (float) $r->bobot_aktual_gram : $abwSampling->get($r->hari_ke);
             $std = $standarPerHari->get($r->hari_ke);
             $target = $parameter->first(fn (ParameterUmur $p) => $r->hari_ke >= $p->umur_awal && $r->hari_ke <= $p->umur_akhir);
 

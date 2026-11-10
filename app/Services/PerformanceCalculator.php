@@ -87,6 +87,12 @@ class PerformanceCalculator
         return $selisihHari > 0 ? ($abwSekarangKg - $abwSebelumnyaKg) * 1000 / $selisihHari : null;
     }
 
+    /** Sampel sebagai persen populasi hidup. */
+    public function samplingPersen(int $jumlahSampel, int $ayamHidup): ?float
+    {
+        return $ayamHidup > 0 ? $jumlahSampel / $ayamHidup * 100 : null;
+    }
+
     /** R8: sampel di bawah 5 persen populasi hidup ditandai kurang representatif. */
     public function samplingRepresentatif(int $jumlahSampel, int $ayamHidup): bool
     {
