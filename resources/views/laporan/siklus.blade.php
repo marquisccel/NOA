@@ -2,125 +2,114 @@
     use App\Support\Format as F;
 
     $rp = fn ($n) => $n === null ? 'belum lengkap' : 'Rp '.F::angka($n, 0);
-    $status = ['berjalan' => 'Berjalan', 'selesai' => 'Selesai', 'dihentikan' => 'Dihentikan'][$siklus->status] ?? $siklus->status;
     $adaGrafik = collect($grafik['labels'])->isNotEmpty();
+    $sudahPanen = $p['jumlah_tahap'] > 0;
+    $subtitle = 'Siklus '.$nomor.' · '.$siklus->kandang->nama_farm.($siklus->tanggal_panen ? ' · data s.d. panen terakhir '.$siklus->tanggal_panen->translatedFormat('j M Y') : '');
+    $porsi = fn ($n) => $biaya['total'] > 0 && $n !== null ? F::angka($n / $biaya['total'] * 100, 1).'%' : '–';
+    $sisaSak = $p['pakan_masuk_sak'] - $p['pakan_bersih_sak'];
 @endphp
 
-<x-app-layout :siklus="$siklus">
-    <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Laporan siklus · {{ $siklus->kandang->nama_farm }}</h2>
-                <p class="mt-1 text-base text-gray-700">
-                    Masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }} · {{ F::angka($siklus->populasi, 0) }} ekor · {{ $status }}
-                    · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline print:hidden">Detail siklus</a>
-                </p>
-            </div>
-            <button type="button" onclick="window.print()" class="print:hidden min-h-11 px-4 py-2 bg-gray-800 rounded-md font-semibold text-sm text-white hover:bg-gray-700">Cetak laporan (1 halaman)</button>
+<x-app-layout title="Laporan siklus" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Laporan']]">
+    <x-page>
+        <x-page-header title="Laporan siklus" :subtitle="$subtitle">
+            <x-slot name="actions">
+                <x-button variant="secondary" :href="route('laporan.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>
+                <x-button :href="route('laporan.cetak', $siklus)" target="_blank" rel="noopener"><x-icon name="printer" class="size-4" /> Cetak laporan</x-button>
+            </x-slot>
+        </x-page-header>
+
+        @if ($p['tidak_sebanding'])
+            <x-alert variant="warning"><strong>Tidak sebanding:</strong> siklus dihentikan dini. Angka dihitung dari data yang ada dan tidak layak dibandingkan dengan siklus lengkap.</x-alert>
+        @endif
+        @if (! $sudahPanen)
+            <x-alert variant="info">Belum ada catatan panen: FCR, ABW, umur panen, IP, dan margin belum bisa dihitung.</x-alert>
+        @endif
+
+        <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+            <x-kpi label="Deplesi" :value="F::angka($p['deplesi_persen']).'%'" :caption="F::angka($p['deplesi'], 0).' ekor · daya hidup '.F::angka($p['liveability']).'%'" />
+            <x-kpi label="FCR" :value="F::angka($p['fcr'], 3)" :caption="$sudahPanen ? F::angka($p['pakan_bersih_kg'], 0).' kg ÷ '.F::angka($p['total_tonase'], 0).' kg' : null" />
+            <x-kpi label="ABW panen" :value="F::angka($p['abw'], 3).' kg'" :caption="$sudahPanen ? F::angka($p['total_ekor'], 0).' ekor' : null" />
+            <x-kpi label="IP" :value="F::angka($p['ip'], 0)" caption="Rumus kemitraan" />
+            <x-kpi label="Umur panen" :value="F::angka($p['umur_panen']).' hari'" :caption="$sudahPanen ? 'Berbobot '.$p['jumlah_tahap'].' tahap' : null" />
+            <x-kpi label="Biaya produksi" :value="$biaya['per_kg'] === null ? '–' : 'Rp '.F::angka($biaya['per_kg'], 0)" :caption="'per kg · total '.($biaya['lengkap'] ? $rp($biaya['total']) : $rp($biaya['total']).' (belum lengkap)')" />
         </div>
-    </x-slot>
 
-    <div class="py-8 print:py-2">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 print:space-y-3 print:max-w-none print:px-0">
-            @if ($p['tidak_sebanding'])
-                <p class="rounded-md bg-amber-50 border border-amber-400 p-4 text-base text-amber-900" role="alert">
-                    <strong>Tidak sebanding:</strong> siklus dihentikan dini. Angka dihitung dari data yang ada dan tidak layak dibandingkan dengan siklus lengkap.
-                </p>
-            @endif
-            @if ($p['jumlah_tahap'] === 0)
-                <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800">Belum ada catatan panen: FCR, ABW, umur panen, IP, dan margin belum bisa dihitung.</p>
-            @endif
+        @if ($p['selisih_populasi'] !== 0 && $sudahPanen)
+            <x-alert variant="warning"><p class="font-semibold">Selisih populasi {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</p><p>Panen + deplesi ≠ populasi awal. <a href="{{ route('panen.selisih', $siklus) }}" class="font-semibold underline">Lihat rincian</a></p></x-alert>
+        @endif
 
-            <dl class="grid grid-cols-2 gap-4 lg:grid-cols-6 text-base print:grid-cols-6 print:gap-2">
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">Deplesi</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['deplesi_persen']) }}%</dd>
-                    <dd class="text-sm text-gray-600">{{ F::angka($p['deplesi'], 0) }} ekor</dd>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">FCR</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['fcr'], 3) }}</dd>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">ABW panen</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['abw'], 3) }} kg</dd>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">Umur panen</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['umur_panen'], 1) }} hari</dd>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">IP</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['ip'], 1) }}</dd>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2">
-                    <dt class="text-gray-600">Panen</dt>
-                    <dd class="text-2xl font-semibold print:text-lg">{{ F::angka($p['total_ekor'], 0) }}</dd>
-                    <dd class="text-sm text-gray-600">ekor · {{ F::angka($p['total_tonase'], 0) }} kg</dd>
-                </div>
-            </dl>
-
-            <section class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6 print:shadow-none print:border print:p-3 break-inside-avoid">
-                <h3 class="text-lg font-semibold text-gray-900">Biaya produksi</h3>
-                <table class="mt-3 min-w-full text-base text-left print:text-sm">
-                    <caption class="sr-only">Rincian biaya produksi siklus</caption>
-                    <tbody class="divide-y divide-gray-100 text-gray-900">
-                        <tr>
-                            <th scope="row" class="py-2 pe-4 font-normal">DOC ({{ F::angka($siklus->populasi, 0) }} ekor × harga DOC)</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $rp($biaya['doc']) }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="py-2 pe-4 font-normal">Pakan ({{ F::angka($p['pakan_bersih_sak']) }} sak tertagih × harga per sak)</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $rp($biaya['pakan']) }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="py-2 pe-4 font-normal">OVK (jumlah catatan pemberian)</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $rp($biaya['ovk']) }}</td>
-                        </tr>
-                        <tr class="font-semibold">
-                            <th scope="row" class="py-2 pe-4">Total biaya produksi{{ $biaya['lengkap'] ? '' : ' (belum lengkap)' }}</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $rp($biaya['total']) }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="py-2 pe-4 font-normal">Biaya per kg panen / per ekor panen</th>
-                            <td class="py-2 text-right whitespace-nowrap">
-                                {{ $biaya['per_kg'] === null ? '-' : 'Rp '.F::angka($biaya['per_kg'], 0) }} / {{ $biaya['per_ekor'] === null ? '-' : 'Rp '.F::angka($biaya['per_ekor'], 0) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="py-2 pe-4 font-normal">Pendapatan panen ({{ $p['jumlah_tahap'] }} tahap)</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $p['jumlah_tahap'] ? 'Rp '.F::angka($p['pendapatan'], 0) : '-' }}</td>
-                        </tr>
-                        <tr class="font-semibold">
-                            <th scope="row" class="py-2 pe-4">Margin kasar</th>
-                            <td class="py-2 text-right whitespace-nowrap">{{ $biaya['margin_kasar'] === null ? '-' : ($biaya['margin_kasar'] < 0 ? '−' : '').'Rp '.F::angka(abs($biaya['margin_kasar']), 0) }}</td>
-                        </tr>
+        <section class="space-y-3" aria-labelledby="biaya-judul">
+            <h2 id="biaya-judul" class="text-base font-bold">Biaya produksi (catatan peternak)</h2>
+            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <table class="tabel min-w-[560px]">
+                    <caption class="sr-only">Biaya produksi menurut komponen</caption>
+                    <thead><tr><th scope="col">Komponen</th><th scope="col">Dasar</th><th scope="col" class="text-right">Biaya</th><th scope="col" class="text-right">Porsi</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">DOC</th><td class="text-ink-secondary">{{ $biaya['doc_dasar'] ?? 'harga DOC belum diisi' }}</td><td class="text-right">{{ $rp($biaya['doc']) }}</td><td class="text-right">{{ $porsi($biaya['doc']) }}</td></tr>
+                        <tr><th scope="row">Pakan</th><td class="text-ink-secondary">{{ $biaya['pakan_dasar'] ?? 'harga pakan belum diisi' }}</td><td class="text-right">{{ $rp($biaya['pakan']) }}</td><td class="text-right">{{ $porsi($biaya['pakan']) }}</td></tr>
+                        <tr><th scope="row">OVK</th><td class="text-ink-secondary">{{ $jumlahOvk }} pemberian</td><td class="text-right">{{ $rp($biaya['ovk']) }}</td><td class="text-right">{{ $porsi($biaya['ovk']) }}</td></tr>
+                        <tr class="!bg-tint font-bold"><th scope="row">Total biaya</th><td></td><td class="text-right">{{ $rp($biaya['total']) }}{{ $biaya['lengkap'] ? '' : '*' }}</td><td class="text-right">100%</td></tr>
                     </tbody>
                 </table>
-                <p class="mt-3 text-sm text-gray-600">
-                    Margin kasar = pendapatan panen dikurangi biaya produksi di atas; belum termasuk bonus, listrik, tenaga kerja, sekam, dan biaya operasional lain.
-                    @unless ($biaya['lengkap']) Harga DOC atau harga pakan per sak belum diisi di kontrak, jadi total belum lengkap dan margin tidak dihitung. @endunless
-                </p>
-            </section>
+            </div>
+            @unless ($biaya['lengkap'])<p class="text-xs text-ink-muted">* Belum lengkap: harga DOC atau pakan di kontrak belum diisi.</p>@endunless
 
+            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <table class="tabel min-w-[560px]">
+                    <caption class="sr-only">Biaya per kilogram dan per ekor panen</caption>
+                    <thead><tr><th scope="col">Ukuran</th><th scope="col">Dasar</th><th scope="col" class="text-right">Per kg</th><th scope="col" class="text-right">Per ekor panen</th></tr></thead>
+                    <tbody><tr>
+                        <th scope="row">Biaya produksi</th>
+                        <td class="text-ink-secondary">{{ $sudahPanen ? $rp($biaya['total']).' ÷ '.F::angka($p['total_tonase'], 0).' kg · ÷ '.F::angka($p['total_ekor'], 0).' ekor' : 'menunggu panen' }}</td>
+                        <td class="text-right">{{ $biaya['per_kg'] === null ? '–' : 'Rp '.F::angka($biaya['per_kg'], 0) }}</td>
+                        <td class="text-right">{{ $biaya['per_ekor'] === null ? '–' : 'Rp '.F::angka($biaya['per_ekor'], 0) }}</td>
+                    </tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="space-y-3" aria-labelledby="produksi-judul">
+            <h2 id="produksi-judul" class="text-base font-bold">Produksi</h2>
+            <div class="overflow-hidden rounded-[16px] border border-line bg-surface">
+                <dl class="divide-y divide-line-subtle text-sm">
+                    @foreach ([
+                        ['Populasi DOC', F::angka($p['populasi'], 0).' ekor'],
+                        ['Ayam mati', F::angka($p['mati'], 0).' ekor'],
+                        ['Ayam afkir', F::angka($p['afkir'], 0).' ekor'],
+                        ['Ayam dipanen', F::angka($p['total_ekor'], 0).' ekor'],
+                        ['Selisih populasi', F::angka(abs($p['selisih_populasi']), 0).' ekor'],
+                        ['Tonase panen', F::angka($p['total_tonase'], 0).' kg'],
+                        ['Pakan terpakai', F::angka($p['pakan_bersih_kg'], 0).' kg'],
+                        ['Sisa pakan', F::angka($sisaSak, 1).' sak'],
+                    ] as [$k, $v])
+                        <div class="flex items-center justify-between gap-4 px-5 py-3"><dt class="text-ink-secondary">{{ $k }}</dt><dd class="font-semibold">{{ $v }}</dd></div>
+                    @endforeach
+                </dl>
+            </div>
+            <p class="text-xs text-ink-muted">Hasil bersih dan bonus tidak dihitung NOA (lihat RHPP &amp; Rekonsiliasi).</p>
+        </section>
+
+        <section class="space-y-3" aria-labelledby="grafik-judul">
+            <h2 id="grafik-judul" class="text-base font-bold">Grafik siklus</h2>
             @if ($adaGrafik)
-                <div class="grid gap-6 lg:grid-cols-2 print:grid-cols-2 print:gap-3">
-                    <section class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2 break-inside-avoid">
-                        <h3 class="text-lg font-semibold text-gray-900 print:text-base">Bobot sepanjang siklus</h3>
-                        <div class="mt-2 h-64 print:h-44"><canvas id="grafik-bobot" role="img" aria-label="Grafik bobot aktual dibandingkan standar menurut umur"></canvas></div>
-                    </section>
-                    <section class="bg-white shadow-sm sm:rounded-lg p-4 print:shadow-none print:border print:p-2 break-inside-avoid">
-                        <h3 class="text-lg font-semibold text-gray-900 print:text-base">Deplesi kumulatif</h3>
-                        <div class="mt-2 h-64 print:h-44"><canvas id="grafik-deplesi" role="img" aria-label="Grafik deplesi kumulatif menurut umur"></canvas></div>
-                    </section>
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div class="rounded-[16px] border border-line bg-surface p-5">
+                        <h3 class="text-sm font-bold">Bobot rata-rata (g)</h3>
+                        <p class="text-xs text-ink-secondary">Sampling vs standar</p>
+                        <div class="mt-2 h-64"><canvas id="grafik-bobot" role="img" aria-label="Grafik bobot aktual dibandingkan standar menurut umur"></canvas></div>
+                    </div>
+                    <div class="rounded-[16px] border border-line bg-surface p-5">
+                        <h3 class="text-sm font-bold">Deplesi kumulatif (%)</h3>
+                        <p class="text-xs text-ink-secondary">Ayam mati + ayam afkir ÷ DOC</p>
+                        <div class="mt-2 h-64"><canvas id="grafik-deplesi" role="img" aria-label="Grafik deplesi kumulatif menurut umur"></canvas></div>
+                    </div>
                 </div>
                 <script type="application/json" id="data-grafik">@json($grafik)</script>
                 @vite('resources/js/laporan.js')
             @else
-                <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800 print:hidden">Grafik muncul setelah ada recording harian atau tabel standar.</p>
+                <x-empty-state icon="chart-column" title="Grafik muncul setelah ada recording" text="Bobot sampling, standar, dan deplesi kumulatif tergambar per hari umur." />
             @endif
-
-            <p class="hidden print:block text-xs text-gray-600">Dicetak {{ now()->translatedFormat('j F Y') }} dari NOA. Angka performa dihitung dari catatan peternak; bukan angka RHPP inti.</p>
-        </div>
-    </div>
+        </section>
+    </x-page>
 </x-app-layout>

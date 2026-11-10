@@ -59,6 +59,22 @@ class RecordingController extends Controller
         ]);
     }
 
+    /** Unduh riwayat recording sebagai CSV (angka aktual dan standar). */
+    public function csv(Siklus $siklus): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        Gate::authorize('catat', $siklus);
+
+        $stdHari = $this->ringkasan->pakanStdHarian($siklus->standarHarian()->get());
+        $baris = [['Hari', 'Tanggal', 'Pakan std (sak)', 'Pakan aktual (sak)', 'Ayam mati', 'Ayam afkir', 'Deplesi std (%)', 'Deplesi aktual (%)', 'Stok pakan (sak)', 'Diparaf PPL', 'Tanggal paraf']];
+        foreach ($this->hitung($siklus) as $b) {
+            $r = $b['recording'];
+            $baris[] = [$b['hari_ke'], $b['tanggal']->toDateString(), $stdHari[$b['hari_ke']] ?? '', $b['pakan_pakai_sak'], $r->mati, $r->afkir,
+                $b['standar']?->deplesi_std_persen ?? '', round($b['deplesi_kum_persen'], 2), round($b['stok_sak'], 2), $r->diparaf_ppl ? 'ya' : 'belum', $r->tanggal_paraf?->toDateString() ?? ''];
+        }
+
+        return LaporanController::unduhCsv($baris, 'recording-'.str($siklus->kandang->nama_farm)->slug().'.csv');
+    }
+
     /** Halaman sukses setelah simpan: angka berjalan terbaru dan pengingat hari yang terlewat (F2.8). */
     public function tersimpan(Siklus $siklus, int $hari): View
     {

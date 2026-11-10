@@ -42,12 +42,12 @@ class LaporanSiklusTest extends TestCase
         $biaya = app(LaporanSiklus::class)->biaya($this->siklus->fresh(['kontrak']));
 
         $this->assertEqualsWithDelta(7000 * 3000, $biaya['doc'], 0.5);
-        // 190 sak tertagih (masuk 195 dikurangi sisa 5) x Rp430.000.
-        $this->assertEqualsWithDelta(190 * 430000, $biaya['pakan'], 0.5);
+        // 195 sak pakan masuk (tagihan sapronak) x Rp430.000.
+        $this->assertEqualsWithDelta(195 * 430000, $biaya['pakan'], 0.5);
         $this->assertEqualsWithDelta(150000 + 175000 + 150000 + 90000, $biaya['ovk'], 0.5);
         $this->assertTrue($biaya['lengkap']);
 
-        $total = 21000000 + 81700000 + 565000;
+        $total = 21000000 + 83850000 + 565000;
         $this->assertEqualsWithDelta($total, $biaya['total'], 0.5);
         $this->assertEqualsWithDelta($total / 5750, $biaya['per_kg'], 0.01);
         $this->assertEqualsWithDelta($total / 2904, $biaya['per_ekor'], 0.01);
@@ -66,7 +66,7 @@ class LaporanSiklusTest extends TestCase
         $this->assertFalse($biaya['lengkap']);
         $this->assertNull($biaya['margin_kasar']);
         $this->actingAs($this->peternak)->get(route('laporan.siklus', $this->siklus))
-            ->assertOk()->assertSee('belum lengkap')->assertSee('total belum lengkap');
+            ->assertOk()->assertSee('belum lengkap')->assertSee('Belum lengkap: harga DOC atau pakan di kontrak belum diisi');
     }
 
     public function test_ovk_selalu_dihitung_walau_harga_kontrak_kosong(): void
@@ -110,14 +110,38 @@ class LaporanSiklusTest extends TestCase
         $this->actingAs($this->peternak)->get(route('laporan.siklus', $this->siklus))
             ->assertOk()
             ->assertSee('Laporan siklus')
-            ->assertSee('Biaya produksi')
+            ->assertSee('Biaya produksi (catatan peternak)')
             ->assertSee('1,652')
             ->assertSee('3,20%')
+            ->assertSee('195 sak × Rp 430.000')
+            ->assertSee('Unduh CSV')
+            ->assertSee('Cetak laporan')
             ->assertSee('id="grafik-bobot"', false)
             ->assertSee('id="grafik-deplesi"', false)
             ->assertSee('id="data-grafik"', false)
-            ->assertSee('window.print()', false)
-            ->assertSee('Margin kasar');
+            ->assertSee('Hasil bersih dan bonus tidak dihitung NOA');
+    }
+
+    public function test_lembar_cetak_a4_memuat_performa_biaya_dan_panen(): void
+    {
+        $this->actingAs($this->peternak)->get(route('laporan.cetak', $this->siklus))->assertOk()
+            ->assertSee('Laporan Siklus 1')->assertSee('NOA · catatan peternak')->assertSee('Performa')->assertSee('Total biaya')->assertSee('No. BTPA')
+            ->assertSee('Halaman 1 dari 1')->assertSee('size: A4', false)->assertSee('window.print()', false)->assertDontSee('Dashboard');
+    }
+
+    public function test_unduh_csv_laporan_dan_recording(): void
+    {
+        $laporan = $this->actingAs($this->peternak)->get(route('laporan.csv', $this->siklus));
+        $laporan->assertOk()->assertDownload();
+        $isi = $laporan->streamedContent();
+        $this->assertStringStartsWith(chr(239).chr(187).chr(191), $isi);
+        $this->assertStringContainsString('Ukuran,Nilai,Keterangan', $isi);
+        $this->assertStringContainsString('FCR,1.652', $isi);
+        $this->assertStringContainsString('"Biaya pakan (Rp)",83850000', $isi);
+
+        $rec = $this->actingAs($this->peternak)->get(route('recording.csv', $this->siklus));
+        $rec->assertOk();
+        $this->assertStringContainsString('Hari,Tanggal,"Pakan std (sak)"', $rec->streamedContent());
     }
 
     public function test_chart_js_hanya_dimuat_di_halaman_laporan(): void
@@ -136,30 +160,43 @@ class LaporanSiklusTest extends TestCase
         $this->actingAs($this->peternak)->get(route('laporan.siklus', $this->siklus))->assertSee('Tidak sebanding');
     }
 
-    public function test_f7_3_perbandingan_antar_siklus_di_kandang_yang_sama(): void
+    public function test_perbandingan_global_lintas_kandang_dengan_siklus_berjalan_tampil_strip(): void
     {
         $kandang = $this->siklus->kandang;
         $baru = Siklus::create(['kandang_id' => $kandang->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 3000, 'status' => 'berjalan']);
-        $dihentikan = Siklus::create(['kandang_id' => $kandang->id, 'tanggal_masuk' => '2026-10-01', 'populasi' => 3000, 'status' => 'dihentikan']);
+        $lain = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Lain', 'kapasitas' => 5000]);
+        Siklus::create(['kandang_id' => $lain->id, 'tanggal_masuk' => '2026-10-01', 'populasi' => 777, 'status' => 'dihentikan']);
 
-        $response = $this->actingAs($this->peternak)->get(route('laporan.perbandingan', $kandang));
+        $response = $this->actingAs($this->peternak)->get(route('laporan.index'));
 
-        $response->assertOk()
-            ->assertSee('Perbandingan siklus')
-            ->assertSee('1,652')
-            ->assertSee('Dihentikan dini, tidak sebanding')
-            ->assertSee('Belum panen');
-        // Terbaru di atas: 1 Nov, 1 Okt, 20 Sep.
-        $response->assertSeeInOrder(['1 Nov 2026', '1 Okt 2026', '20 Sep 2026']);
-        $response->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->all() === [$baru->id, $dihentikan->id, $this->siklus->id]);
+        $response->assertOk()->assertSee('Perbandingan antar-siklus')->assertSee('Kandang Lain')->assertSee('Siklus 2')->assertSee('1,652')->assertSee('Dihentikan')->assertSee('Berjalan')
+            ->assertSee('IP per siklus')->assertSee('FCR per siklus');
+        $response->assertSeeInOrder(['1 Nov 2026', '20 Sep 2026']);
+        $response->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->first() === $baru->id);
     }
 
-    public function test_perbandingan_tidak_mencampur_siklus_kandang_lain(): void
+    public function test_perbandingan_filter_kandang_status_dan_tahun(): void
     {
-        $lain = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Lain', 'kapasitas' => 100]);
-        Siklus::create(['kandang_id' => $lain->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 777, 'status' => 'berjalan']);
+        $lain = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Lain', 'kapasitas' => 5000]);
+        $s = Siklus::create(['kandang_id' => $lain->id, 'tanggal_masuk' => '2025-03-01', 'populasi' => 777, 'status' => 'dihentikan']);
 
-        $this->actingAs($this->peternak)->get(route('laporan.perbandingan', $this->siklus->kandang))->assertDontSee('777 ekor');
+        $this->actingAs($this->peternak)->get(route('laporan.index', ['kandang' => $lain->id]))->assertViewHas('baris', fn ($b) => $b->count() === 1);
+        $this->actingAs($this->peternak)->get(route('laporan.index', ['status' => 'selesai']))->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->all() === [$this->siklus->id]);
+        $this->actingAs($this->peternak)->get(route('laporan.index', ['tahun' => 2025]))->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->all() === [$s->id]);
+    }
+
+    public function test_perbandingan_tidak_mencampur_siklus_peternak_lain(): void
+    {
+        $lain = User::factory()->create();
+        $k = Kandang::create(['user_id' => $lain->id, 'nama_farm' => 'Milik Orang', 'kapasitas' => 100]);
+        Siklus::create(['kandang_id' => $k->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 777, 'status' => 'berjalan']);
+
+        $this->actingAs($this->peternak)->get(route('laporan.index'))->assertDontSee('Milik Orang')->assertDontSee('777 ekor');
+    }
+
+    public function test_tautan_lama_perbandingan_kandang_mengarah_ke_halaman_global(): void
+    {
+        $this->actingAs($this->peternak)->get(route('laporan.perbandingan', $this->siklus->kandang))->assertRedirect(route('laporan.index', ['kandang' => $this->siklus->kandang->id]));
     }
 
     public function test_laporan_dan_perbandingan_hanya_untuk_peternak_pemilik(): void
@@ -170,6 +207,15 @@ class LaporanSiklusTest extends TestCase
         foreach ([$abk, $lain] as $user) {
             $this->actingAs($user)->get(route('laporan.siklus', $this->siklus))->assertForbidden();
             $this->actingAs($user)->get(route('laporan.perbandingan', $this->siklus->kandang))->assertForbidden();
+            $this->actingAs($user)->get(route('laporan.cetak', $this->siklus))->assertForbidden();
+            $this->actingAs($user)->get(route('laporan.csv', $this->siklus))->assertForbidden();
         }
+    }
+
+    public function test_abk_ditolak_di_laporan_global(): void
+    {
+        $abk = User::factory()->abk($this->peternak)->create();
+
+        $this->actingAs($abk)->get(route('laporan.index'))->assertForbidden();
     }
 }

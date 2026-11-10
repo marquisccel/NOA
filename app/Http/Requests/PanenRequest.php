@@ -32,8 +32,8 @@ class PanenRequest extends FormRequest
             'jumlah_ekor' => ['required', 'integer', 'min:1', 'max:1000000'],
             'tonase_kg' => ['required', 'numeric', 'gt:0', 'max:99999999'],
             'harga_per_kg' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
-            'nomor_btpa' => ['nullable', 'string', 'max:100'],
-            'foto_btpa' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'nomor_btpa' => ['required', 'string', 'max:100'],
+            'foto_btpa' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'hapus_foto' => ['boolean'],
         ];
     }
@@ -88,8 +88,9 @@ class PanenRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'nomor_btpa.required' => 'Nomor BTPA wajib diisi.',
             'foto_btpa.mimes' => 'Foto BTPA harus berupa JPG, PNG, atau WebP.',
-            'foto_btpa.max' => 'Foto BTPA maksimal 4 MB.',
+            'foto_btpa.max' => 'Foto BTPA maksimal 5 MB.',
         ];
     }
 }

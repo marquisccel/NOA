@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SelesaiSiklusRequest;
 use App\Http\Requests\SiklusRequest;
 use App\Models\Siklus;
 use App\Services\RingkasanPerforma;
@@ -110,30 +109,6 @@ class SiklusController extends Controller
         });
 
         return redirect()->route('siklus.pengaturan', $siklus)->with('status', 'Pengaturan siklus berhasil disimpan.');
-    }
-
-    /** F1.9: tandai siklus selesai (atau dihentikan) beserta tanggal panen dan re-chick in. */
-    public function selesai(SelesaiSiklusRequest $request, Siklus $siklus): RedirectResponse
-    {
-        Gate::authorize('update', $siklus);
-
-        if ($siklus->status !== Siklus::STATUS_BERJALAN) {
-            return back()->withErrors(['status' => 'Siklus ini sudah tidak berjalan.']);
-        }
-
-        $siklus->update($request->validated() + ['ditutup_pada' => now()->toDateString()]);
-
-        $redirect = redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditandai '.mb_strtolower($siklus->labelStatus()).'.');
-
-        // Peringatan saat siklus ditutup: data panen belum lengkap atau populasi tidak seimbang (R7, R10).
-        $p = app(RingkasanPerforma::class)->hitung($siklus);
-        if ($p['jumlah_tahap'] === 0) {
-            $redirect->with('peringatan', 'Belum ada catatan panen, jadi FCR dan IP belum bisa dihitung.');
-        } elseif ($p['selisih_populasi'] !== 0) {
-            $redirect->with('peringatan', 'Ekor panen ditambah deplesi berselisih '.abs($p['selisih_populasi']).' ekor dari populasi awal. Periksa catatan panen dan deplesi.');
-        }
-
-        return $redirect;
     }
 
     public function destroy(Siklus $siklus): RedirectResponse

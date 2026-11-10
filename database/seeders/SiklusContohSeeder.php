@@ -261,7 +261,14 @@ class SiklusContohSeeder extends Seeder
 
         Rhpp::create([
             'siklus_id' => $siklus->id,
+            'nomor_rhpp' => 'RHPP/CONTOH/'.$panen[2]->tanggal->format('Y/m').'/0001',
             'tanggal_terbit' => $panen[2]->tanggal->addDays(5),
+            'populasi_doc' => self::POPULASI,
+            'deplesi_ekor' => 78 + 18,
+            'pakan_terpakai_kg' => $terpakaiKg,
+            'biaya_doc' => self::POPULASI * 7000,
+            'biaya_pakan' => 195 * 430000,
+            'biaya_ovk' => (float) PemberianOvk::where('siklus_id', $siklus->id)->sum('biaya'),
             'total_pakan_kg' => $tagihanKg,
             'pakan_retur_sak' => $returSak,
             'total_ekor' => $totalEkor,

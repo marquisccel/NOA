@@ -14,6 +14,7 @@
         <x-page-header title="Recording harian"
             :subtitle="$siklus->isTerkunci() ? 'Siklus ditutup · semua baris hanya dapat dilihat' : 'Kolom STD dari tabel standar kemitraan · angka oranye = di atas standar'">
             <x-slot name="actions">
+                @unless (empty($daftar))<x-button variant="secondary" :href="route('recording.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>@endunless
                 @if ($bisaIsi)
                     <x-button :href="route('recording.create', $siklus)"><x-icon name="plus" class="size-4" /> Isi recording hari ini</x-button>
                 @endif

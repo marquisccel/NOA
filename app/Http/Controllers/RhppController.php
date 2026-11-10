@@ -8,15 +8,23 @@ use App\Models\Siklus;
 use App\Services\Rekonsiliasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Rekonsiliasi RHPP (F6.x): halaman ini memuat angka rupiah dan selisih komersial,
- * sehingga hanya untuk peternak (R13); ABK ditolak oleh middleware dan kebijakan.
+ * RHPP dan rekonsiliasi: halaman ini memuat angka rupiah, jadi hanya untuk peternak (R13).
+ * Penanda "Berbeda" hanya berarti angka tidak sama; tidak ada ambang dan tidak ada dampak rupiah.
  */
 class RhppController extends Controller
 {
+    private const DISK = 'local';
+
+    private const FOLDER = 'rhpp';
+
     public function __construct(private Rekonsiliasi $rekonsiliasi) {}
 
     public function show(Siklus $siklus): View
@@ -26,7 +34,7 @@ class RhppController extends Controller
         return view('rhpp.show', $this->data($siklus));
     }
 
-    /** F6.4: lembar perbandingan untuk dibawa musyawarah dengan inti. */
+    /** Lembar perbandingan untuk dibawa musyawarah dengan inti. */
     public function cetak(Siklus $siklus): View
     {
         Gate::authorize('view', $siklus);
@@ -34,54 +42,90 @@ class RhppController extends Controller
         return view('rhpp.cetak', $this->data($siklus));
     }
 
-    /** F6.1: simpan angka RHPP apa adanya; satu RHPP per siklus. */
+    public function form(Siklus $siklus): View|RedirectResponse
+    {
+        Gate::authorize('update', $siklus);
+
+        if (! $this->bisaInput($siklus)) {
+            return redirect()->route('rhpp.show', $siklus);
+        }
+
+        return view('rhpp.form', ['siklus' => $siklus->load('kandang'), 'rhpp' => $siklus->rhpp()->first()]);
+    }
+
+    /** Simpan angka RHPP apa adanya; satu RHPP per siklus. Status menjadi Rekonsiliasi. */
     public function simpan(RhppRequest $request, Siklus $siklus): RedirectResponse
     {
         Gate::authorize('update', $siklus);
 
-        $siklus->rhpp()->withTrashed()->first()?->restore();
-        $siklus->rhpp()->updateOrCreate([], $request->validated());
+        if (! $this->bisaInput($siklus)) {
+            return redirect()->route('rhpp.show', $siklus)->withErrors(['rhpp' => 'RHPP hanya bisa diinput setelah panen ditandai selesai dan sebelum siklus ditutup.']);
+        }
 
-        $hasil = $this->rekonsiliasi->hitung($siklus->fresh(['kontrak']), $siklus->rhpp()->first());
-        $pesan = 'Angka RHPP disimpan. '.($hasil['jumlah_melebihi'] === 0
-            ? 'Tidak ada baris yang melebihi ambang selisih wajar.'
-            : $hasil['jumlah_melebihi'].' baris melebihi ambang selisih wajar.');
+        $data = Arr::except($request->validated(), ['lampiran']);
+        $data['deplesi_persen'] = $data['populasi_doc'] > 0 ? min(100, $data['deplesi_ekor'] / $data['populasi_doc'] * 100) : 0;
 
-        return redirect()->route('rhpp.show', $siklus)->with('status', $pesan);
+        $ada = $siklus->rhpp()->withTrashed()->first();
+        $ada?->restore();
+        $lama = $ada?->lampiran;
+
+        if ($request->hasFile('lampiran')) {
+            $data['lampiran'] = $request->file('lampiran')->store(self::FOLDER, self::DISK);
+        }
+
+        $siklus->rhpp()->updateOrCreate([], $data);
+
+        if (isset($data['lampiran']) && $lama && $lama !== $data['lampiran']) {
+            Storage::disk(self::DISK)->delete($lama);
+        }
+
+        if ($siklus->status === Siklus::STATUS_MENUNGGU_RHPP) {
+            $siklus->update(['status' => Siklus::STATUS_REKONSILIASI]);
+        }
+
+        return redirect()->route('rhpp.show', $siklus)->with('status', 'RHPP tersimpan. Siklus masuk tahap Rekonsiliasi.');
     }
 
-    public function hapus(Siklus $siklus): RedirectResponse
+    /** Keterangan selisih per baris; dicetak di lembar perbandingan. */
+    public function catatan(Request $request, Siklus $siklus): RedirectResponse
     {
         Gate::authorize('update', $siklus);
 
-        $siklus->rhpp()->first()?->delete();
+        $rhpp = $siklus->rhpp()->first();
+        abort_if(! $rhpp || $siklus->isTerkunci(), 403);
 
-        return redirect()->route('rhpp.show', $siklus)->with('status', 'Angka RHPP dihapus. Kolom rekonsiliasi dikosongkan.');
+        $data = $request->validate([
+            'catatan' => ['nullable', 'array'],
+            'catatan.*' => ['nullable', 'string', 'max:300'],
+        ]);
+
+        $catatan = collect($data['catatan'] ?? [])
+            ->filter(fn ($teks, $kunci) => array_key_exists($kunci, Rekonsiliasi::BARIS) && filled($teks))
+            ->map(fn ($teks) => trim($teks))
+            ->all();
+
+        $rhpp->update(['catatan' => $catatan ?: null]);
+
+        return redirect()->route('rhpp.show', $siklus)->with('status', 'Catatan selisih tersimpan.');
     }
 
-    /** F6.3: ambang selisih wajar per metrik; isian kosong kembali ke bawaan. */
-    public function simpanAmbang(Request $request, Siklus $siklus): RedirectResponse
+    /** Lampiran RHPP hanya lewat rute terautentikasi dan terotorisasi. */
+    public function lampiran(Siklus $siklus): StreamedResponse
     {
-        Gate::authorize('update', $siklus);
+        Gate::authorize('view', $siklus);
 
-        $aturan = [];
-        foreach (array_keys(Rekonsiliasi::BARIS) as $kunci) {
-            $aturan["ambang.{$kunci}"] = ['nullable', 'numeric', 'min:0', 'max:9999999'];
-        }
-        $data = $request->validate($aturan, [], ['ambang.*' => 'ambang']);
+        $rhpp = $siklus->rhpp()->first();
+        abort_unless($rhpp?->lampiran && Storage::disk(self::DISK)->exists($rhpp->lampiran), 404);
 
-        $bawaan = config('noa.ambang_rekonsiliasi');
-        $override = [];
-        foreach ($data['ambang'] ?? [] as $kunci => $nilai) {
-            // Hanya simpan yang berbeda dari bawaan, supaya perubahan bawaan di masa depan tetap berlaku.
-            if ($nilai !== null && (float) $nilai !== (float) ($bawaan[$kunci] ?? 0)) {
-                $override[$kunci] = (float) $nilai;
-            }
-        }
+        return Storage::disk(self::DISK)->response($rhpp->lampiran, null, [
+            'Cache-Control' => 'private, max-age=0, must-revalidate',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
 
-        $siklus->update(['ambang_rekonsiliasi' => $override ?: null]);
-
-        return redirect()->route('rhpp.show', $siklus)->with('status', 'Ambang selisih wajar disimpan.');
+    private function bisaInput(Siklus $siklus): bool
+    {
+        return in_array($siklus->status, [Siklus::STATUS_MENUNGGU_RHPP, Siklus::STATUS_REKONSILIASI], true);
     }
 
     /** @return array<string, mixed> */
@@ -94,9 +138,7 @@ class RhppController extends Controller
             'siklus' => $siklus,
             'rhpp' => $rhpp,
             'r' => $this->rekonsiliasi->hitung($siklus, $rhpp),
-            'ambang' => $this->rekonsiliasi->ambang($siklus),
-            'ambangBawaan' => config('noa.ambang_rekonsiliasi'),
-            'baris' => Rekonsiliasi::BARIS,
+            'bisaInput' => $this->bisaInput($siklus),
         ];
     }
 }

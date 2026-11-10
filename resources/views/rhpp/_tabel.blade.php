@@ -1,63 +1,67 @@
 @php
-    use App\Support\Format as F;
-
-    $angka = fn ($n, $d) => $n === null ? '-' : F::angka($n, $d);
-    $bertanda = function ($n, $d, $nol) {
-        if ($n === null) return '-';
-        if ($nol) return F::angka(0, $d);
-        return ($n > 0 ? '+' : '−').F::angka(abs($n), $d);
-    };
-    $rp = fn ($n) => $n === null ? null : (round($n) == 0 ? 'Rp 0' : ($n < 0 ? '−' : '+').'Rp '.F::angka(abs($n), 0));
+    $bisaCatat = $bisaCatat ?? false;
+    $cetak = $cetak ?? false;
+    $penanda = [
+        'sama' => ['success', 'Sama', 'Sama'],
+        'berbeda' => ['warning', 'Berbeda', 'Beda'],
+        'tidak' => ['neutral', 'Tidak dibandingkan', '–'],
+    ];
 @endphp
 
-<table class="min-w-full text-base text-left align-top">
-    <caption class="sr-only">Perbandingan catatan peternak dengan RHPP baris demi baris</caption>
-    <thead class="text-gray-600 border-b border-gray-300">
-        <tr>
-            <th scope="col" class="py-2 pe-4">Baris</th>
-            <th scope="col" class="py-2 pe-4 text-right">Versi peternak</th>
-            <th scope="col" class="py-2 pe-4 text-right">Versi RHPP</th>
-            <th scope="col" class="py-2 pe-4 text-right">Selisih (RHPP − peternak)</th>
-            <th scope="col" class="py-2 pe-4">Status</th>
-            <th scope="col" class="py-2 text-right">Dampak rupiah</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100 text-gray-900">
-        @foreach ($r['baris'] as $b)
-            <tr class="{{ $b['melebihi'] ? 'bg-amber-50' : '' }}">
-                <th scope="row" class="py-2 pe-4 font-medium">{{ $b['label'] }}@if ($b['satuan'])<span class="text-gray-600 font-normal"> ({{ $b['satuan'] }})</span>@endif</th>
-                <td class="py-2 pe-4 text-right whitespace-nowrap">{{ $angka($b['peternak'], $b['desimal']) }}</td>
-                <td class="py-2 pe-4 text-right whitespace-nowrap">{{ $angka($b['rhpp'], $b['desimal']) }}</td>
-                <td class="py-2 pe-4 text-right whitespace-nowrap font-medium">{{ $bertanda($b['selisih'], $b['desimal'], $b['nol']) }}</td>
-                <td class="py-2 pe-4">
-                    @if ($b['selisih'] === null)
-                        <span class="text-gray-600">Belum bisa dibandingkan</span>
-                    @elseif ($b['nol'])
-                        Sama
-                    @elseif ($b['melebihi'])
-                        <strong class="text-amber-900">Melebihi ambang</strong> <span class="text-sm text-gray-700">({{ $b['arah'] }}, ambang {{ F::angka($b['ambang'], $b['desimal']) }})</span>
-                    @else
-                        Wajar <span class="text-sm text-gray-700">({{ $b['arah'] }}, dalam ambang {{ F::angka($b['ambang'], $b['desimal']) }})</span>
-                    @endif
-                </td>
-                <td class="py-2 text-right whitespace-nowrap">
-                    @if ($b['dampak_rp'] !== null)
-                        {{ $rp($b['dampak_rp']) }}
-                        <div class="text-sm text-gray-600">{{ $b['dampak_rp'] < 0 ? 'merugikan Anda' : 'menguntungkan Anda' }}</div>
-                    @elseif ($b['bonus_terkait'])
-                        <span class="text-sm text-gray-700">memengaruhi bonus; nilai rupiah butuh tabel bonus inti</span>
-                    @else
-                        -
-                    @endif
-                </td>
+{{-- Tabel rekonsiliasi: catatan peternak vs RHPP inti. Selisih = RHPP − peternak. --}}
+<div class="{{ $cetak ? '' : 'overflow-x-auto rounded-[16px] border border-line bg-surface' }}">
+    <table class="{{ $cetak ? 'w-full border-collapse text-[11px]' : 'tabel min-w-[960px]' }}">
+        <caption class="sr-only">Perbandingan catatan peternak dengan RHPP inti</caption>
+        <thead>
+            <tr @if ($cetak) class="border-b border-black text-left" @endif>
+                <th scope="col">{{ $cetak ? 'Baris' : 'Baris' }}</th>
+                <th scope="col">{{ $cetak ? 'Catatan peternak' : 'Catatan peternak' }}</th>
+                <th scope="col">RHPP inti</th>
+                <th scope="col">Selisih{{ $cetak ? '' : ' (RHPP − peternak)' }}</th>
+                <th scope="col">{{ $cetak ? 'Ket.' : 'Penanda' }}</th>
+                <th scope="col">Keterangan</th>
             </tr>
-        @endforeach
-        <tr class="text-gray-700">
-            <th scope="row" class="py-2 pe-4 font-medium">Pendapatan panen (rupiah, informatif)</th>
-            <td class="py-2 pe-4 text-right whitespace-nowrap">{{ $r['pendapatan']['peternak'] === null ? '-' : 'Rp '.F::angka($r['pendapatan']['peternak'], 0) }}</td>
-            <td class="py-2 pe-4 text-right whitespace-nowrap">{{ $r['pendapatan']['rhpp'] === null ? '-' : 'Rp '.F::angka($r['pendapatan']['rhpp'], 0) }}</td>
-            <td class="py-2 pe-4 text-right whitespace-nowrap">{{ $r['pendapatan']['selisih'] === null ? '-' : $rp($r['pendapatan']['selisih']) }}</td>
-            <td class="py-2 pe-4 text-sm" colspan="2">RHPP dapat memuat bonus dan harga yang tidak tercatat di NOA, jadi tidak ditandai.</td>
-        </tr>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach ($r['baris'] as $b)
+                @php
+                    $p = $b['status'] ? $penanda[$b['status']] : null;
+                    $boleh = $bisaCatat && $b['status'] === 'berbeda';
+                @endphp
+                <tr @if ($cetak) class="border-b border-gray-400 align-top" @endif>
+                    <th scope="row" class="{{ $cetak ? 'py-1 pr-2 text-left font-semibold' : '' }}">{{ $b['label'] }}</th>
+                    <td class="{{ $cetak ? 'py-1 pr-2' : '' }}">{{ $b['peternak'] ?? '–' }}</td>
+                    <td class="{{ $cetak ? 'py-1 pr-2' : '' }}">{{ $b['rhpp'] ?? '–' }}</td>
+                    <td class="{{ $cetak ? 'py-1 pr-2' : '' }} font-semibold">{{ $b['selisih'] ?? '–' }}</td>
+                    <td class="{{ $cetak ? 'py-1 pr-2' : '' }}">
+                        @if ($p)
+                            @if ($cetak)<span class="font-semibold">{{ $p[2] }}</span>
+                            @else<x-badge :variant="$p[0]">{{ $p[1] }}</x-badge>@endif
+                        @else
+                            <span class="text-ink-muted">–</span>
+                        @endif
+                    </td>
+                    <td class="{{ $cetak ? 'py-1' : 'min-w-64 max-w-sm' }}">
+                        @if ($boleh)
+                            <div :class="ubah ? 'hidden' : ''">
+                                @if (filled($b['catatan']))
+                                    <span class="text-[13px] text-ink-secondary">{{ $b['catatan'] }}</span>
+                                    <button type="button" @click="ubah = true" class="ml-1 inline-flex min-h-11 items-center text-[13px] font-semibold text-ink-brand hover:underline">Ubah</button>
+                                @else
+                                    <button type="button" @click="ubah = true" class="inline-flex min-h-11 items-center text-[13px] font-semibold text-ink-brand hover:underline">+ Tambah catatan</button>
+                                @endif
+                            </div>
+                            <div x-cloak :class="ubah ? '' : 'hidden'">
+                                <label for="catatan-{{ $b['kunci'] }}" class="sr-only">Keterangan {{ $b['label'] }}</label>
+                                <textarea id="catatan-{{ $b['kunci'] }}" name="catatan[{{ $b['kunci'] }}]" rows="2" maxlength="300" placeholder="Tulis keterangan selisih"
+                                    class="block w-full rounded-md border-line-control bg-surface px-3 py-2 text-base focus:border-brand focus:ring-1 focus:ring-brand">{{ old('catatan.'.$b['kunci'], $b['catatan']) }}</textarea>
+                            </div>
+                        @else
+                            <span class="{{ $cetak ? '' : 'text-[13px] text-ink-secondary' }}">{{ filled($b['catatan']) ? $b['catatan'] : '–' }}</span>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>

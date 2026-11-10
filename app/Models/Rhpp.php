@@ -26,6 +26,13 @@ class Rhpp extends Model
             'fcr' => 'decimal:3',
             'ip' => 'decimal:2',
             'pendapatan' => 'decimal:2',
+            'pakan_terpakai_kg' => 'decimal:2',
+            'biaya_doc' => 'decimal:2',
+            'biaya_pakan' => 'decimal:2',
+            'biaya_ovk' => 'decimal:2',
+            'bonus' => 'decimal:2',
+            'hasil_bersih' => 'decimal:2',
+            'catatan' => 'array',
         ];
     }
 

@@ -15,7 +15,7 @@ class LaporanSiklus
     ) {}
 
     /**
-     * Biaya produksi = DOC + pakan tertagih (pakan masuk dikurangi sisa) + OVK.
+     * Biaya produksi = DOC + pakan tertagih (seluruh pakan masuk dari inti, tagihan sapronak) + OVK.
      * Komponen yang harganya belum diisi di kontrak bernilai null dan membuat total ditandai tidak lengkap.
      *
      * @param  array<string, mixed>|null  $p  hasil RingkasanPerforma::hitung bila sudah ada
@@ -27,13 +27,15 @@ class LaporanSiklus
         $kontrak = $siklus->kontrak;
 
         $doc = $kontrak?->harga_doc !== null ? (float) $kontrak->harga_doc * $siklus->populasi : null;
-        $pakan = $kontrak?->harga_pakan_sak !== null ? (float) $kontrak->harga_pakan_sak * $p['pakan_bersih_sak'] : null;
+        $pakan = $kontrak?->harga_pakan_sak !== null ? (float) $kontrak->harga_pakan_sak * $p['pakan_masuk_sak'] : null;
         $ovk = (float) $siklus->pemberianOvk()->sum('biaya');
 
         $lengkap = $doc !== null && $pakan !== null;
         $total = ($doc ?? 0) + ($pakan ?? 0) + $ovk;
 
         return [
+            'doc_dasar' => $kontrak?->harga_doc !== null ? $siklus->populasi.' ekor × Rp '.\App\Support\Format::angka($kontrak->harga_doc, 0) : null,
+            'pakan_dasar' => $kontrak?->harga_pakan_sak !== null ? \App\Support\Format::angka($p['pakan_masuk_sak'], 0).' sak × Rp '.\App\Support\Format::angka($kontrak->harga_pakan_sak, 0) : null,
             'doc' => $doc,
             'pakan' => $pakan,
             'ovk' => $ovk,

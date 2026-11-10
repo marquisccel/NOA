@@ -99,24 +99,22 @@
                     </dl>
                 </section>
 
-                @if (! $kunci && $siklus->status === \App\Models\Siklus::STATUS_BERJALAN)
+                @if (! $kunci)
                     <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-tutup">
                         <h2 id="s-tutup" class="text-base font-bold">Akhiri siklus</h2>
-                        <p class="mt-1 text-[13px] text-ink-secondary">Siklus yang diakhiri dikunci dari penyuntingan. Alur penutupan lengkap (panen selesai, menunggu RHPP) menyusul.</p>
-                        <form method="POST" action="{{ route('siklus.selesai', $siklus) }}" class="mt-4 grid gap-4 sm:grid-cols-3" onsubmit="return confirm('Akhiri siklus ini? Recording akan terkunci.')">
-                            @csrf @method('PATCH')
-                            <div>
-                                <x-input-label for="status" value="Status akhir" />
-                                <select id="status" name="status" class="mt-2 block min-h-[46px] w-full rounded-md border-line-control bg-surface text-base focus:border-brand focus:ring-1 focus:ring-brand">
-                                    <option value="selesai" @selected(old('status') === 'selesai')>Ditutup</option>
-                                    <option value="dihentikan" @selected(old('status') === 'dihentikan')>Dihentikan dini (misalnya wabah)</option>
-                                </select>
-                                <x-input-error class="mt-1.5" :messages="$errors->get('status')" />
+                        @if ($siklus->status === \App\Models\Siklus::STATUS_BERJALAN)
+                            <p class="mt-1 text-[13px] text-ink-secondary">Siklus normal berakhir lewat panen: tandai panen selesai, input RHPP, lalu tutup siklus. Bila terjadi kejadian luar biasa (misalnya wabah), siklus bisa dihentikan dini.</p>
+                            <div class="mt-4 flex flex-wrap gap-2.5">
+                                <x-button :href="route('panen.index', $siklus)">Ke Panen</x-button>
+                                <x-button variant="secondary" :href="route('siklus.hentikan', $siklus)">Hentikan siklus dini</x-button>
                             </div>
-                            <x-field name="tanggal_panen" label="Tanggal panen" type="date" required />
-                            <x-field name="tanggal_rechick" label="Tanggal re-chick in" type="date" />
-                            <div class="sm:col-span-3"><x-button>Akhiri siklus</x-button></div>
-                        </form>
+                        @else
+                            <p class="mt-1 text-[13px] text-ink-secondary">Siklus sedang {{ mb_strtolower($siklus->labelStatus()) }}. Lanjutkan ke RHPP dan penutupan.</p>
+                            <div class="mt-4 flex flex-wrap gap-2.5">
+                                <x-button :href="route('rhpp.show', $siklus)">Ke RHPP</x-button>
+                                <x-button variant="secondary" :href="route('siklus.tutup', $siklus)">Tutup siklus</x-button>
+                            </div>
+                        @endif
                     </section>
                 @endif
             </div>

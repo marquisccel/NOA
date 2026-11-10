@@ -38,7 +38,7 @@ class RingkasanPerforma
         $umurPanen = $this->calc->umurPanenRataRata($panen->map(fn ($p) => ['jumlah_ekor' => $p->jumlah_ekor, 'umur_hari' => $p->umur_hari]));
         $fcr = $this->calc->fcr($pakanBersihKg, $totalTonase);
 
-        $tanpaHarga = $panen->filter(fn ($p) => $p->harga_per_kg === null)->count();
+        $tanpaHarga = $siklus->kontrak?->harga_kontrak_ayam !== null ? 0 : $panen->filter(fn ($p) => $p->harga_per_kg === null)->count();
 
         return [
             'jumlah_tahap' => $panen->count(),
@@ -66,7 +66,8 @@ class RingkasanPerforma
             // R7: panen + deplesi harus sama dengan populasi awal; selisih ditandai, tidak dipaksa seimbang.
             'selisih_populasi' => $this->calc->selisihPopulasi($siklus->populasi, $totalEkor, $mati + $afkir),
 
-            'pendapatan' => $panen->sum(fn ($p) => (float) $p->tonase_kg * (float) ($p->harga_per_kg ?? 0)),
+            // Pendapatan = tonase x harga kontrak ayam; tahap yang punya harga sendiri memakai harganya.
+            'pendapatan' => $panen->sum(fn ($p) => (float) $p->tonase_kg * (float) ($p->harga_per_kg ?? $siklus->kontrak?->harga_kontrak_ayam ?? 0)),
             'tahap_tanpa_harga' => $tanpaHarga,
             'tahap_tanpa_btpa' => $panen->filter(fn ($p) => blank($p->nomor_btpa))->count(),
 

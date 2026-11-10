@@ -104,8 +104,9 @@ class PanenPerformaTest extends TestCase
     {
         $this->isiRecording();
 
-        $this->panen('2026-12-03', 2904, 5750)
-            ->assertSessionHas('status', fn ($p) => str_contains($p, 'Total panen 2.904 ekor, 5.750,00 kg') && str_contains($p, 'FCR 1,652'));
+        $this->panen('2026-12-03', 2904, 5750)->assertSessionHas('status', fn ($p) => str_contains($p, 'tersimpan'));
+
+        $this->actingAs($this->peternak)->get(route('panen.ringkasan', $this->siklus))->assertSee('2.904 ekor')->assertSee('1,652');
     }
 
     public function test_f5_4_total_ekor_dan_tonase_dijumlahkan(): void
@@ -144,7 +145,7 @@ class PanenPerformaTest extends TestCase
         $this->assertNull($p['ip']);
         $this->assertNull($p['abw']);
         $this->assertNull($p['umur_panen']);
-        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('Belum ada catatan panen');
+        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('Belum ada panen');
     }
 
     public function test_fcr_dan_ip_sesuai_contoh_prd(): void
@@ -189,7 +190,7 @@ class PanenPerformaTest extends TestCase
         Panen::query()->delete();
         $this->panen('2026-12-03', 2900, 5750);
         $this->assertSame(4, $this->performa()['selisih_populasi']);
-        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('4 ekor belum terhitung');
+        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('Selisih populasi: 4 ekor belum tercatat');
     }
 
     public function test_selisih_negatif_memunculkan_peringatan_saat_simpan(): void
@@ -212,15 +213,19 @@ class PanenPerformaTest extends TestCase
         $this->assertEqualsWithDelta(780 * 20500 + 1200 * 21000, $this->performa()['pendapatan'], 0.01);
     }
 
-    public function test_tahap_tanpa_harga_atau_btpa_ditandai(): void
+    public function test_nomor_btpa_wajib_dan_tahap_tanpa_harga_memakai_harga_kontrak(): void
     {
-        $this->panen('2026-12-03', 400, 780, ['harga_per_kg' => '', 'nomor_btpa' => '']);
+        $this->panen('2026-12-03', 400, 780, ['nomor_btpa' => ''])->assertSessionHasErrors('nomor_btpa');
+        $this->assertSame(0, Panen::count());
 
+        $this->panen('2026-12-03', 400, 780, ['harga_per_kg' => '']);
+        $this->assertSame(1, $this->performa()['tahap_tanpa_harga']);
+
+        // Harga kontrak ayam dipakai bila tahap tidak punya harga sendiri.
+        $this->siklus->kontrak()->updateOrCreate([], ['harga_kontrak_ayam' => 20500]);
         $p = $this->performa();
-        $this->assertSame(1, $p['tahap_tanpa_harga']);
-        $this->assertSame(1, $p['tahap_tanpa_btpa']);
-        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))
-            ->assertSee('belum diisi')->assertSee('belum ada nomor');
+        $this->assertSame(0, $p['tahap_tanpa_harga']);
+        $this->assertEqualsWithDelta(780 * 20500, $p['pendapatan'], 0.5);
     }
 
     public function test_siklus_dihentikan_dihitung_tetapi_ditandai_tidak_sebanding(): void
@@ -301,7 +306,7 @@ class PanenPerformaTest extends TestCase
     {
         $this->panen('2026-12-03', 400, 780, ['foto_btpa' => UploadedFile::fake()->create('rahasia.php', 5, 'text/x-php')])->assertSessionHasErrors('foto_btpa');
         $this->panen('2026-12-03', 400, 780, ['foto_btpa' => UploadedFile::fake()->create('dokumen.pdf', 50, 'application/pdf')])->assertSessionHasErrors('foto_btpa');
-        $this->panen('2026-12-03', 400, 780, ['foto_btpa' => UploadedFile::fake()->image('besar.jpg')->size(5000)])->assertSessionHasErrors('foto_btpa');
+        $this->panen('2026-12-03', 400, 780, ['foto_btpa' => UploadedFile::fake()->image('besar.jpg')->size(6000)])->assertSessionHasErrors('foto_btpa');
 
         $this->assertSame(0, Panen::count());
         $this->assertSame([], Storage::disk('local')->allFiles());
@@ -348,30 +353,6 @@ class PanenPerformaTest extends TestCase
     }
 
     // ---- Penutupan siklus, rumus IP, otorisasi ----
-
-    public function test_menutup_siklus_tanpa_panen_diperingatkan(): void
-    {
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $this->siklus), ['status' => 'selesai', 'tanggal_panen' => '2026-12-05'])
-            ->assertSessionHas('peringatan', fn ($p) => str_contains($p, 'Belum ada catatan panen'));
-    }
-
-    public function test_menutup_siklus_dengan_selisih_populasi_diperingatkan(): void
-    {
-        $this->isiRecording();
-        $this->panen('2026-12-03', 2800, 5500);
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $this->siklus), ['status' => 'selesai', 'tanggal_panen' => '2026-12-05'])
-            ->assertSessionHas('peringatan', fn ($p) => str_contains($p, 'berselisih 104 ekor'));
-    }
-
-    public function test_menutup_siklus_seimbang_tanpa_peringatan(): void
-    {
-        $this->isiRecording();
-        $this->panen('2026-12-03', 2904, 5750);
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $this->siklus), ['status' => 'selesai', 'tanggal_panen' => '2026-12-05'])
-            ->assertSessionMissing('peringatan');
-    }
 
     public function test_rumus_ip_disimpan_per_siklus_dan_nama_tidak_dikenal_ditolak(): void
     {

@@ -36,13 +36,14 @@ class Navigasi
                 'items' => [
                     self::item('Dashboard', 'layout-dashboard', 'dashboard', ['dashboard']),
                     self::item('Kandang & Siklus', 'warehouse', 'kandang.index', [
-                        'kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.*',
+                        'kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.siklus', 'laporan.cetak',
                     ]),
                 ],
             ],
             [
                 'label' => 'Manajemen',
                 'items' => [
+                    self::item('Laporan', 'chart-column', 'laporan.index', ['laporan.index']),
                     self::item('Pengguna & Akses', 'users', 'abk.index', ['abk.*']),
                     self::item('Pengaturan', 'settings', 'profile.edit', ['profile.*']),
                 ],
@@ -63,7 +64,7 @@ class Navigasi
 
         return [
             self::item('Dashboard', 'layout-dashboard', 'dashboard', ['dashboard']),
-            self::item('Kandang', 'warehouse', 'kandang.index', ['kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.*']),
+            self::item('Kandang', 'warehouse', 'kandang.index', ['kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.siklus']),
         ];
     }
 

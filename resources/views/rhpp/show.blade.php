@@ -1,112 +1,93 @@
 @php
     use App\Support\Format as F;
+    use App\Models\Siklus;
 
-    $rp = fn ($n) => ($n < 0 ? '−' : '+').'Rp '.F::angka(abs($n), 0);
-    $nilai = fn ($kolom) => old($kolom, $rhpp?->{$kolom});
-    $kolomRhpp = [
-        'total_pakan_kg' => ['Total pakan ditagih (kg)', 'decimal', '0.01', 'Tagihan sapronak: seluruh pakan yang dikirim inti.'],
-        'pakan_retur_sak' => ['Pakan retur (sak)', 'decimal', '0.01', null],
-        'total_ekor' => ['Total ekor panen', 'numeric', '1', null],
-        'total_tonase' => ['Total tonase panen (kg)', 'decimal', '0.01', null],
-        'abw' => ['Bobot rata-rata / ABW (kg)', 'decimal', '0.001', null],
-        'umur_panen' => ['Umur panen rata-rata (hari)', 'decimal', '0.01', null],
-        'deplesi_persen' => ['Deplesi (%)', 'decimal', '0.01', null],
-        'fcr' => ['FCR', 'decimal', '0.001', null],
-        'ip' => ['Indeks Performa (IP)', 'decimal', '0.01', null],
-        'pendapatan' => ['Pendapatan menurut RHPP (Rp)', 'decimal', '0.01', 'Opsional; hanya untuk perbandingan informatif.'],
-    ];
+    $menunggu = $siklus->status === Siklus::STATUS_MENUNGGU_RHPP;
+    $rekon = $siklus->status === Siklus::STATUS_REKONSILIASI;
+    $tanpa = $siklus->status === Siklus::STATUS_DITUTUP_TANPA_RHPP;
+    $berjalan = $siklus->status === Siklus::STATUS_BERJALAN;
+    $terkunci = $siklus->isTerkunci();
+    $inti = $siklus->nama_inti ?: 'inti';
+    $hariSejak = $siklus->tanggal_panen ? (int) $siklus->tanggal_panen->copy()->startOfDay()->diffInDays(now()->startOfDay()) : null;
+    $nomor = Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1;
 @endphp
 
-<x-app-layout :siklus="$siklus">
-    <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Rekonsiliasi RHPP · {{ $siklus->kandang->nama_farm }}</h2>
-                <p class="mt-1 text-base text-gray-700">
-                    Masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }} · {{ $siklus->nama_inti ?: 'inti belum diisi' }}
-                    · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a>
-                </p>
-            </div>
-            @if ($rhpp)
-                <a href="{{ route('rhpp.cetak', $siklus) }}" target="_blank" rel="noopener" class="inline-flex items-center min-h-11 px-4 py-2 bg-gray-800 rounded-md font-semibold text-sm text-white hover:bg-gray-700">Cetak lembar perbandingan</a>
-            @endif
-        </div>
-    </x-slot>
-
-    <div class="py-8">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            @if (! $rhpp)
-                <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800">
-                    RHPP belum dimasukkan. Bila inti belum atau tidak menerbitkannya, siklus tetap bisa ditutup dan kolom rekonsiliasi dibiarkan kosong.
-                    Ketik angka dari lembar RHPP apa adanya di bawah; NOA tidak mengisinya dari catatan Anda.
-                </p>
-            @else
-                <div class="rounded-md border p-4 text-base {{ $r['jumlah_melebihi'] === 0 ? 'bg-green-50 border-green-300 text-green-900' : 'bg-amber-50 border-amber-400 text-amber-900' }}" role="status">
-                    @if ($r['jumlah_melebihi'] === 0)
-                        <strong>Tidak ada baris yang melebihi ambang selisih wajar.</strong>
-                    @else
-                        <strong>{{ $r['jumlah_melebihi'] }} baris melebihi ambang selisih wajar</strong> dan ditandai di bawah.
-                    @endif
-                    @if ($r['total_dampak_rp'] !== null)
-                        Dampak rupiah yang bisa dihitung dari kontrak: <strong>{{ $rp($r['total_dampak_rp']) }}</strong>
-                        ({{ $r['total_dampak_rp'] < 0 ? 'merugikan Anda' : 'menguntungkan Anda' }}).
-                    @endif
-                </div>
-
-                <div class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="text-lg font-semibold text-gray-900">Perbandingan baris demi baris</h3>
-                        <p class="text-base text-gray-700">RHPP terbit {{ $rhpp->tanggal_terbit->translatedFormat('j M Y') }}</p>
-                    </div>
-                    <div class="mt-4 overflow-x-auto">
-                        @include('rhpp._tabel')
-                    </div>
-                    <p class="mt-4 text-sm text-gray-600">
-                        Dampak rupiah dihitung dari kontrak siklus untuk tagihan pakan, kredit retur, dan tonase.
-                        Bonus FCR, deplesi, dan IP bergantung pada tabel bonus inti yang belum ada di NOA, jadi hanya ditandai.
-                    </p>
-                </div>
-            @endif
-
-            <section>
-                <h3 class="mb-3 text-lg font-semibold text-gray-900">{{ $rhpp ? 'Ubah angka RHPP' : 'Masukkan angka RHPP' }}</h3>
-                <form method="POST" action="{{ route('rhpp.simpan', $siklus) }}" class="bg-white shadow-sm sm:rounded-lg p-6 space-y-6">
-                    @csrf @method('PUT')
-                    <x-field name="tanggal_terbit" label="Tanggal RHPP terbit" type="date" :value="$rhpp?->tanggal_terbit?->toDateString()"
-                             min="{{ $siklus->tanggal_masuk->toDateString() }}" max="{{ now()->toDateString() }}" required />
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        @foreach ($kolomRhpp as $nama => [$label, $mode, $step, $hint])
-                            <x-field :name="$nama" :label="$label" type="number" :step="$step" min="0" :inputmode="$mode" :value="$nilai($nama)" :hint="$hint" />
-                        @endforeach
-                    </div>
-                    <p class="text-sm text-gray-600">Kolom yang tidak dicetak inti boleh dikosongkan; barisnya ditandai belum bisa dibandingkan.</p>
-                    <x-primary-button class="min-h-11 text-sm">Simpan RHPP</x-primary-button>
-                </form>
+<x-app-layout title="RHPP & Rekonsiliasi" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['RHPP']]">
+    <x-page>
+        <x-page-header :title="$rhpp ? 'Rekonsiliasi RHPP' : 'RHPP & Rekonsiliasi'"
+            :subtitle="$rhpp ? $rhpp->nomor_rhpp.' · terbit '.$rhpp->tanggal_terbit->translatedFormat('j M Y').' · '.$r['jumlah_berbeda'].' dari '.$r['jumlah_dibandingkan'].' baris berbeda' : 'Hanya terlihat oleh peternak'">
+            <x-slot name="actions">
                 @if ($rhpp)
-                    <form method="POST" action="{{ route('rhpp.hapus', $siklus) }}" class="mt-3" onsubmit="return confirm('Hapus angka RHPP? Kolom rekonsiliasi dikosongkan.')">
-                        @csrf @method('DELETE')
-                        <button class="min-h-11 text-base text-red-700 underline">Hapus angka RHPP</button>
-                    </form>
+                    @if ($bisaInput)<x-button variant="secondary" :href="route('rhpp.form', $siklus)">Ubah RHPP</x-button>@endif
+                    <x-button variant="secondary" :href="route('rhpp.cetak', $siklus)" target="_blank" rel="noopener"><x-icon name="printer" class="size-4" /> Cetak lembar</x-button>
+                    @if ($rekon)<x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup siklus</x-button>@endif
+                @elseif ($menunggu)
+                    <x-button :href="route('rhpp.form', $siklus)">Input RHPP</x-button>
                 @endif
-            </section>
+            </x-slot>
+        </x-page-header>
 
-            <section class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Ambang selisih wajar</h3>
-                <p class="mt-1 text-base text-gray-700">
-                    Selisih mutlak yang masih dianggap wajar (pembulatan, selisih timbang kecil). Di atas ambang, baris ditandai.
-                    Angka bawaan adalah perkiraan awal, bukan hasil wawancara lapangan; sesuaikan dengan kebiasaan inti Anda.
-                </p>
-                <form method="POST" action="{{ route('rhpp.ambang', $siklus) }}" class="mt-4">
-                    @csrf @method('PATCH')
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        @foreach ($baris as $kunci => [$label, $satuan, $desimal])
-                            <x-field :name="'ambang['.$kunci.']'" :label="$label.($satuan ? ' ('.$satuan.')' : '')" type="number" step="any" min="0" inputmode="decimal"
-                                     :value="$ambang[$kunci]" :hint="'Bawaan: '.F::angka($ambangBawaan[$kunci], $desimal + 1)" />
-                        @endforeach
+        @if ($errors->has('rhpp'))<x-alert variant="error">{{ $errors->first('rhpp') }}</x-alert>@endif
+
+        @if ($berjalan)
+            <x-empty-state icon="file-text" title="RHPP belum waktunya diinput"
+                text="Siklus masih berjalan. RHPP diinput setelah panen ditandai selesai; sampai saat itu kolom RHPP kosong.">
+                <x-button :href="route('panen.index', $siklus)">Ke Panen</x-button>
+            </x-empty-state>
+        @else
+            @if ($menunggu)
+                <x-alert variant="warning">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="font-semibold">Menunggu RHPP dari {{ $inti }}</p>
+                            <p>RHPP biasanya terbit 3–7 hari setelah panen terakhir.
+                                @if ($siklus->tanggal_panen)Panen terakhir {{ $siklus->tanggal_panen->translatedFormat('j M Y') }} — sudah {{ $hariSejak }} hari.@endif
+                                Kolom RHPP kosong sampai Anda menginput angka dari dokumen RHPP. Bila RHPP tidak pernah terbit, siklus tetap bisa ditutup tanpa RHPP.</p>
+                        </div>
+                        <x-button variant="secondary" :href="route('siklus.tutup-tanpa-rhpp', $siklus)">Tutup tanpa RHPP</x-button>
                     </div>
-                    <x-secondary-button type="submit" class="mt-4 min-h-11">Simpan ambang</x-secondary-button>
-                </form>
-            </section>
-        </div>
-    </div>
+                </x-alert>
+            @elseif ($tanpa)
+                <x-alert variant="info">Siklus ditutup tanpa RHPP{{ $siklus->alasan_penutupan ? ' ('.mb_strtolower($siklus->alasan_penutupan).')' : '' }}. Kolom RHPP dan selisih tetap “–”.</x-alert>
+            @endif
+
+            @if ($rhpp)
+                <x-alert variant="info">Penanda “Berbeda” hanya menunjukkan angka tidak sama — tanpa ambang wajar dan tanpa dampak rupiah bonus (belum ditetapkan).</x-alert>
+            @endif
+
+            <form method="POST" action="{{ route('rhpp.catatan', $siklus) }}" x-data="{ ubah: false }">
+                @csrf @method('PATCH')
+                @include('rhpp._tabel', ['bisaCatat' => $rhpp && ! $terkunci])
+                @if ($rhpp && ! $terkunci)
+                    <div x-cloak :class="ubah ? 'flex' : 'hidden'" class="mt-4 items-center justify-end gap-2.5">
+                        <x-button type="button" variant="secondary" @click="ubah = false">Batal</x-button>
+                        <x-button>Simpan catatan</x-button>
+                    </div>
+                @endif
+            </form>
+
+            @if ($rekon && $rhpp)
+                @php $tanpaCatatan = $r['jumlah_berbeda'] - $r['berbeda_bercatatan']; @endphp
+                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="siap-tutup">
+                    <div class="flex items-center gap-2.5"><x-icon name="circle-check" class="size-5 text-success-text" /><h2 id="siap-tutup" class="text-base font-bold">Rekonsiliasi siap ditutup</h2></div>
+                    <dl class="mt-4 grid grid-cols-2 gap-3 text-sm lg:grid-cols-4">
+                        <div class="rounded-md border border-line-subtle p-3.5"><dt class="text-xs text-ink-secondary">Baris dibandingkan</dt><dd class="font-heading text-xl font-semibold">{{ $r['jumlah_dibandingkan'] }}</dd></div>
+                        <div class="rounded-md border border-line-subtle p-3.5"><dt class="text-xs text-ink-secondary">Sama</dt><dd class="font-heading text-xl font-semibold text-success-text">{{ $r['jumlah_sama'] }}</dd></div>
+                        <div class="rounded-md border border-line-subtle p-3.5"><dt class="text-xs text-ink-secondary">Berbeda</dt><dd class="font-heading text-xl font-semibold text-warning-text">{{ $r['jumlah_berbeda'] }}</dd></div>
+                        <div class="rounded-md border border-line-subtle p-3.5"><dt class="text-xs text-ink-secondary">Berbeda + catatan</dt><dd class="font-heading text-xl font-semibold">{{ $r['berbeda_bercatatan'] }} dari {{ $r['jumlah_berbeda'] }}</dd></div>
+                    </dl>
+                    @if ($tanpaCatatan > 0)
+                        <x-alert variant="info" class="mt-4"><p class="font-semibold">{{ $tanpaCatatan }} baris berbeda belum diberi catatan</p><p>Catatan opsional, tetapi membantu saat musyawarah dengan inti.</p></x-alert>
+                    @endif
+                    <ul class="mt-4 space-y-1.5 text-[13px] text-ink-secondary">
+                        <li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-success-text" /> RHPP tersimpan ({{ $rhpp->tanggal_terbit->translatedFormat('j M Y') }})</li>
+                        <li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-success-text" /> Lembar perbandingan dapat dicetak</li>
+                        <li class="flex items-center gap-2"><x-icon name="info" class="size-4 text-info" /> Langkah berikutnya: tutup siklus — data akan dikunci</li>
+                    </ul>
+                    <div class="mt-4 flex justify-end"><x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup siklus</x-button></div>
+                </section>
+            @endif
+        @endif
+    </x-page>
 </x-app-layout>

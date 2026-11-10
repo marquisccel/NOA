@@ -501,17 +501,6 @@ class UiFase3Test extends TestCase
         $this->assertSame('150.00', $s->kontrak->nilai_bonus_ip);
     }
 
-    public function test_akhiri_siklus_mencatat_tanggal_penutupan(): void
-    {
-        $s = $this->siklus();
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $s), ['status' => 'selesai', 'tanggal_panen' => '2026-11-09'])->assertRedirect(route('siklus.show', $s));
-
-        $s->refresh();
-        $this->assertSame('2026-11-10', $s->ditutup_pada->toDateString());
-        $this->assertTrue($s->isTerkunci());
-    }
-
     public function test_pengaturan_siklus_dan_ringkasan_hanya_untuk_peternak_pemilik(): void
     {
         $s = $this->siklus();

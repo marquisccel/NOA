@@ -24,7 +24,7 @@ Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI
 | 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Selesai |
 | 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Selesai |
 | 4 | Recording (desktop dan ponsel), Sampling, OVK | Selesai |
-| 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Belum |
+| 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Selesai |
 | 6 | Peran Pengawas (baca-saja) dan akses per siklus | Belum |
 
 ### UI Fase 1 — Fondasi dan autentikasi (selesai)
@@ -243,3 +243,25 @@ Perubahan perilaku yang perlu dikonfirmasi:
 - "Unduh CSV" di riwayat recording ada di desain tetapi belum dibuat (belum ada di PRD fase mana pun)
 - ADG sampling pertama dari bobot DOC (desain) belum ada: bobot DOC tidak disimpan, sampling pertama tampil "–"
 - Layar ABK khusus (E-09) memakai form yang sama; ABK tidak melihat tab komersial dan tidak melihat biaya
+
+### UI Fase 5 — Panen, RHPP, Laporan, Penutupan, Halaman galat (selesai)
+
+- [x] Panen & BTPA: daftar tahap (KPI, tabel dengan ABW per tahap, baris total, foto BTPA), tambah dan ubah tahap dengan pratinjau langsung (umur, ABW tahap, total, sisa ayam hidup tercatat), nomor BTPA wajib, foto maks. 5 MB, keadaan kosong, halaman Ringkasan panen (KPI + cara hitung) dan rincian Selisih populasi (tidak diseimbangkan otomatis)
+- [x] Alur status: "Tandai panen selesai" (dialog konfirmasi, menyebut selisih populasi) → Menunggu RHPP → input RHPP → Rekonsiliasi → Tutup siklus (Ditutup); jalan keluar "Tutup tanpa RHPP" (alasan wajib) dan "Hentikan siklus dini" (alasan, keterangan, tanggal; angka ditandai tidak sebanding); semua hanya peternak pemilik, data terkunci setelah ditutup
+- [x] Input RHPP satu halaman (dokumen, populasi dan produksi, biaya dan hasil) dengan 16 isian wajib dan ringkasan isian kosong, lampiran foto/PDF privat; menyimpan RHPP memindahkan status ke Rekonsiliasi
+- [x] Rekonsiliasi memakai 17 baris desain (15 dibandingkan + Bonus dan Hasil bersih tidak dibandingkan), penanda Sama/Berbeda/Tidak dibandingkan, keterangan selisih per baris (dicetak di lembar perbandingan), panel "siap ditutup", lembar cetak A4 dengan tiga tanda tangan
+- [x] Ambang selisih wajar dan dampak rupiah dibuang (sesuai desain): "Berbeda" hanya berarti angka tidak sama; konfigurasi dan rute ambang dihapus
+- [x] Laporan siklus (KPI, biaya produksi per komponen dan porsi, biaya per kg dan per ekor, produksi, grafik), Unduh CSV, lembar cetak A4 satu halaman; Unduh CSV di riwayat recording
+- [x] Laporan global (sidebar "Laporan"): perbandingan antar-siklus lintas kandang dengan filter kandang, status, tahun, dan dua grafik IP dan FCR; siklus berjalan tampil "–"
+- [x] Halaman galat 404, 419 (Sesi habis), 500, 503 berdiri sendiri (tanpa sesi atau basis data) dengan desain tim
+- [x] Migrasi: `siklus.alasan_penutupan`, `siklus.keterangan_penutupan`; tabel `rhpp` menambah nomor, lampiran, populasi DOC, deplesi ekor, pakan terpakai, biaya DOC/pakan/OVK, bonus, hasil bersih, catatan
+- [x] Uji: 25 baru dan tes lama direvisi, total 377 lulus; halaman utama dicek di browser
+
+Perubahan perilaku yang perlu dikonfirmasi:
+- Biaya pakan di laporan dan rekonsiliasi = seluruh pakan masuk × harga per sak (tagihan sapronak, sesuai desain); sebelumnya pakan bersih (masuk dikurangi sisa)
+- Pendapatan = tonase × harga kontrak ayam (harga per tahap, bila diisi, tetap didahulukan); kolom harga per kg dihapus dari form panen
+- "Pakan retur" versi peternak = pakan masuk − pakan terpakai bersih (sisa di gudang ditambah retur yang dicatat)
+- Siklus yang ditandai panen selesai langsung berstatus Menunggu RHPP (status Panen selesai ada di basis data tetapi tidak dipakai alur desain)
+- Rute lama "Akhiri siklus" (selesai/dihentikan dalam satu langkah) dihapus; tautan "Bandingkan siklus" di Kandang mengarah ke laporan global dengan filter kandang
+- Menghapus RHPP tidak tersedia lagi (desain hanya "Ubah RHPP")
+- Pengawas Inti dan akses per siklus (Fase 6) belum ada; halaman Pengaturan dan Pengguna tidak berubah

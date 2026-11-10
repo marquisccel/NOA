@@ -172,53 +172,6 @@ class KandangSiklusTest extends TestCase
         $this->assertTrue($siklus->kontrak->bonus_ip);
     }
 
-    public function test_f1_9_menandai_siklus_selesai_dengan_tanggal_panen_dan_rechick(): void
-    {
-        $kandang = $this->kandang();
-        $this->actingAs($this->peternak)->post(route('siklus.store'), $this->dataSiklus($kandang));
-        $siklus = Siklus::firstOrFail();
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $siklus), [
-            'status' => 'selesai',
-            'tanggal_panen' => '2026-12-06',
-            'tanggal_rechick' => '2026-12-20',
-        ])->assertRedirect();
-
-        $siklus->refresh();
-        $this->assertTrue($siklus->isTerkunci());
-        $this->assertSame('2026-12-06', $siklus->tanggal_panen->toDateString());
-        $this->assertSame('2026-12-20', $siklus->tanggal_rechick->toDateString());
-
-        // Kandang kini boleh membuka siklus baru.
-        $this->actingAs($this->peternak)->post(route('siklus.store'), $this->dataSiklus($kandang))->assertSessionDoesntHaveErrors();
-        $this->assertSame(2, Siklus::count());
-    }
-
-    public function test_tanggal_panen_tidak_boleh_sebelum_tanggal_masuk(): void
-    {
-        $kandang = $this->kandang();
-        $this->actingAs($this->peternak)->post(route('siklus.store'), $this->dataSiklus($kandang));
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', Siklus::firstOrFail()), [
-            'status' => 'selesai',
-            'tanggal_panen' => '2026-10-01',
-        ])->assertSessionHasErrors('tanggal_panen');
-    }
-
-    public function test_siklus_dihentikan_dini_tetap_bisa_ditandai(): void
-    {
-        $kandang = $this->kandang();
-        $this->actingAs($this->peternak)->post(route('siklus.store'), $this->dataSiklus($kandang));
-        $siklus = Siklus::firstOrFail();
-
-        $this->actingAs($this->peternak)->patch(route('siklus.selesai', $siklus), [
-            'status' => 'dihentikan',
-            'tanggal_panen' => '2026-11-20',
-        ])->assertRedirect();
-
-        $this->assertSame(Siklus::STATUS_DIHENTIKAN, $siklus->fresh()->status);
-    }
-
     public function test_unggah_standar_csv_mengganti_seluruh_tabel(): void
     {
         $kandang = $this->kandang();
