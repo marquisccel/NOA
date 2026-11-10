@@ -15,6 +15,14 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if (Auth::user()->isPeternak())
+                        <x-nav-link :href="route('kandang.index')" :active="request()->routeIs('kandang.*')">
+                            Kandang
+                        </x-nav-link>
+                        <x-nav-link :href="route('siklus.index')" :active="request()->routeIs('siklus.*')">
+                            Siklus
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -70,6 +78,14 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @if (Auth::user()->isPeternak())
+                <x-responsive-nav-link :href="route('kandang.index')" :active="request()->routeIs('kandang.*')">
+                    Kandang
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('siklus.index')" :active="request()->routeIs('siklus.*')">
+                    Siklus
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

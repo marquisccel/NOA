@@ -27,6 +27,8 @@
                 </header>
             @endisset
 
+            <x-flash />
+
             <!-- Page Content -->
             <main>
                 {{ $slot }}
