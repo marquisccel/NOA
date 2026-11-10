@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OvkController;
 use App\Http\Controllers\RecordingController;
+use App\Http\Controllers\SamplingController;
 use App\Http\Controllers\SiklusAcuanController;
 use App\Http\Controllers\SiklusController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +35,18 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::put('recording/{recording}', [RecordingController::class, 'update'])->name('recording.update');
     Route::delete('recording/{recording}', [RecordingController::class, 'destroy'])->name('recording.destroy');
     Route::patch('recording/{recording}/paraf', [RecordingController::class, 'paraf'])->name('recording.paraf');
+
+    Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
+    Route::post('siklus/{siklus}/sampling', [SamplingController::class, 'store'])->name('sampling.store');
+    Route::get('sampling/{sampling}/edit', [SamplingController::class, 'edit'])->name('sampling.edit');
+    Route::put('sampling/{sampling}', [SamplingController::class, 'update'])->name('sampling.update');
+    Route::delete('sampling/{sampling}', [SamplingController::class, 'destroy'])->name('sampling.destroy');
+
+    Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
+    Route::post('siklus/{siklus}/ovk', [OvkController::class, 'store'])->name('ovk.store');
+    Route::get('ovk/{ovk}/edit', [OvkController::class, 'edit'])->name('ovk.edit');
+    Route::put('ovk/{ovk}', [OvkController::class, 'update'])->name('ovk.update');
+    Route::delete('ovk/{ovk}', [OvkController::class, 'destroy'])->name('ovk.destroy');
 });
 
 Route::middleware('auth')->group(function () {

@@ -159,6 +159,7 @@ class RecordingController extends Controller
             $siklus->recordings()->orderBy('hari_ke')->get(),
             $siklus->standarHarian()->get(),
             $siklus->parameterUmur()->get(),
+            $siklus->samplings()->get(),
         );
     }
 
