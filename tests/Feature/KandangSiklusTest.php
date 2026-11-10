@@ -60,7 +60,7 @@ class KandangSiklusTest extends TestCase
 
     public function test_abk_tidak_boleh_membuka_halaman_kandang_dan_siklus(): void
     {
-        $abk = User::factory()->create(['role' => User::ROLE_ABK]);
+        $abk = User::factory()->abk()->create();
 
         $this->actingAs($abk)->get(route('kandang.index'))->assertForbidden();
         $this->actingAs($abk)->get(route('siklus.index'))->assertForbidden();

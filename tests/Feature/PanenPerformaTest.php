@@ -286,7 +286,7 @@ class PanenPerformaTest extends TestCase
 
         auth()->logout();
         $this->get(route('panen.foto', $p))->assertRedirect(route('login'));
-        $this->actingAs(User::factory()->create(['role' => User::ROLE_ABK]))->get(route('panen.foto', $p))->assertForbidden();
+        $this->actingAs(User::factory()->abk()->create())->get(route('panen.foto', $p))->assertForbidden();
         $this->actingAs(User::factory()->create())->get(route('panen.foto', $p))->assertForbidden();
     }
 
@@ -404,7 +404,7 @@ class PanenPerformaTest extends TestCase
         $this->panen('2026-12-03', 400, 780);
         $p = Panen::firstOrFail();
 
-        foreach ([User::factory()->create(['role' => User::ROLE_ABK]), User::factory()->create()] as $user) {
+        foreach ([User::factory()->abk()->create(), User::factory()->create()] as $user) {
             $this->actingAs($user)->get(route('panen.index', $this->siklus))->assertForbidden();
             $this->actingAs($user)->post(route('panen.store', $this->siklus), $this->dataPanen('2026-12-04', 100, 200))->assertForbidden();
             $this->actingAs($user)->patch(route('panen.retur', $this->siklus), ['pakan_retur_sak' => 1])->assertForbidden();

@@ -305,7 +305,7 @@ class RecordingHarianTest extends TestCase
         $this->simpan('2026-11-01');
         $r = RecordingHarian::firstOrFail();
 
-        $abk = User::factory()->create(['role' => User::ROLE_ABK]);
+        $abk = User::factory()->abk()->create();
         $lain = User::factory()->create();
 
         $this->actingAs($abk)->get(route('recording.index', $this->siklus))->assertForbidden();

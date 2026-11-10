@@ -261,7 +261,7 @@ class SamplingOvkTest extends TestCase
     {
         $this->sampling('2026-11-07', 150, 27);
         $s = SamplingBobot::firstOrFail();
-        $abk = User::factory()->create(['role' => User::ROLE_ABK]);
+        $abk = User::factory()->abk()->create();
         $lain = User::factory()->create();
 
         foreach ([$abk, $lain] as $user) {
@@ -347,7 +347,7 @@ class SamplingOvkTest extends TestCase
     {
         $this->ovk();
         $o = PemberianOvk::firstOrFail();
-        $abk = User::factory()->create(['role' => User::ROLE_ABK]);
+        $abk = User::factory()->abk()->create();
         $lain = User::factory()->create();
 
         foreach ([$abk, $lain] as $user) {
