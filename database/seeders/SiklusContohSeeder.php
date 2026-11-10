@@ -31,14 +31,22 @@ class SiklusContohSeeder extends Seeder
 
     public function run(PerformanceCalculator $calc): void
     {
-        $peternak = User::firstOrCreate(
-            ['email' => 'peternak@noa.test'],
-            ['name' => 'Pak Yanto', 'password' => 'password', 'role' => User::ROLE_PETERNAK],
-        );
-        User::firstOrCreate(
-            ['email' => 'abk@noa.test'],
-            ['name' => 'ABK Contoh', 'password' => 'password', 'role' => User::ROLE_ABK],
-        );
+        // role dan peternak_id sengaja tidak mass-assignable, jadi diisi lewat forceFill.
+        $peternak = User::where('email', 'peternak@noa.test')->first();
+        if (! $peternak) {
+            $peternak = (new User)->forceFill([
+                'name' => 'Pak Yanto', 'email' => 'peternak@noa.test', 'password' => 'password',
+                'role' => User::ROLE_PETERNAK, 'email_verified_at' => now(),
+            ]);
+            $peternak->save();
+        }
+
+        if (! User::where('email', 'abk@noa.test')->exists()) {
+            (new User)->forceFill([
+                'name' => 'ABK Contoh', 'email' => 'abk@noa.test', 'password' => 'password',
+                'role' => User::ROLE_ABK, 'peternak_id' => $peternak->id, 'email_verified_at' => now(),
+            ])->save();
+        }
 
         $kandang = Kandang::create([
             'user_id' => $peternak->id,
@@ -238,11 +246,14 @@ class SiklusContohSeeder extends Seeder
     {
         $totalEkor = array_sum(array_map(fn (Panen $p) => $p->jumlah_ekor, $panen));
         $totalTonase = array_sum(array_map(fn (Panen $p) => (float) $p->tonase_kg, $panen));
-        $totalPakanKg = (195 - 5) * 50.0;
+        // Tagihan sapronak = seluruh pakan masuk; terpakai = tagihan dikurangi retur.
+        $tagihanKg = 195 * 50.0;
+        $returSak = 5;
+        $terpakaiKg = $tagihanKg - $returSak * 50.0;
 
         $deplesi = $calc->deplesiPersen(78, 18, self::POPULASI);
         $abw = $calc->abw($totalTonase, $totalEkor);
-        $fcr = $calc->fcr($totalPakanKg, $totalTonase);
+        $fcr = $calc->fcr($terpakaiKg, $totalTonase);
         $umur = $calc->umurPanenRataRata(array_map(
             fn (Panen $p) => ['jumlah_ekor' => $p->jumlah_ekor, 'umur_hari' => $p->umur_hari],
             $panen,
@@ -251,8 +262,8 @@ class SiklusContohSeeder extends Seeder
         Rhpp::create([
             'siklus_id' => $siklus->id,
             'tanggal_terbit' => $panen[2]->tanggal->addDays(5),
-            'total_pakan_kg' => $totalPakanKg,
-            'pakan_retur_sak' => 5,
+            'total_pakan_kg' => $tagihanKg,
+            'pakan_retur_sak' => $returSak,
             'total_ekor' => $totalEkor,
             'total_tonase' => $totalTonase,
             'abw' => $abw,

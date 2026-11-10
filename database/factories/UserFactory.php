@@ -33,6 +33,15 @@ class UserFactory extends Factory
         ];
     }
 
+    /** Akun ABK milik peternak tertentu (atau peternak baru bila tidak diberikan). */
+    public function abk(?\App\Models\User $peternak = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => \App\Models\User::ROLE_ABK,
+            'peternak_id' => $peternak?->id ?? \App\Models\User::factory(),
+        ]);
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      */
