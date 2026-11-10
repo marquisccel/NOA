@@ -94,6 +94,12 @@ class PerformanceCalculatorTest extends TestCase
         $this->assertFalse($this->calc->samplingRepresentatif(149, 3000));
     }
 
+    public function test_sampling_persen(): void
+    {
+        $this->assertEqualsWithDelta(5.0, $this->calc->samplingPersen(150, 3000), 0.0001);
+        $this->assertNull($this->calc->samplingPersen(10, 0));
+    }
+
     public function test_adg(): void
     {
         $this->assertEqualsWithDelta(45.0, $this->calc->adgGram(0.9, 0.45, 10), 0.0001);
