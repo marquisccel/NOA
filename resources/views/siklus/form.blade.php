@@ -49,6 +49,16 @@
                         <x-field name="nama_ppl" label="Nama PPL" :value="$siklus->nama_ppl" />
                         <x-field name="nama_inti" label="Nama inti" :value="$siklus->nama_inti" />
                         <x-field name="bobot_sak_kg" label="Bobot per sak (kg)" type="number" step="0.01" min="0.01" :value="$siklus->bobot_sak_kg" inputmode="decimal" required hint="Dipakai mengonversi sak ke kilogram." />
+                        <div>
+                            <x-input-label for="rumus_ip" value="Rumus Indeks Performa (IP)" class="text-base" />
+                            <select id="rumus_ip" name="rumus_ip" class="mt-1 block w-full min-h-11 text-base border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                @foreach (\App\Services\PerformanceCalculator::RUMUS_IP as $nama => $keterangan)
+                                    <option value="{{ $nama }}" @selected(old('rumus_ip', $siklus->rumus_ip ?? 'standar') === $nama)>{{ $keterangan }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-sm text-gray-600">Rumus IP bisa berbeda antar perusahaan inti; pilih yang dipakai inti Anda.</p>
+                            <x-input-error class="mt-2" :messages="$errors->get('rumus_ip')" />
+                        </div>
                     </div>
                 </div>
 

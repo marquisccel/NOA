@@ -55,6 +55,12 @@
                 <a href="{{ route('recording.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka recording harian</a>
             </div>
 
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900">Panen dan performa</h3>
+                <p class="mt-2 text-base text-gray-700">Panen bertahap dengan nomor BTPA, lalu FCR, IP, umur panen berbobot, dan selisih populasi.</p>
+                <a href="{{ route('panen.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka panen dan performa</a>
+            </div>
+
             <div class="grid gap-6 sm:grid-cols-2">
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900">Sampling bobot</h3>
