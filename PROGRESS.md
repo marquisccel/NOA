@@ -11,7 +11,7 @@ diperagakan dari antarmuka, rumus terkait lulus uji otomatis, dan tidak ada gala
 | 3 | M3 | Recording harian (F2.x): entri < 1 menit, angka berjalan, validasi R1/R5 | Selesai |
 | 4 | M4 | Sampling bobot dan OVK (F3.x, F4.x): ABW, ADG, peringatan sampel < 5% | Selesai |
 | 5 | M5 | Panen bertahap dan performa (F5.x): FCR, IP, umur panen berbobot, selisih populasi | Belum |
-| 6 | M6 | Rekonsiliasi RHPP, laporan cetak, otorisasi ABK (F6.x, F7.x, F8.2) | Belum |
+| 6 | M6 | Rekonsiliasi RHPP, laporan cetak, otorisasi ABK (F6.x, F7.x, F8.2) | Selesai |
 
 ## Fase 1 — Fondasi (selesai)
 
@@ -113,6 +113,31 @@ Keputusan yang perlu dikonfirmasi:
 - Nomor BTPA dan harga per kg boleh kosong saat simpan, tetapi ditandai di daftar.
 - Foto BTPA lama dihapus dari disk saat diganti atau dikosongkan; saat tahap panen dihapus (soft delete), berkas dipertahankan.
 
+## Fase 6 — Rekonsiliasi RHPP, laporan, akses ABK (selesai)
+
+- [x] F6.1 input angka RHPP apa adanya (satu per siklus; kolom boleh kosong; hapus = soft delete, simpan ulang memulihkan)
+- [x] F6.2 perbandingan baris demi baris: versi peternak, versi RHPP, selisih (RHPP − peternak); selisih nol tampil sebagai nol
+- [x] Baris: pakan masuk (tagihan), pakan terpakai, retur, total ekor, tonase, ABW, umur panen, deplesi, FCR, IP; pendapatan sebagai baris informatif
+- [x] F6.3 ambang selisih wajar per metrik (bawaan di `config/noa.php`, dapat ditimpa per siklus); baris di atas ambang ditandai dengan kata
+- [x] F6.4 lembar perbandingan cetak A4 (CSS print, tanpa pustaka PDF) dengan kolom tanda tangan peternak dan inti
+- [x] F6.5 dampak rupiah dari kontrak untuk tagihan pakan, kredit retur, dan tonase; bonus FCR/deplesi/IP hanya ditandai
+- [x] F7.1 laporan siklus: deplesi, FCR, ABW, umur panen, IP, biaya produksi (DOC + pakan tertagih + OVK), pendapatan, margin kasar
+- [x] F7.2 grafik bobot (aktual vs standar) dan deplesi kumulatif dengan Chart.js (hanya modul garis; dimuat khusus halaman laporan)
+- [x] F7.3 perbandingan performa antar-siklus di kandang yang sama; dihentikan/belum panen ditandai
+- [x] F7.4 laporan siklus bisa dicetak satu halaman (print CSS, navigasi disembunyikan)
+- [x] F8.2 / R13 akun ABK dibuat peternak (peran dan pemilik ditentukan server); ABK mengisi dan memperbaiki recording harian, tidak bisa menghapus entri atau memberi paraf; ditolak di kontrak, biaya, panen, sampling, rekonsiliasi, laporan
+- [x] Uji: 58 baru, total 218 lulus (termasuk uji bahwa halaman ABK tidak memuat harga atau kata kontrak)
+
+F8.3 (pengawas inti baca-saja) berstatus C di PRD dan tidak dikerjakan.
+
+Keputusan yang perlu dikonfirmasi:
+- Angka ambang selisih wajar bawaan adalah perkiraan saya, bukan hasil wawancara. Ganti sesuai kebiasaan inti di lapangan.
+- Tafsir RHPP: `total_pakan_kg` = tagihan sapronak (semua pakan dikirim), terpakai = tagihan − retur. Seeder disesuaikan (9.750 kg, retur 5 sak).
+- Dampak rupiah bonus FCR, deplesi, dan IP tidak dihitung karena tabel bonus inti tidak ada di model data; hanya ditandai.
+- ABK terikat ke seluruh kandang milik satu peternak (bukan per kandang).
+- Biaya produksi = DOC + pakan tertagih + OVK tercatat; belum termasuk listrik, tenaga kerja, sekam.
+- Pakan versi peternak untuk "retur" diturunkan dari pakan masuk dikurangi pakan terpakai bersih.
+
 ## Menjalankan
 
 ```bash
@@ -122,5 +147,6 @@ php artisan migrate:fresh --seed
 php artisan test
 ```
 
-Akun contoh (seeder): `peternak@noa.test` dan `abk@noa.test`, kata sandi `password`.
+Akun contoh (seeder): `peternak@noa.test` dan `abk@noa.test` (ABK milik peternak itu), kata sandi `password`.
+Peternak membuat akun ABK baru di menu ABK.
 Uji memakai database `noa_test` (buat sekali: `docker exec noa-pgsql psql -U noa -d postgres -c "CREATE DATABASE noa_test OWNER noa;"`).
