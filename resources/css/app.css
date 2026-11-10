@@ -1,7 +1,145 @@
+/*
+ * Font dihosting sendiri (subset latin saja) agar halaman tetap ringan di jaringan 3G
+ * dan tidak bergantung pada layanan font pihak ketiga.
+ */
+@font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 200 800;
+    src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+@font-face {
+    font-family: 'Space Grotesk';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 300 700;
+    src: url('../../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2') format('woff2-variations');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Token desain NOA (NOA_V.01.pen, variabel tema terang dan gelap).
+ * Warna dipakai lewat nama semantik di tailwind.config.js, bukan nilai heksa langsung.
+ * Tema gelap baru berupa token; belum ada tombol pengalih dan halaman lama belum disesuaikan.
+ */
+:root {
+    --bg-page: #f6f8f6;
+    --bg-surface: #ffffff;
+    --bg-muted: #e9eeea80;
+    --bg-tint: #f3faf6;
+    --bg-gold-tint: #fff7e7;
+    --bg-glass: #ffffffcc;
+
+    --text-primary: #1a1c1b;
+    --text-secondary: #5c625f;
+    --text-muted: #656b66;
+    --text-disabled: #9aa09b;
+    --text-brand: #1f6b5b;
+    --text-gold: #7a5a14;
+    --text-on-primary: #ffffff;
+
+    --brand-primary: #1f6b5b;
+    --brand-primary-hover: #185648;
+    --brand-primary-active: #134a3e;
+    --brand-soft: #1f6b5b1a;
+    --brand-border: #1f6b5b33;
+    --brand-mint: #7ed6b0;
+
+    --gold-base: #c99a2e;
+    --gold-soft: #c99a2e24;
+    --gold-border: #c99a2e40;
+
+    --border-default: #7e847f33;
+    --border-subtle: #7e847f26;
+    --border-strong: #7e847f4d;
+    --border-control: #878d88;
+
+    --status-success: #2e8b3d;
+    --status-success-soft: #e8f4ea;
+    --status-success-text: #1d6a2c;
+    --status-success-border: #bfe0c5;
+    --status-warning: #b38600;
+    --status-warning-soft: #fbf3dc;
+    --status-warning-text: #7a5a14;
+    --status-warning-border: #e9d49b;
+    --status-danger: #d14343;
+    --status-danger-soft: #d143431a;
+    --status-danger-text: #b42318;
+    --status-danger-border: #f0bdbd;
+    --status-info: #2f6fb3;
+    --status-info-soft: #2f6fb31a;
+    --status-info-text: #1f5a99;
+    --status-info-border: #bcd3ea;
+    --status-neutral: #7e847f;
+    --status-neutral-soft: #edf0ee;
+    --status-neutral-text: #3f4541;
+    --status-neutral-border: #d5dad6;
+
+    --state-hover: #f3f6f4;
+    --state-pressed: #e6ece8;
+    --state-selected: #e8f1ee;
+}
+
+[data-theme='dark'] {
+    --bg-page: #0e1211;
+    --bg-surface: #151b19;
+    --bg-muted: #ffffff0a;
+    --bg-tint: #10221c;
+    --bg-gold-tint: #1a1911;
+    --bg-glass: #0e1211cc;
+
+    --text-primary: #e3e7e4;
+    --text-secondary: #a7aea9;
+    --text-muted: #8a918c;
+    --text-brand: #8ee6c1;
+    --text-gold: #e7c16b;
+
+    --brand-primary-hover: #278069;
+    --brand-soft: #7ed6b01f;
+    --brand-border: #7ed6b033;
+
+    --gold-base: #e7c16b;
+    --gold-soft: #e7c16b1f;
+    --gold-border: #e7c16b40;
+
+    --border-default: #ffffff1a;
+    --border-subtle: #ffffff0f;
+    --border-strong: #ffffff2e;
+
+    --status-danger: #f2807a;
+    --status-danger-soft: #f2807a1f;
+    --status-info: #7fb2e8;
+    --status-info-soft: #7fb2e81f;
+}
+
+@layer base {
+    html {
+        font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    body {
+        @apply bg-page text-ink antialiased;
+    }
+
+    /* Fokus terlihat jelas di semua kontrol (aksesibilitas, kontras 4,5:1). */
+    :focus-visible {
+        outline: 2px solid var(--brand-primary);
+        outline-offset: 2px;
+    }
+}
+
 [x-cloak] {
     display: none !important;
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
 }

@@ -27,3 +27,6 @@ Homestead.yaml
 Thumbs.db
 
 /.docker
+
+# Berkas desain mentah (zip, .pen, tangkapan layar situs pihak ketiga); tidak ikut repo publik
+/design/template/
