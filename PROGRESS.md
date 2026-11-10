@@ -91,6 +91,28 @@ Keputusan yang perlu dikonfirmasi:
 - Sampling dua kali pada hari yang sama diizinkan; ADG antar keduanya kosong.
 - ABW sampling hanya dipinjam untuk FCR berjalan pada hari yang sama, tidak dibawa ke hari lain agar tidak basi.
 
+## Fase 5 — Panen bertahap dan performa (selesai)
+
+- [x] F5.1–F5.2 tahap panen: tanggal (umur hari dihitung otomatis), jumlah ekor, tonase, harga per kg per tahap, nomor BTPA
+- [x] F5.3 foto BTPA: JPG/PNG/WebP maks 4 MB, disimpan di disk privat dengan nama acak, hanya lewat rute terautentikasi dan terotorisasi
+- [x] F5.4 total ekor dan tonase; ABW panen
+- [x] F5.5 / R9 umur panen rata-rata berbobot jumlah ekor tiap tahap
+- [x] F5.6 / R7 selisih populasi (panen + deplesi vs populasi awal) ditandai, tidak dipaksa seimbang; peringatan bila melebihi populasi
+- [x] R10 FCR dan IP kosong sebelum ada panen; FCR 3 desimal, deplesi 2 desimal
+- [x] IP memakai rumus per siklus (`siklus.rumus_ip`, registri di `PerformanceCalculator::RUMUS_IP`; baru ada `standar`)
+- [x] Pakan sisa/retur akhir siklus sebagai pengurang pakan terpakai (kolom `siklus.pakan_retur_sak`)
+- [x] Pendapatan dijumlahkan per tahap (harga berbeda tiap tahap); tahap tanpa harga/BTPA ditandai
+- [x] Siklus dihentikan dini: dihitung dari data yang ada, ditandai "tidak sebanding"
+- [x] Menutup siklus tanpa panen atau dengan selisih populasi memunculkan peringatan
+- [x] Uji: 32 baru, total 160 lulus; siklus contoh seeder menghasilkan FCR 1,652, IP 339,2, ABW 1,98, umur 34,2
+
+Keputusan yang perlu dikonfirmasi:
+- Pakan sisa/retur mengurangi pakan terpakai harian (sesuai kasus khusus PRD). Bila catatan harian sudah tidak menghitung pakan tersisa, nilainya harus 0 agar tidak dihitung dua kali; seeder memakai 0.
+- Rumus IP baru satu (standar PRD). Mekanisme pilihan per siklus sudah ada; rumus inti lain ditambahkan saat rumusnya diketahui dari kontrak.
+- Panen tidak dikunci saat siklus selesai (sejalan dengan sampling dan OVK).
+- Nomor BTPA dan harga per kg boleh kosong saat simpan, tetapi ditandai di daftar.
+- Foto BTPA lama dihapus dari disk saat diganti atau dikosongkan; saat tahap panen dihapus (soft delete), berkas dipertahankan.
+
 ## Menjalankan
 
 ```bash
