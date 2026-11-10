@@ -31,10 +31,10 @@ class Kandang extends Model
         return self::TIPE[$this->tipe][0] ?? null;
     }
 
-    /** Siklus yang belum ditutup (R2: paling banyak satu per kandang). */
+    /** Siklus yang belum ditutup, termasuk yang menunggu RHPP (R2: paling banyak satu per kandang). */
     public function siklusBerjalan(): HasOne
     {
-        return $this->hasOne(Siklus::class)->where('status', Siklus::STATUS_BERJALAN)->latestOfMany('tanggal_masuk');
+        return $this->hasOne(Siklus::class)->whereIn('status', Siklus::TERBUKA)->latestOfMany('tanggal_masuk');
     }
 
     public function user(): BelongsTo

@@ -40,9 +40,11 @@ class SiklusAcuanController extends Controller
             return back()->withErrors(['file' => array_slice($hasil['errors'], 0, 10)]);
         }
 
-        DB::transaction(function () use ($siklus, $hasil) {
+        $rows = $csv->lengkapi($hasil['rows'], $siklus->populasi, (float) $siklus->bobot_sak_kg);
+
+        DB::transaction(function () use ($siklus, $rows) {
             $siklus->standarHarian()->delete();
-            $siklus->standarHarian()->createMany($hasil['rows']);
+            $siklus->standarHarian()->createMany($rows);
         });
 
         return redirect()->route('siklus.standar', $siklus)
@@ -53,8 +55,8 @@ class SiklusAcuanController extends Controller
     {
         return response()->streamDownload(function () {
             $out = fopen('php://output', 'w');
-            fputcsv($out, StandarHarianCsv::KOLOM);
-            fputcsv($out, [1, 0.96, 42, 0.23, 14.4]);
+            fputcsv($out, ['hari', 'bobot_std_gram', 'feed_intake_std_gram', 'deplesi_std_persen']);
+            fputcsv($out, [1, 62, 13, 0.10]);
             fclose($out);
         }, 'template-standar-harian.csv', ['Content-Type' => 'text/csv']);
     }

@@ -3,7 +3,7 @@
     $rp = fn ($n) => 'Rp '.F::angka($n, 0);
 @endphp
 
-<x-app-layout>
+<x-app-layout :siklus="$siklus">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">OVK · {{ $siklus->kandang->nama_farm }}</h2>
         <p class="mt-1 text-base text-gray-700">Obat, vaksin, dan kimia selama siklus · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a></p>

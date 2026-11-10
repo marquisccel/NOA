@@ -1,4 +1,4 @@
-@props(['title' => null, 'crumbs' => null, 'header' => null])
+@props(['title' => null, 'crumbs' => null, 'header' => null, 'siklus' => null])
 
 @php
     use App\Support\Navigasi;
@@ -103,6 +103,10 @@
 
                 <main id="isi" class="min-w-0 flex-1 pb-24 md:pb-0">
                     <x-flash />
+
+                    @if ($siklus)
+                        <div class="mx-auto w-full max-w-7xl px-4 pt-4 md:mb-5 md:px-0 md:pt-0"><x-siklus-header :siklus="$siklus" /></div>
+                    @endif
 
                     @if ($header)
                         <div class="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">{{ $header }}</div>

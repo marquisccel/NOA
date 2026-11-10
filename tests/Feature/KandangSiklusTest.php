@@ -327,7 +327,7 @@ class KandangSiklusTest extends TestCase
 
         foreach ([
             route('dashboard'), route('kandang.index'), route('kandang.create'), route('kandang.show', $kandang),
-            route('kandang.edit', $kandang), route('siklus.index'), route('siklus.create'), route('siklus.show', $siklus),
+            route('kandang.edit', $kandang), route('siklus.index'), route('siklus.show', $siklus), route('siklus.pengaturan', $siklus),
             route('siklus.edit', $siklus), route('siklus.standar', $siklus), route('siklus.acuan', $siklus),
         ] as $url) {
             $this->actingAs($this->peternak)->get($url)->assertOk();

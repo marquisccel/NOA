@@ -1,102 +1,76 @@
 @php
-    $bonus = [
-        'bonus_fcr' => 'Bonus FCR',
-        'bonus_deplesi' => 'Bonus deplesi',
-        'bonus_ip' => 'Bonus IP',
-        'bonus_harga_pasar' => 'Bonus harga pasar',
-    ];
-    $nilaiKontrak = fn ($k) => $kontrak?->{$k};
+    $nomor = \App\Models\Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1;
+    $nilai = fn ($k) => $kontrak?->{$k};
+    $bonus = ['fcr' => 'Bonus FCR', 'deplesi' => 'Bonus deplesi', 'ip' => 'Bonus IP', 'harga_pasar' => 'Bonus harga pasar'];
+    $kelasSelect = 'mt-2 block min-h-[46px] w-full rounded-md border-line-control bg-surface text-base focus:border-brand focus:ring-1 focus:ring-brand';
 @endphp
 
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $siklus->exists ? 'Ubah siklus' : 'Buka siklus' }}
-        </h2>
-    </x-slot>
+<x-app-layout title="Ubah Pengaturan Siklus" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor, route('siklus.show', $siklus)], ['Ubah pengaturan']]">
+    <x-page lebar="max-w-3xl">
+        <x-page-header title="Ubah pengaturan siklus" subtitle="Data kontrak dan skema bonus hanya terlihat oleh peternak." />
 
-    <div class="py-8">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            @if ($kandang->isEmpty())
-                <div class="bg-white shadow-sm sm:rounded-lg p-6 text-base text-gray-900">
-                    Daftarkan kandang dulu sebelum membuka siklus.
-                    <a href="{{ route('kandang.create') }}" class="text-indigo-700 underline">Tambah kandang</a>
-                </div>
-            @else
-            <form method="POST" action="{{ $siklus->exists ? route('siklus.update', $siklus) : route('siklus.store') }}" class="space-y-6">
-                @csrf
-                @if ($siklus->exists) @method('PUT') @endif
+        <form method="POST" action="{{ route('siklus.update', $siklus) }}" novalidate class="space-y-5">
+            @csrf @method('PUT')
 
-                <div class="bg-white shadow-sm sm:rounded-lg p-6 space-y-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Data siklus</h3>
+            @if ($errors->any())
+                <x-alert variant="error">Periksa kembali {{ $errors->count() }} isian yang ditandai sebelum menyimpan.</x-alert>
+            @endif
 
+            <section id="identitas" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+                <h2 class="text-base font-bold">Identitas &amp; DOC</h2>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-field name="tanggal_masuk" label="Tanggal DOC masuk *" type="date" :value="$siklus->tanggal_masuk?->toDateString()" required />
+                    <x-field name="populasi" label="Populasi awal (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$siklus->populasi" required />
+                    <x-field name="strain_doc" label="Strain DOC" :value="$siklus->strain_doc" />
+                    <x-field name="jenis_pakan" label="Jenis pakan" :value="$siklus->jenis_pakan" />
+                    <x-field name="nama_ppl" label="Nama PPL" :value="$siklus->nama_ppl" />
+                    <x-field name="nama_inti" label="Nama inti" :value="$siklus->nama_inti" />
+                    <x-field name="bobot_sak_kg" label="Bobot per sak (kg) *" type="number" min="0.01" step="0.01" inputmode="decimal" :value="$siklus->bobot_sak_kg" required hint="Dipakai untuk konversi sak ↔ kg (R4)." />
                     <div>
-                        <x-input-label for="kandang_id" value="Kandang" class="text-base" />
-                        <select id="kandang_id" name="kandang_id" @disabled($siklus->exists) required
-                                class="mt-1 block w-full min-h-11 text-base border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            @foreach ($kandang as $k)
-                                <option value="{{ $k->id }}" @selected((int) old('kandang_id', $kandangDipilih) === $k->id)>{{ $k->nama_farm }}</option>
+                        <x-input-label for="rumus_ip" value="Rumus Indeks Performa (IP)" />
+                        <select id="rumus_ip" name="rumus_ip" class="{{ $kelasSelect }}">
+                            @foreach (\App\Services\PerformanceCalculator::RUMUS_IP as $nama => $ket)
+                                <option value="{{ $nama }}" @selected(old('rumus_ip', $siklus->rumus_ip ?? 'standar') === $nama)>{{ $ket }}</option>
                             @endforeach
                         </select>
-                        <x-input-error class="mt-2" :messages="$errors->get('kandang_id')" />
+                        <x-input-error class="mt-1.5" :messages="$errors->get('rumus_ip')" />
                     </div>
+                </div>
+            </section>
 
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        <x-field name="tanggal_masuk" label="Tanggal masuk DOC" type="date" :value="$siklus->tanggal_masuk?->toDateString()" required />
-                        <x-field name="populasi" label="Populasi (ekor DOC)" type="number" :value="$siklus->populasi" min="1" inputmode="numeric" required />
-                        <x-field name="strain_doc" label="Jenis DOC / strain" :value="$siklus->strain_doc" hint="Contoh: Cobb 500, Ross 308." />
-                        <x-field name="jenis_pakan" label="Jenis pakan" :value="$siklus->jenis_pakan" />
-                        <x-field name="nama_ppl" label="Nama PPL" :value="$siklus->nama_ppl" />
-                        <x-field name="nama_inti" label="Nama inti" :value="$siklus->nama_inti" />
-                        <x-field name="bobot_sak_kg" label="Bobot per sak (kg)" type="number" step="0.01" min="0.01" :value="$siklus->bobot_sak_kg" inputmode="decimal" required hint="Dipakai mengonversi sak ke kilogram." />
-                        <div>
-                            <x-input-label for="rumus_ip" value="Rumus Indeks Performa (IP)" class="text-base" />
-                            <select id="rumus_ip" name="rumus_ip" class="mt-1 block w-full min-h-11 text-base border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                @foreach (\App\Services\PerformanceCalculator::RUMUS_IP as $nama => $keterangan)
-                                    <option value="{{ $nama }}" @selected(old('rumus_ip', $siklus->rumus_ip ?? 'standar') === $nama)>{{ $keterangan }}</option>
-                                @endforeach
-                            </select>
-                            <p class="mt-1 text-sm text-gray-600">Rumus IP bisa berbeda antar perusahaan inti; pilih yang dipakai inti Anda.</p>
-                            <x-input-error class="mt-2" :messages="$errors->get('rumus_ip')" />
+            <section id="kontrak" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+                <div class="flex items-center gap-2.5"><h2 class="text-base font-bold">Kontrak</h2><x-badge variant="brand">Hanya peternak</x-badge></div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-field name="kontrak[harga_doc]" label="Harga DOC (Rp / ekor)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('harga_doc')" />
+                    <x-field name="kontrak[harga_pakan_sak]" label="Harga pakan (Rp / sak)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('harga_pakan_sak')" />
+                    <x-field name="kontrak[harga_ovk]" label="Harga OVK (Rp, opsional)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('harga_ovk')" />
+                    <x-field name="kontrak[harga_kontrak_ayam]" label="Harga kontrak ayam (Rp / kg)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('harga_kontrak_ayam')" />
+                </div>
+            </section>
+
+            <section id="bonus" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+                <div class="flex items-center gap-2.5"><h2 class="text-base font-bold">Skema bonus</h2><x-badge variant="brand">Hanya peternak</x-badge></div>
+                <p class="text-[13px] text-ink-secondary">Aktifkan bonus yang tercantum di kontrak. Semua boleh nonaktif. NOA hanya menyimpan nilainya; rupiah bonus tidak dihitung.</p>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    @foreach ($bonus as $k => $label)
+                        <div class="space-y-2 rounded-md border border-line-subtle p-3.5" x-data="{ aktif: @js((bool) old('kontrak.bonus_'.$k, $nilai('bonus_'.$k))) }">
+                            <label class="flex min-h-11 items-center gap-3 text-sm font-semibold">
+                                <input type="checkbox" name="kontrak[bonus_{{ $k }}]" value="1" x-model="aktif" class="size-5 rounded border-line-control text-brand focus:ring-brand">
+                                {{ $label }}
+                            </label>
+                            <div :class="aktif ? '' : 'hidden'" class="hidden">
+                                <x-field name="kontrak[nilai_bonus_{{ $k }}]" label="Nilai (Rp / kg)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('nilai_bonus_'.$k)" />
+                            </div>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
+            </section>
 
-                <div class="bg-white shadow-sm sm:rounded-lg p-6 space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Kontrak siklus</h3>
-                        <p class="mt-1 text-base text-gray-600">Isi sesuai salinan kontrak. Kolom yang belum diketahui boleh dikosongkan.</p>
-                    </div>
-
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        <x-field name="kontrak[harga_doc]" label="Harga DOC (Rp)" type="number" step="0.01" min="0" inputmode="decimal" :value="$nilaiKontrak('harga_doc')" />
-                        <x-field name="kontrak[harga_pakan_sak]" label="Harga pakan per sak (Rp)" type="number" step="0.01" min="0" inputmode="decimal" :value="$nilaiKontrak('harga_pakan_sak')" />
-                        <x-field name="kontrak[harga_ovk]" label="Harga OVK (Rp)" type="number" step="0.01" min="0" inputmode="decimal" :value="$nilaiKontrak('harga_ovk')" />
-                        <x-field name="kontrak[harga_kontrak_ayam]" label="Harga kontrak ayam (Rp/kg)" type="number" step="0.01" min="0" inputmode="decimal" :value="$nilaiKontrak('harga_kontrak_ayam')" />
-                    </div>
-
-                    <fieldset>
-                        <legend class="text-base font-medium text-gray-900">Skema bonus yang berlaku</legend>
-                        <p class="mt-1 text-sm text-gray-600">Skema bonus berbeda antar inti; aktifkan hanya yang ada di kontrak.</p>
-                        <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                            @foreach ($bonus as $kolom => $teks)
-                                <label class="flex items-center gap-3 min-h-11 text-base text-gray-900">
-                                    <input type="checkbox" name="kontrak[{{ $kolom }}]" value="1"
-                                           class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                           @checked(old('kontrak.'.$kolom, $nilaiKontrak($kolom)))>
-                                    {{ $teks }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </fieldset>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <x-primary-button class="min-h-11 text-sm">Simpan</x-primary-button>
-                    <a href="{{ $siklus->exists ? route('siklus.show', $siklus) : route('siklus.index') }}" class="text-base text-gray-700 underline">Batal</a>
-                </div>
-            </form>
-            @endif
-        </div>
-    </div>
+            <div class="flex justify-end gap-2.5">
+                <x-button variant="secondary" :href="route('siklus.pengaturan', $siklus)">Batal</x-button>
+                <x-button>Simpan perubahan</x-button>
+            </div>
+        </form>
+    </x-page>
 </x-app-layout>

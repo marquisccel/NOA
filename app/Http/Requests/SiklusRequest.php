@@ -32,6 +32,10 @@ class SiklusRequest extends FormRequest
             'kontrak.harga_pakan_sak' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
             'kontrak.harga_ovk' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
             'kontrak.harga_kontrak_ayam' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
+            'kontrak.nilai_bonus_fcr' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
+            'kontrak.nilai_bonus_deplesi' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
+            'kontrak.nilai_bonus_ip' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
+            'kontrak.nilai_bonus_harga_pasar' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
             'kontrak.bonus_fcr' => ['boolean'],
             'kontrak.bonus_deplesi' => ['boolean'],
             'kontrak.bonus_ip' => ['boolean'],
@@ -61,7 +65,7 @@ class SiklusRequest extends FormRequest
                 }
 
                 $ada = Siklus::where('kandang_id', $this->integer('kandang_id'))
-                    ->where('status', Siklus::STATUS_BERJALAN)
+                    ->whereIn('status', Siklus::TERBUKA)
                     ->exists();
 
                 if ($ada) {

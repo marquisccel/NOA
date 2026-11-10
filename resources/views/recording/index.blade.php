@@ -7,7 +7,7 @@
     };
 @endphp
 
-<x-app-layout>
+<x-app-layout :siklus="$siklus">
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>

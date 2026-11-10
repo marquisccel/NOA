@@ -26,7 +26,7 @@ class RingkasanDashboard
         $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
 
         $berjalan = Siklus::whereIn('kandang_id', $kandangIds)
-            ->where('status', Siklus::STATUS_BERJALAN)
+            ->whereIn('status', Siklus::TERBUKA)
             ->with('kandang')
             ->orderBy('tanggal_masuk')
             ->get();
@@ -49,8 +49,10 @@ class RingkasanDashboard
         return [
             'total_kandang' => $kandangIds->count(),
             'kandang_aktif' => $berjalan->pluck('kandang_id')->unique()->count(),
-            'siklus_berjalan' => $berjalan->count(),
-            'populasi_aktif' => (int) $kartu->sum('populasi_kini'),
+            // Kartu "Siklus Berjalan" dan populasi hanya menghitung yang masih dalam pemeliharaan;
+            // daftar siklus aktif juga memuat yang menunggu RHPP.
+            'siklus_berjalan' => $kartu->filter(fn ($k) => $k['siklus']->status === Siklus::STATUS_BERJALAN)->count(),
+            'populasi_aktif' => (int) $kartu->filter(fn ($k) => $k['siklus']->status === Siklus::STATUS_BERJALAN)->sum('populasi_kini'),
             'siklus' => $kartu,
         ];
     }

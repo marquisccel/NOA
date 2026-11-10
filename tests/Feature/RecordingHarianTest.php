@@ -292,12 +292,13 @@ class RecordingHarianTest extends TestCase
         $this->assertTrue($r->fresh()->diparaf_ppl);
     }
 
-    public function test_siklus_dihentikan_tidak_ikut_terkunci(): void
+    public function test_siklus_dihentikan_ikut_terkunci_sesuai_desain(): void
     {
+        // Desain UI Fase 3: siklus Ditutup, Ditutup tanpa RHPP, dan Dihentikan sama-sama terkunci.
         $this->siklus->update(['status' => Siklus::STATUS_DIHENTIKAN, 'tanggal_panen' => '2026-11-10']);
 
-        $this->simpan('2026-11-02')->assertSessionDoesntHaveErrors();
-        $this->assertSame(1, RecordingHarian::count());
+        $this->simpan('2026-11-02')->assertForbidden();
+        $this->assertSame(0, RecordingHarian::count());
     }
 
     public function test_abk_dan_peternak_lain_tidak_bisa_mengakses(): void

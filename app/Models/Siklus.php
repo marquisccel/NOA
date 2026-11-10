@@ -22,6 +22,7 @@ class Siklus extends Model
             'tanggal_masuk' => 'date',
             'tanggal_panen' => 'date',
             'tanggal_rechick' => 'date',
+            'ditutup_pada' => 'date',
             'bobot_sak_kg' => 'decimal:2',
             'pakan_retur_sak' => 'decimal:2',
             'ambang_rekonsiliasi' => 'array',
@@ -30,21 +31,54 @@ class Siklus extends Model
 
     public const STATUS_BERJALAN = 'berjalan';
 
+    public const STATUS_PANEN_SELESAI = 'panen_selesai';
+
+    public const STATUS_MENUNGGU_RHPP = 'menunggu_rhpp';
+
+    public const STATUS_REKONSILIASI = 'rekonsiliasi';
+
+    /** Nilai 'selesai' dipertahankan dari Fase 1-6 dan tampil sebagai "Ditutup". */
     public const STATUS_SELESAI = 'selesai';
+
+    public const STATUS_DITUTUP_TANPA_RHPP = 'ditutup_tanpa_rhpp';
 
     public const STATUS_DIHENTIKAN = 'dihentikan';
 
-    public const STATUSES = [self::STATUS_BERJALAN, self::STATUS_SELESAI, self::STATUS_DIHENTIKAN];
+    /** Label dan variasi badge tiap status (desain: 7 status). */
+    public const STATUS = [
+        self::STATUS_BERJALAN => ['Berjalan', 'success'],
+        self::STATUS_PANEN_SELESAI => ['Panen selesai', 'info'],
+        self::STATUS_MENUNGGU_RHPP => ['Menunggu RHPP', 'warning'],
+        self::STATUS_REKONSILIASI => ['Rekonsiliasi', 'info'],
+        self::STATUS_SELESAI => ['Ditutup', 'neutral'],
+        self::STATUS_DITUTUP_TANPA_RHPP => ['Ditutup tanpa RHPP', 'neutral'],
+        self::STATUS_DIHENTIKAN => ['Dihentikan', 'danger'],
+    ];
 
-    /** Label dan warna badge status. "Selesai" tampil sebagai "Ditutup" seperti di desain. */
+    public const STATUSES = [
+        self::STATUS_BERJALAN, self::STATUS_PANEN_SELESAI, self::STATUS_MENUNGGU_RHPP, self::STATUS_REKONSILIASI,
+        self::STATUS_SELESAI, self::STATUS_DITUTUP_TANPA_RHPP, self::STATUS_DIHENTIKAN,
+    ];
+
+    /** Siklus terbuka menahan kandangnya dari siklus baru (R2), termasuk saat menunggu RHPP. */
+    public const TERBUKA = [self::STATUS_BERJALAN, self::STATUS_PANEN_SELESAI, self::STATUS_MENUNGGU_RHPP, self::STATUS_REKONSILIASI];
+
+    /** Siklus tertutup: data hanya dapat dilihat (recording dan pengaturan terkunci). */
+    public const TERTUTUP = [self::STATUS_SELESAI, self::STATUS_DITUTUP_TANPA_RHPP, self::STATUS_DIHENTIKAN];
+
     public function labelStatus(): string
     {
-        return ['berjalan' => 'Berjalan', 'selesai' => 'Ditutup', 'dihentikan' => 'Dihentikan'][$this->status] ?? ucfirst($this->status);
+        return self::STATUS[$this->status][0] ?? ucfirst(str_replace('_', ' ', $this->status));
     }
 
     public function varianStatus(): string
     {
-        return ['berjalan' => 'success', 'selesai' => 'neutral', 'dihentikan' => 'danger'][$this->status] ?? 'neutral';
+        return self::STATUS[$this->status][1] ?? 'neutral';
+    }
+
+    public function isTerbuka(): bool
+    {
+        return in_array($this->status, self::TERBUKA, true);
     }
 
     /** Hari umur ayam pada tanggal tertentu (tanggal masuk = hari ke-1), minimal 1. */
@@ -86,10 +120,10 @@ class Siklus extends Model
         return $peta;
     }
 
-    /** R12: siklus selesai dikunci dari penyuntingan recording. */
+    /** R12: siklus yang sudah ditutup (atau dihentikan) dikunci dari penyuntingan. */
     public function isTerkunci(): bool
     {
-        return $this->status === self::STATUS_SELESAI;
+        return in_array($this->status, self::TERTUTUP, true);
     }
 
     public function kandang(): BelongsTo

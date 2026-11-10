@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SelesaiSiklusRequest;
 use App\Http\Requests\SiklusRequest;
-use App\Models\Kandang;
 use App\Models\Siklus;
 use App\Services\RingkasanPerforma;
+use App\Services\RingkasanSiklus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,27 +21,24 @@ class SiklusController extends Controller
 
         $siklus = Siklus::whereHas('kandang', fn ($q) => $q->where('user_id', auth()->id()))
             ->with('kandang')
-            ->orderByRaw("CASE status WHEN 'berjalan' THEN 0 ELSE 1 END")
+            ->orderByRaw("CASE WHEN status IN ('berjalan', 'panen_selesai', 'menunggu_rhpp', 'rekonsiliasi') THEN 0 ELSE 1 END")
             ->orderByDesc('tanggal_masuk')
             ->get();
 
         return view('siklus.index', compact('siklus'));
     }
 
-    public function create(Request $request): View
+    /** Membuka siklus baru kini lewat wizard di halaman kandang. */
+    public function create(Request $request): RedirectResponse
     {
         Gate::authorize('create', Siklus::class);
 
-        $kandang = Kandang::where('user_id', $request->user()->id)->orderBy('nama_farm')->get();
-
-        return view('siklus.form', [
-            'siklus' => new Siklus(['bobot_sak_kg' => 50, 'tanggal_masuk' => now()]),
-            'kontrak' => null,
-            'kandang' => $kandang,
-            'kandangDipilih' => $request->integer('kandang_id') ?: null,
-        ]);
+        return $request->filled('kandang_id')
+            ? redirect()->route('siklus.baru', $request->integer('kandang_id'))
+            : redirect()->route('kandang.index');
     }
 
+    /** Pembuatan satu langkah (dipakai pengujian dan integrasi); antarmuka memakai wizard. */
     public function store(SiklusRequest $request): RedirectResponse
     {
         $data = $request->validated();
@@ -53,35 +50,57 @@ class SiklusController extends Controller
             return $siklus;
         });
 
-        return redirect()->route('siklus.show', $siklus)
-            ->with('status', 'Siklus dibuka. Unggah tabel standar harian agar perbandingan harian berjalan.');
+        return redirect()->route('siklus.dibuka', $siklus);
     }
 
-    public function show(Siklus $siklus): View
+    /** Ringkasan Siklus (tab pertama). */
+    public function show(Siklus $siklus, RingkasanSiklus $ringkasan): View
     {
         Gate::authorize('view', $siklus);
 
-        $siklus->load(['kandang', 'kontrak', 'parameterUmur', 'jadwalVaksin']);
-        $standarJumlah = $siklus->standarHarian()->count();
+        $siklus->load('kandang');
 
-        return view('siklus.show', compact('siklus', 'standarJumlah'));
+        return view('siklus.show', [
+            'siklus' => $siklus,
+            'nomor' => Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1,
+            'r' => $ringkasan->hitung($siklus),
+        ]);
     }
 
-    public function edit(Siklus $siklus): View
+    /** Pengaturan Siklus: identitas, kontrak, skema bonus, standar harian; terkunci setelah siklus ditutup. */
+    public function pengaturan(Siklus $siklus): View
+    {
+        Gate::authorize('view', $siklus);
+
+        $siklus->load(['kandang', 'kontrak']);
+
+        return view('siklus.pengaturan', [
+            'siklus' => $siklus,
+            'kontrak' => $siklus->kontrak,
+            'standar' => $siklus->standarHarian()->orderBy('hari_ke')->get(),
+            'parameter' => $siklus->parameterUmur()->count(),
+            'vaksin' => $siklus->jadwalVaksin()->count(),
+        ]);
+    }
+
+    public function edit(Siklus $siklus): View|RedirectResponse
     {
         Gate::authorize('update', $siklus);
 
-        return view('siklus.form', [
-            'siklus' => $siklus->load('kandang'),
-            'kontrak' => $siklus->kontrak,
-            'kandang' => collect([$siklus->kandang]),
-            'kandangDipilih' => $siklus->kandang_id,
-        ]);
+        if ($siklus->isTerkunci()) {
+            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Siklus sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
+        }
+
+        return view('siklus.form', ['siklus' => $siklus->load(['kandang', 'kontrak']), 'kontrak' => $siklus->kontrak]);
     }
 
     public function update(SiklusRequest $request, Siklus $siklus): RedirectResponse
     {
         Gate::authorize('update', $siklus);
+
+        if ($siklus->isTerkunci()) {
+            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Siklus sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
+        }
 
         $data = $request->validated();
 
@@ -90,7 +109,7 @@ class SiklusController extends Controller
             $siklus->kontrak()->updateOrCreate([], $data['kontrak']);
         });
 
-        return redirect()->route('siklus.show', $siklus)->with('status', 'Siklus diperbarui.');
+        return redirect()->route('siklus.pengaturan', $siklus)->with('status', 'Pengaturan siklus berhasil disimpan.');
     }
 
     /** F1.9: tandai siklus selesai (atau dihentikan) beserta tanggal panen dan re-chick in. */
@@ -102,9 +121,9 @@ class SiklusController extends Controller
             return back()->withErrors(['status' => 'Siklus ini sudah tidak berjalan.']);
         }
 
-        $siklus->update($request->validated());
+        $siklus->update($request->validated() + ['ditutup_pada' => now()->toDateString()]);
 
-        $redirect = redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditandai '.$siklus->status.'.');
+        $redirect = redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditandai '.mb_strtolower($siklus->labelStatus()).'.');
 
         // Peringatan saat siklus ditutup: data panen belum lengkap atau populasi tidak seimbang (R7, R10).
         $p = app(RingkasanPerforma::class)->hitung($siklus);

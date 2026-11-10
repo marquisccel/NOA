@@ -68,7 +68,7 @@ class KandangController extends Controller
 
         $siklus = $kandang->siklus()->orderByDesc('tanggal_masuk')->orderByDesc('id')->get();
         $nomor = Siklus::nomorMap([$kandang->id]);
-        $berjalan = $siklus->firstWhere('status', Siklus::STATUS_BERJALAN);
+        $berjalan = $siklus->first(fn ($s) => $s->isTerbuka());
         $riwayat = $siklus->reject(fn ($s) => $berjalan && $s->is($berjalan))->values();
 
         return view('kandang.show', [
@@ -121,7 +121,7 @@ class KandangController extends Controller
     {
         Gate::authorize('delete', $kandang);
 
-        if ($kandang->siklus()->where('status', Siklus::STATUS_BERJALAN)->exists()) {
+        if ($kandang->siklus()->whereIn('status', Siklus::TERBUKA)->exists()) {
             return back()->withErrors(['kandang' => 'Kandang masih punya siklus berjalan, tidak bisa dihapus.']);
         }
 

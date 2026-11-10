@@ -11,6 +11,7 @@ use App\Http\Controllers\RecordingController;
 use App\Http\Controllers\RhppController;
 use App\Http\Controllers\SamplingController;
 use App\Http\Controllers\SiklusAcuanController;
+use App\Http\Controllers\SiklusBaruController;
 use App\Http\Controllers\SiklusController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,14 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('kandang/{kandang}/riwayat', [KandangController::class, 'riwayat'])->name('kandang.riwayat');
     Route::resource('kandang', KandangController::class)->parameters(['kandang' => 'kandang']);
     Route::resource('siklus', SiklusController::class)->parameters(['siklus' => 'siklus']);
+    Route::get('kandang/{kandang}/siklus/baru', [SiklusBaruController::class, 'mulai'])->name('siklus.baru');
+    Route::get('kandang/{kandang}/siklus/baru/{langkah}', [SiklusBaruController::class, 'tampil'])->whereNumber('langkah')->name('siklus.baru.langkah');
+    Route::post('kandang/{kandang}/siklus/baru/{langkah}', [SiklusBaruController::class, 'simpan'])->whereNumber('langkah')->name('siklus.baru.simpan');
+    Route::post('kandang/{kandang}/siklus/baru-standar', [SiklusBaruController::class, 'unggahStandar'])->name('siklus.baru.standar');
+    Route::post('kandang/{kandang}/siklus/baru-lewati', [SiklusBaruController::class, 'lewatiStandar'])->name('siklus.baru.lewati');
+    Route::post('kandang/{kandang}/siklus/buka', [SiklusBaruController::class, 'buka'])->name('siklus.baru.buka');
+    Route::get('siklus/{siklus}/dibuka', [SiklusBaruController::class, 'dibuka'])->name('siklus.dibuka');
+    Route::get('siklus/{siklus}/pengaturan', [SiklusController::class, 'pengaturan'])->name('siklus.pengaturan');
     Route::patch('siklus/{siklus}/selesai', [SiklusController::class, 'selesai'])->name('siklus.selesai');
 
     Route::get('siklus/{siklus}/standar', [SiklusAcuanController::class, 'standar'])->name('siklus.standar');

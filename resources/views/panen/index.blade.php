@@ -4,7 +4,7 @@
     $selisih = $p['selisih_populasi'];
 @endphp
 
-<x-app-layout>
+<x-app-layout :siklus="$siklus">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Panen dan performa · {{ $siklus->kandang->nama_farm }}</h2>
         <p class="mt-1 text-base text-gray-700">

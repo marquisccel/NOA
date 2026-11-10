@@ -10,7 +10,7 @@
     $kelas = 'mt-1 block w-full min-h-11 text-base border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm';
 @endphp
 
-<x-app-layout>
+<x-app-layout :siklus="$siklus">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Hari ke-{{ $hariKe }} · {{ $tanggal->translatedFormat('l, j F Y') }}

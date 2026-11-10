@@ -22,7 +22,7 @@ Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI
 |----|---------|--------|
 | 1 | Token, font, komponen dasar, shell (sidebar, topbar, navigasi bawah), autentikasi | Selesai |
 | 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Selesai |
-| 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Belum |
+| 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Selesai |
 | 4 | Recording (desktop dan ponsel), Sampling, OVK | Belum |
 | 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Belum |
 | 6 | Peran Pengawas (baca-saja) dan akses per siklus | Belum |
@@ -206,3 +206,19 @@ Perubahan perilaku yang perlu dikonfirmasi:
 - Akun ABK tidak bisa dihapus lagi, hanya dinonaktifkan (sesuai desain)
 - Tipe kandang lama yang tidak dikenal dikosongkan oleh migrasi dan harus dipilih ulang saat kandang diubah
 - Label status siklus di antarmuka: berjalan = "Berjalan", selesai = "Ditutup", dihentikan = "Dihentikan" (7 status desain menunggu UI Fase 3)
+
+### UI Fase 3 — Siklus: wizard, ringkasan, tab, status 7 tahap (selesai)
+
+- [x] Status siklus 7 tahap: Berjalan, Panen selesai, Menunggu RHPP, Rekonsiliasi, Ditutup, Ditutup tanpa RHPP, Dihentikan (badge per status). Empat pertama dianggap terbuka dan menahan kandang (satu siklus terbuka per kandang, dijaga indeks unik parsial); tiga terakhir mengunci data (R12)
+- [x] Wizard "Buka Siklus Baru" 5 langkah (Identitas & DOC, Kontrak, Skema bonus, Standar harian, Konfirmasi): draf di sesi per kandang, tidak bisa melompati langkah, validasi sesuai pesan desain (kapasitas kandang, bobot sak > 0, nilai bonus wajib bila aktif), layar sukses dan layar gagal bila kandang masih punya siklus terbuka
+- [x] Unggah standar di wizard: format desain (`hari, bobot_std_gram, feed_intake_std_gram, deplesi_std_persen`) dan format PRD sama-sama diterima; pratinjau, daftar baris bermasalah, pakan kumulatif dan FCR standar diturunkan dari populasi dan bobot sak
+- [x] Ringkasan Siklus: header siklus dan delapan tab di semua halaman siklus, KPI (populasi, deplesi vs standar, FCR berjalan, feed intake, stok, ABW), grafik bobot dan deplesi, daftar "Perlu perhatian" (recording terlewat, standar belum ada, pakan masuk belum dicatat, stok tipis, baris belum diparaf), angka final dan penutupan untuk siklus tertutup
+- [x] Pengaturan Siklus: kartu identitas, kontrak, bonus, standar; terkunci bila siklus tertutup; ubah dan akhiri siklus; tanggal penutupan tercatat
+- [x] Migrasi: status baru, indeks unik parsial baru, `siklus.ditutup_pada`, `kontrak_siklus.nilai_bonus_*`, `standar_harian.deplesi_std_persen`
+- [x] Uji: 41 baru, total 333 lulus; dicek di browser desktop dan ponsel
+
+Perubahan perilaku yang perlu dikonfirmasi:
+- Siklus Dihentikan sekarang ikut terkunci untuk recording (PRD R12 hanya menyebut selesai; desain mengunci semua status tertutup)
+- Nilai bonus hanya disimpan; perhitungan rupiah bonus belum ada
+- Ambang dan dampak rupiah di rekonsiliasi (Fase 6) bertentangan dengan desain ("Berbeda" saja); akan dibuang di UI Fase 5
+- Ukuran teks formulir 16 px (desain 14 px) mengikuti PRD

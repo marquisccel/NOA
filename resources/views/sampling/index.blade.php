@@ -1,6 +1,6 @@
 @php use App\Support\Format as F; @endphp
 
-<x-app-layout>
+<x-app-layout :siklus="$siklus">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Sampling bobot · {{ $siklus->kandang->nama_farm }}</h2>
         <p class="mt-1 text-base text-gray-700">

@@ -28,7 +28,7 @@ class RecordingHarian extends Model
     protected static function booted(): void
     {
         static::saving(function (self $recording) {
-            $selesai = Siklus::withTrashed()->whereKey($recording->siklus_id)->value('status') === Siklus::STATUS_SELESAI;
+            $selesai = in_array(Siklus::withTrashed()->whereKey($recording->siklus_id)->value('status'), Siklus::TERTUTUP, true);
 
             if ($selesai && ! $recording->hanyaMengubahParaf()) {
                 throw RecordingTerkunci::siklusSelesai();
@@ -46,7 +46,7 @@ class RecordingHarian extends Model
                 throw RecordingTerkunci::diparaf();
             }
 
-            if (Siklus::withTrashed()->whereKey($recording->siklus_id)->value('status') === Siklus::STATUS_SELESAI) {
+            if (in_array(Siklus::withTrashed()->whereKey($recording->siklus_id)->value('status'), Siklus::TERTUTUP, true)) {
                 throw RecordingTerkunci::siklusSelesai();
             }
         });

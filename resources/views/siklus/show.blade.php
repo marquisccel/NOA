@@ -1,145 +1,116 @@
 @php
-    $label = ['berjalan' => 'Berjalan', 'selesai' => 'Selesai', 'dihentikan' => 'Dihentikan'];
-    $rp = fn ($n) => $n === null ? '-' : 'Rp '.number_format((float) $n, 0, ',', '.');
-    $k = $siklus->kontrak;
-    $bonusAktif = collect(['bonus_fcr' => 'FCR', 'bonus_deplesi' => 'Deplesi', 'bonus_ip' => 'IP', 'bonus_harga_pasar' => 'Harga pasar'])
-        ->filter(fn ($teks, $kolom) => $k?->{$kolom})->values();
+    use App\Support\Format as F;
+
+    $tutup = $siklus->isTerkunci();
+    $f = $r['final'];
+    $bisaIsi = $siklus->status === \App\Models\Siklus::STATUS_BERJALAN;
+    $bandingWarna = fn ($b) => $b === 'di atas standar' ? 'text-warning-text' : 'text-ink-muted';
 @endphp
 
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Siklus {{ $siklus->kandang->nama_farm }} · masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}
-                </h2>
-                <p class="mt-1 text-base text-gray-700">Status: <strong>{{ $label[$siklus->status] ?? $siklus->status }}</strong></p>
-            </div>
-            <a href="{{ route('siklus.edit', $siklus) }}" class="text-base text-indigo-700 underline">Ubah</a>
-        </div>
-    </x-slot>
+<x-app-layout title="Ringkasan Siklus" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor]]">
+    <x-page>
+        @if ($siklus->isTerbuka() && ! $r['standar_ada'])
+            <x-alert variant="info">
+                <span class="flex flex-wrap items-center justify-between gap-2">
+                    <span>Tabel standar harian belum diunggah untuk siklus ini. Kolom standar tampil “–” dan perbandingan harian belum berjalan.</span>
+                    <a href="{{ route('siklus.standar', $siklus) }}" class="inline-flex min-h-11 items-center font-bold underline">Unggah standar</a>
+                </span>
+            </x-alert>
+        @endif
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Data siklus</h3>
-                <dl class="mt-4 grid gap-4 sm:grid-cols-3 text-base">
-                    <div><dt class="text-gray-600">Populasi</dt><dd class="text-gray-900">{{ number_format($siklus->populasi, 0, ',', '.') }} ekor</dd></div>
-                    <div><dt class="text-gray-600">Strain DOC</dt><dd class="text-gray-900">{{ $siklus->strain_doc ?: '-' }}</dd></div>
-                    <div><dt class="text-gray-600">Jenis pakan</dt><dd class="text-gray-900">{{ $siklus->jenis_pakan ?: '-' }}</dd></div>
-                    <div><dt class="text-gray-600">PPL</dt><dd class="text-gray-900">{{ $siklus->nama_ppl ?: '-' }}</dd></div>
-                    <div><dt class="text-gray-600">Inti</dt><dd class="text-gray-900">{{ $siklus->nama_inti ?: '-' }}</dd></div>
-                    <div><dt class="text-gray-600">Bobot per sak</dt><dd class="text-gray-900">{{ rtrim(rtrim(number_format((float) $siklus->bobot_sak_kg, 2, ',', '.'), '0'), ',') }} kg</dd></div>
-                    <div><dt class="text-gray-600">Tanggal panen</dt><dd class="text-gray-900">{{ $siklus->tanggal_panen?->translatedFormat('j M Y') ?? '-' }}</dd></div>
-                    <div><dt class="text-gray-600">Re-chick in</dt><dd class="text-gray-900">{{ $siklus->tanggal_rechick?->translatedFormat('j M Y') ?? '-' }}</dd></div>
-                </dl>
-            </div>
+        <x-page-header title="Ringkasan siklus"
+            :subtitle="$tutup
+                ? 'Angka final'.($siklus->ditutup_pada ? ' · ditutup '.$siklus->ditutup_pada->translatedFormat('j M Y') : '')
+                : ($r['ada_recording']
+                    ? 'Data s.d. hari ke-'.$r['hari_terakhir'].' ('.$r['tanggal_terakhir']->translatedFormat('j M Y').') · recording terakhir tersimpan'
+                    : 'Belum ada recording tersimpan')">
+            <x-slot name="actions">
+                @if ($tutup)
+                    <x-button variant="secondary" :href="route('laporan.siklus', $siklus)"><x-icon name="printer" class="size-4" /> Cetak laporan</x-button>
+                @elseif ($bisaIsi)
+                    <x-button :href="route('recording.create', $siklus)">{{ $r['ada_recording'] ? 'Isi recording hari ini' : 'Isi recording hari ke-1' }}</x-button>
+                @endif
+            </x-slot>
+        </x-page-header>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Kontrak</h3>
-                <dl class="mt-4 grid gap-4 sm:grid-cols-4 text-base">
-                    <div><dt class="text-gray-600">Harga DOC</dt><dd class="text-gray-900">{{ $rp($k?->harga_doc) }}</dd></div>
-                    <div><dt class="text-gray-600">Pakan per sak</dt><dd class="text-gray-900">{{ $rp($k?->harga_pakan_sak) }}</dd></div>
-                    <div><dt class="text-gray-600">OVK</dt><dd class="text-gray-900">{{ $rp($k?->harga_ovk) }}</dd></div>
-                    <div><dt class="text-gray-600">Kontrak ayam / kg</dt><dd class="text-gray-900">{{ $rp($k?->harga_kontrak_ayam) }}</dd></div>
-                </dl>
-                <p class="mt-4 text-base text-gray-900">
-                    <span class="text-gray-600">Skema bonus:</span>
-                    {{ $bonusAktif->isEmpty() ? 'tidak ada yang diaktifkan' : $bonusAktif->implode(', ') }}
-                </p>
+        @if ($f && ($tutup || $f['jumlah_tahap'] > 0))
+            {{-- Angka final siklus (R10: kosong sampai ada panen) --}}
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+                <x-kpi label="Total ekor panen" :value="$f['jumlah_tahap'] ? F::angka($f['total_ekor'], 0).' ekor' : '–'" :caption="'Dari '.F::angka($siklus->populasi, 0).' ekor DOC'" />
+                <x-kpi label="Deplesi" :value="F::angka($f['deplesi_persen']).'%'" :caption="F::angka($f['deplesi'], 0).' ekor · daya hidup '.F::angka($f['liveability']).'%'" />
+                <x-kpi label="FCR" :value="F::angka($f['fcr'], 3)" :caption="$f['fcr'] !== null ? 'Pakan '.F::angka($f['pakan_bersih_kg'], 0).' kg ÷ tonase' : 'Muncul setelah ada panen'" />
+                <x-kpi label="ABW panen" :value="$f['abw'] !== null ? F::angka($f['abw'], 2).' kg' : '–'" :caption="$f['jumlah_tahap'] ? 'Tonase '.F::angka($f['total_tonase'], 0).' kg' : null" />
+                <x-kpi label="Umur panen" :value="$f['umur_panen'] !== null ? F::angka($f['umur_panen'], 1).' hari' : '–'" :caption="$f['jumlah_tahap'] ? 'Rata-rata berbobot '.$f['jumlah_tahap'].' tahap' : null" />
+                <x-kpi label="IP" :value="F::angka($f['ip'], 0)" caption="Dihitung dari data final" />
             </div>
-
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Recording harian</h3>
-                <p class="mt-2 text-base text-gray-700">Pakan terpakai, ayam mati, dan afkir tiap hari; angka berjalan dihitung tiap entri disimpan.</p>
-                <a href="{{ route('recording.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka recording harian</a>
-            </div>
-
-            <div class="grid gap-6 sm:grid-cols-2">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Rekonsiliasi RHPP</h3>
-                    <p class="mt-2 text-base text-gray-700">Bandingkan catatan Anda dengan RHPP inti, baris demi baris, lalu cetak untuk musyawarah.</p>
-                    <a href="{{ route('rhpp.show', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka rekonsiliasi</a>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Laporan siklus</h3>
-                    <p class="mt-2 text-base text-gray-700">Ringkasan performa, biaya produksi, dan grafik; bisa dicetak satu halaman.</p>
-                    <a href="{{ route('laporan.siklus', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka laporan</a>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Panen dan performa</h3>
-                <p class="mt-2 text-base text-gray-700">Panen bertahap dengan nomor BTPA, lalu FCR, IP, umur panen berbobot, dan selisih populasi.</p>
-                <a href="{{ route('panen.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka panen dan performa</a>
-            </div>
-
-            <div class="grid gap-6 sm:grid-cols-2">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Sampling bobot</h3>
-                    <p class="mt-2 text-base text-gray-700">Timbang sampel berkala; ABW dan pertambahan harian dibandingkan dengan standar.</p>
-                    <a href="{{ route('sampling.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka sampling bobot</a>
-                </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">OVK</h3>
-                    <p class="mt-2 text-base text-gray-700">Obat, vaksin, dan kimia beserta biayanya.</p>
-                    <a href="{{ route('ovk.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka catatan OVK</a>
-                </div>
-            </div>
-
-            <div class="grid gap-6 sm:grid-cols-2">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Tabel standar harian</h3>
-                    <p class="mt-2 text-base text-gray-700">
-                        @if ($standarJumlah > 0)
-                            {{ $standarJumlah }} baris hari umur sudah diunggah.
-                        @else
-                            Belum diunggah. Tanpa tabel ini, kolom standar kosong dan perbandingan harian tidak berjalan.
-                        @endif
+        @else
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+                <x-kpi label="Populasi kini" :value="F::angka($r['populasi_kini'], 0).' ekor'" :caption="$r['ada_recording'] ? 'Dari '.F::angka($siklus->populasi, 0).' ekor DOC' : 'Populasi awal (DOC)'" />
+                <x-kpi label="Deplesi kumulatif" :value="$r['deplesi_persen'] !== null ? F::angka($r['deplesi_persen']).'%' : '–'">
+                    <p class="text-xs {{ $bandingWarna($r['deplesi_banding']) }}">
+                        @if ($r['deplesi_persen'] === null) Muncul setelah recording pertama
+                        @elseif ($r['deplesi_std'] === null) Standar –
+                        @else Standar {{ F::angka($r['deplesi_std']) }}% · {{ $r['deplesi_banding'] }} @endif
                     </p>
-                    <a href="{{ route('siklus.standar', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">
-                        {{ $standarJumlah > 0 ? 'Lihat / ganti tabel' : 'Unggah tabel standar' }}
-                    </a>
-                </div>
-
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Parameter umur dan vaksin</h3>
-                    <p class="mt-2 text-base text-gray-700">
-                        {{ $siklus->parameterUmur->count() }} rentang umur, {{ $siklus->jadwalVaksin->count() }} jadwal vaksin.
-                    </p>
-                    <a href="{{ route('siklus.acuan', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Atur parameter dan vaksin</a>
-                </div>
+                </x-kpi>
+                <x-kpi label="FCR berjalan" :value="$r['fcr'] ? F::angka($r['fcr']['nilai'], 3) : '–'"
+                       :caption="$r['fcr'] ? 'Per hari ke-'.$r['fcr']['hari'].' · std '.($r['fcr']['std'] !== null ? F::angka($r['fcr']['std'], 3) : '–') : 'Butuh bobot (sampling)'" />
+                <x-kpi label="Feed intake" :value="$r['feed_intake'] !== null ? F::angka($r['feed_intake'], 0).' g/ekor' : '–'"
+                       :caption="$r['feed_intake'] !== null ? 'Standar '.($r['feed_intake_std'] !== null ? F::angka($r['feed_intake_std'], 0).' g/ekor' : '–') : 'Belum ada pakan terpakai'" />
+                <x-kpi label="Stok pakan" :value="$r['stok_sak'] !== null ? F::angka($r['stok_sak'], 0).' sak' : '–'"
+                       :caption="$r['stok_sak'] !== null ? 'Masuk '.F::angka($r['pakan_masuk_sak'], 0).' · terpakai '.F::angka($r['pakan_terpakai_sak'], 0).' sak' : 'Catat pakan masuk'" />
+                <x-kpi label="ABW terakhir" :value="$r['abw'] ? F::angka($r['abw']['gram'], 0).' g' : '–'"
+                       :caption="$r['abw'] ? 'Hari ke-'.$r['abw']['hari'].' · std '.($r['abw']['std'] !== null ? F::angka($r['abw']['std'], 0).' g' : '–') : 'Belum ada sampling'" />
             </div>
+        @endif
 
-            @if ($siklus->status === 'berjalan')
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Akhiri siklus</h3>
-                    <p class="mt-1 text-base text-gray-600">Siklus selesai dikunci dari penyuntingan recording.</p>
-                    <form method="POST" action="{{ route('siklus.selesai', $siklus) }}" class="mt-4 grid gap-6 sm:grid-cols-3"
-                          onsubmit="return confirm('Akhiri siklus ini? Recording akan terkunci.')">
-                        @csrf @method('PATCH')
-                        <div>
-                            <x-input-label for="status" value="Status akhir" class="text-base" />
-                            <select id="status" name="status" class="mt-1 block w-full min-h-11 text-base border-gray-300 rounded-md shadow-sm">
-                                <option value="selesai" @selected(old('status') === 'selesai')>Selesai</option>
-                                <option value="dihentikan" @selected(old('status') === 'dihentikan')>Dihentikan dini (misal wabah)</option>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('status')" />
-                        </div>
-                        <x-field name="tanggal_panen" label="Tanggal panen" type="date" required />
-                        <x-field name="tanggal_rechick" label="Tanggal re-chick in" type="date" />
-                        <div class="sm:col-span-3">
-                            <x-primary-button class="min-h-11 text-sm">Akhiri siklus</x-primary-button>
-                        </div>
-                    </form>
-                </div>
-            @endif
+        <div class="grid gap-4 lg:grid-cols-2">
+            <x-bar-chart judul="Bobot rata-rata (g)"
+                :sub="$r['standar_ada'] ? 'Hasil sampling vs standar' : 'Hasil sampling · standar belum ada'"
+                :item="$r['grafik_bobot']" :std-ada="$r['standar_ada']" satuan=" g"
+                :kosong="$r['standar_ada'] ? 'Grafik muncul setelah sampling bobot pertama.' : 'Grafik muncul setelah sampling bobot pertama. Standar belum diunggah.'">
+                @if ($r['abw'] && $r['abw']['adg'] !== null)<p class="mt-3 text-xs text-ink-secondary">ADG sampling terakhir: {{ F::angka($r['abw']['adg'], 0) }} g/hari</p>@endif
+            </x-bar-chart>
 
-            <form method="POST" action="{{ route('siklus.destroy', $siklus) }}"
-                  onsubmit="return confirm('Hapus siklus ini? Riwayat tetap tersimpan, tetapi siklus tidak muncul lagi.')">
-                @csrf @method('DELETE')
-                <button class="min-h-11 text-base text-red-700 underline">Hapus siklus</button>
-            </form>
+            <x-bar-chart judul="Deplesi kumulatif (%)" sub="Ayam mati + ayam afkir ÷ DOC"
+                :item="$r['grafik_deplesi']" :std-ada="$r['standar_ada']" :desimal="2" satuan="%"
+                kosong="Grafik muncul setelah recording harian pertama." />
         </div>
-    </div>
+
+        @if ($siklus->isTerbuka())
+            <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-perhatian">
+                <h2 id="judul-perhatian" class="text-sm font-bold">Perlu perhatian</h2>
+                @if (empty($r['perhatian']))
+                    <p class="mt-3 flex items-center gap-2 text-[13px] text-success-text"><x-icon name="circle-check" class="size-4" /> Tidak ada yang perlu ditindaklanjuti saat ini.</p>
+                @else
+                    <ul class="mt-3 divide-y divide-line-subtle">
+                        @foreach ($r['perhatian'] as $p)
+                            <li class="flex flex-wrap items-center justify-between gap-2 py-3">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold">{{ $p['judul'] }}</p>
+                                    <p class="text-xs text-ink-secondary">{{ $p['teks'] }}</p>
+                                </div>
+                                <a href="{{ $p['tautan'] }}" class="inline-flex min-h-11 items-center whitespace-nowrap text-[13px] font-bold text-ink-brand hover:underline">{{ $p['label'] }} →</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+        @endif
+
+        @if ($r['penutupan'])
+            @php $t = $r['penutupan']; @endphp
+            <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-penutupan">
+                <h2 id="judul-penutupan" class="text-sm font-bold">Penutupan siklus</h2>
+                <dl class="mt-3 grid gap-4 text-[13px] sm:grid-cols-2 lg:grid-cols-5">
+                    <div><dt class="text-ink-secondary">Panen terakhir</dt><dd class="mt-0.5 font-bold">{{ $t['panen_terakhir']?->translatedFormat('j M Y') ?? '—' }}</dd></div>
+                    <div><dt class="text-ink-secondary">Ditutup</dt><dd class="mt-0.5 font-bold">{{ $t['ditutup_pada']?->translatedFormat('j M Y') ?? '—' }}</dd></div>
+                    <div><dt class="text-ink-secondary">RHPP</dt><dd class="mt-0.5 font-bold">{{ $t['rhpp_ada'] ? 'Diterima '.$t['rhpp']->translatedFormat('j M Y') : ($t['tanpa_rhpp'] ? 'Tidak diterbitkan' : 'Belum diterima') }}</dd></div>
+                    <div><dt class="text-ink-secondary">Rekonsiliasi</dt><dd class="mt-0.5 font-bold">{{ $t['rekonsiliasi_selesai'] ? 'Selesai' : '—' }}</dd></div>
+                    <div><dt class="text-ink-secondary">Re-chick-in</dt><dd class="mt-0.5 font-bold">{{ $t['rechick']?->translatedFormat('j M Y') ?? '—' }}</dd></div>
+                </dl>
+            </section>
+        @endif
+    </x-page>
 </x-app-layout>
