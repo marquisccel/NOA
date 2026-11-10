@@ -146,7 +146,7 @@
                 </form>
             @endif
 
-            @if ($edit && ! $bacaSaja)
+            @if ($edit && ! $bacaSaja && auth()->user()->isPeternak())
                 <form method="POST" action="{{ route('recording.destroy', $recording) }}" onsubmit="return confirm('Hapus entri hari ini? Riwayat tetap tersimpan.')">
                     @csrf @method('DELETE')
                     <button class="min-h-11 text-base text-red-700 underline">Hapus entri</button>

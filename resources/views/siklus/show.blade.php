@@ -55,6 +55,19 @@
                 <a href="{{ route('recording.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka recording harian</a>
             </div>
 
+            <div class="grid gap-6 sm:grid-cols-2">
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Rekonsiliasi RHPP</h3>
+                    <p class="mt-2 text-base text-gray-700">Bandingkan catatan Anda dengan RHPP inti, baris demi baris, lalu cetak untuk musyawarah.</p>
+                    <a href="{{ route('rhpp.show', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka rekonsiliasi</a>
+                </div>
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Laporan siklus</h3>
+                    <p class="mt-2 text-base text-gray-700">Ringkasan performa, biaya produksi, dan grafik; bisa dicetak satu halaman.</p>
+                    <a href="{{ route('laporan.siklus', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka laporan</a>
+                </div>
+            </div>
+
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-900">Panen dan performa</h3>
                 <p class="mt-2 text-base text-gray-700">Panen bertahap dengan nomor BTPA, lalu FCR, IP, umur panen berbobot, dan selisih populasi.</p>

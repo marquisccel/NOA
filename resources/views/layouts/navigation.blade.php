@@ -22,6 +22,9 @@
                         <x-nav-link :href="route('siklus.index')" :active="request()->routeIs('siklus.*')">
                             Siklus
                         </x-nav-link>
+                        <x-nav-link :href="route('abk.index')" :active="request()->routeIs('abk.*')">
+                            ABK
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -84,6 +87,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('siklus.index')" :active="request()->routeIs('siklus.*')">
                     Siklus
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('abk.index')" :active="request()->routeIs('abk.*')">
+                    ABK
                 </x-responsive-nav-link>
             @endif
         </div>

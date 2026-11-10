@@ -16,7 +16,9 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+            <div class="print:hidden">
+                @include('layouts.navigation')
+            </div>
 
             <!-- Page Heading -->
             @isset($header)
@@ -27,7 +29,7 @@
                 </header>
             @endisset
 
-            <x-flash />
+            <div class="print:hidden"><x-flash /></div>
 
             <!-- Page Content -->
             <main>

@@ -16,7 +16,9 @@
                 </h2>
                 <p class="mt-1 text-base text-gray-700">
                     Masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }} · {{ F::angka($siklus->populasi, 0) }} ekor
-                    · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a>
+                    @if (auth()->user()->isPeternak())
+                        · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a>
+                    @endif
                 </p>
             </div>
             @if ($bisaIsi)
@@ -63,7 +65,11 @@
             @unless ($standarAda)
                 <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800">
                     Tabel standar belum diunggah, jadi kolom standar kosong.
-                    <a href="{{ route('siklus.standar', $siklus) }}" class="text-indigo-700 underline">Unggah tabel standar</a>
+                    @if (auth()->user()->isPeternak())
+                        <a href="{{ route('siklus.standar', $siklus) }}" class="text-indigo-700 underline">Unggah tabel standar</a>
+                    @else
+                        Minta peternak mengunggahnya.
+                    @endif
                 </p>
             @endunless
 

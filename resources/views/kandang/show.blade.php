@@ -19,7 +19,10 @@
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <div class="flex items-center justify-between gap-4">
                     <h3 class="text-lg font-semibold text-gray-900">Siklus</h3>
-                    <a href="{{ route('siklus.create', ['kandang_id' => $kandang->id]) }}" class="inline-flex items-center min-h-11 px-4 py-2 bg-gray-800 rounded-md font-semibold text-sm text-white hover:bg-gray-700">Buka siklus</a>
+                    <div class="flex items-center gap-4">
+                        <a href="{{ route('laporan.perbandingan', $kandang) }}" class="text-base text-indigo-700 underline">Bandingkan siklus</a>
+                        <a href="{{ route('siklus.create', ['kandang_id' => $kandang->id]) }}" class="inline-flex items-center min-h-11 px-4 py-2 bg-gray-800 rounded-md font-semibold text-sm text-white hover:bg-gray-700">Buka siklus</a>
+                    </div>
                 </div>
                 @include('siklus.partials.daftar', ['siklus' => $siklus])
             </div>
