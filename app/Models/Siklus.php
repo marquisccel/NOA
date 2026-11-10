@@ -71,11 +71,17 @@ class Siklus extends Model
     {
         $peta = [];
 
-        static::whereIn('kandang_id', collect($kandangIds)->all())
+        $perKandang = static::whereIn('kandang_id', collect($kandangIds)->all())
             ->orderBy('kandang_id')->orderBy('tanggal_masuk')->orderBy('id')
             ->get(['id', 'kandang_id'])
-            ->groupBy('kandang_id')
-            ->each(fn ($daftar) => $daftar->values()->each(fn ($s, $i) => $peta[$s->id] = $i + 1));
+            ->groupBy('kandang_id');
+
+        // foreach (bukan arrow function): arrow function menangkap $peta per nilai sehingga isinya hilang.
+        foreach ($perKandang as $daftar) {
+            foreach ($daftar->values() as $i => $s) {
+                $peta[$s->id] = $i + 1;
+            }
+        }
 
         return $peta;
     }

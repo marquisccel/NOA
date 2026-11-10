@@ -21,7 +21,7 @@ Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI
 | UI | Lingkup | Status |
 |----|---------|--------|
 | 1 | Token, font, komponen dasar, shell (sidebar, topbar, navigasi bawah), autentikasi | Selesai |
-| 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Menunggu konfirmasi lingkup |
+| 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Selesai |
 | 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Belum |
 | 4 | Recording (desktop dan ponsel), Sampling, OVK | Belum |
 | 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Belum |
@@ -189,13 +189,20 @@ Akun contoh (seeder): `peternak@noa.test` dan `abk@noa.test` (ABK milik peternak
 Peternak membuat akun ABK baru di menu ABK.
 Uji memakai database `noa_test` (buat sekali: `docker exec noa-pgsql psql -U noa -d postgres -c "CREATE DATABASE noa_test OWNER noa;"`).
 
-## UI Fase 2 (sebagian, belum diverifikasi visual)
+### UI Fase 2 — Dashboard, Kandang, Akun dan ABK, Pengaturan (selesai)
 
-Sudah dikode, 251 tes lulus, BELUM dibuka di browser dan BELUM ada tes baru untuk layar ini:
-- Dashboard peternak (KPI, siklus aktif, aktivitas terbaru), dashboard ABK, penomoran siklus
-- Kandang: daftar + cari/filter, form (alamat dan tipe wajib), detail, riwayat, dialog buka siklus
-- Pengguna & Akses: ABK per siklus, nonaktif/aktif, atur ulang kata sandi, halaman 403
-- Pengaturan profil dan kata sandi; hapus akun sendiri dihapus
-- Migrasi: users.aktif, users.siklus_id, kandang.tipe (open_house/closed_house)
+- [x] Dashboard peternak: empat kartu angka (kandang, kandang aktif, siklus berjalan, populasi aktif), siklus aktif, aktivitas terbaru lintas recording, sampling, OVK, panen; keadaan kosong dan tanpa siklus; sapaan menurut jam
+- [x] Dashboard ABK: hanya siklus yang ditugaskan, tanpa data komersial (R13)
+- [x] Nomor siklus per kandang ("Siklus 7") dihitung dari urutan tanggal masuk, tidak disimpan
+- [x] Kandang: daftar (cari nama atau alamat, filter status siklus dan tipe, tabel dan kartu ponsel), tambah dan ubah (alamat dan tipe wajib, pilihan Open atau Closed House), detail (siklus saat ini atau kosong), riwayat siklus dengan filter status, dialog "Buka siklus baru"
+- [x] Pengguna dan Akses: ABK ditugaskan ke satu siklus berjalan, nonaktif dan aktif lagi (nonaktif memblokir masuk, memutus sesi, mencabut penugasan), atur ulang kata sandi (sandi acak tampil sekali), panel hak akses, halaman 403
+- [x] Pengaturan: profil dan ubah kata sandi dengan daftar syarat; hapus akun sendiri dihapus (tidak ada di desain, akan menghapus semua data peternak)
+- [x] Migrasi: `users.aktif`, `users.siklus_id` (hanya ABK), `kandang.tipe` dibatasi `open_house` atau `closed_house`
+- [x] Seeder siklus berjalan (umur 17 hari) di kandang kedua dan ABK contoh ditugaskan ke sana
+- [x] Uji: 41 baru, total 292 lulus; dicek di browser desktop dan ponsel
 
-Belum: tes baru UI Fase 2, cek visual vs desain, penyesuaian.
+Perubahan perilaku yang perlu dikonfirmasi:
+- ABK lama kehilangan akses recording sampai ditugaskan ke siklus (sebelumnya semua kandang peternak)
+- Akun ABK tidak bisa dihapus lagi, hanya dinonaktifkan (sesuai desain)
+- Tipe kandang lama yang tidak dikenal dikosongkan oleh migrasi dan harus dipilih ulang saat kandang diubah
+- Label status siklus di antarmuka: berjalan = "Berjalan", selesai = "Ditutup", dihentikan = "Dihentikan" (7 status desain menunggu UI Fase 3)

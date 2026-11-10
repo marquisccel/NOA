@@ -93,7 +93,8 @@ class AbkController extends Controller
             'siklus_id' => $this->aturanSiklus($request->user(), $abk),
         ], $this->pesan(), $this->atribut());
 
-        $abk->forceFill($data)->save();
+        // Select siklus yang dinonaktifkan tidak terkirim: berarti penugasan dicabut.
+        $abk->forceFill(['name' => $data['name'], 'email' => $data['email'], 'siklus_id' => $data['siklus_id'] ?? null])->save();
 
         return redirect()->route('abk.index')->with('status', "Perubahan akun ABK “{$abk->name}” berhasil disimpan.");
     }

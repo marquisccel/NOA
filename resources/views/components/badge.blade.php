@@ -16,7 +16,7 @@
 @endphp
 
 {{-- Status selalu berupa kata (bukan hanya warna), sesuai aksesibilitas PRD. --}}
-<span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 rounded-full border px-2 py-[3px] text-[11px] font-bold leading-none {$warna}"]) }}>
+<span {{ $attributes->merge(['class' => "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-[3px] text-[11px] font-bold leading-none {$warna}"]) }}>
     @if ($dot)<span class="size-1.5 rounded-full {{ $titik }}"></span>@endif
     {{ $slot }}
 </span>

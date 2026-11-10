@@ -26,7 +26,7 @@
                        :caption="$ringkasan['siklus_berjalan'] ? 'Ekor, dari siklus berjalan' : 'Belum ada siklus berjalan'" icon="feather" />
             </div>
 
-            <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
                 <section aria-labelledby="judul-siklus-aktif" class="space-y-3.5">
                     <div class="flex items-end justify-between gap-3">
                         <div>
