@@ -8,7 +8,7 @@ diperagakan dari antarmuka, rumus terkait lulus uji otomatis, dan tidak ada gala
 |------|-----|---------|--------|
 | 1 | M1 | Fondasi: Laravel 13 + Breeze, PostgreSQL (Docker), skema, model, relasi, seeder siklus contoh, kalkulator performa + uji | Selesai |
 | 2 | M2 | Kandang, siklus, kontrak (F1.1–F1.9, F8.1): CRUD, skema bonus dapat dipilih, unggah standar CSV | Selesai |
-| 3 | M3 | Recording harian (F2.x): entri < 1 menit, angka berjalan, validasi R1/R5 | Belum |
+| 3 | M3 | Recording harian (F2.x): entri < 1 menit, angka berjalan, validasi R1/R5 | Selesai |
 | 4 | M4 | Sampling bobot dan OVK (F3.x, F4.x): ABW, ADG, peringatan sampel < 5% | Belum |
 | 5 | M5 | Panen bertahap dan performa (F5.x): FCR, IP, umur panen berbobot, selisih populasi | Belum |
 | 6 | M6 | Rekonsiliasi RHPP, laporan cetak, otorisasi ABK (F6.x, F7.x, F8.2) | Belum |
@@ -49,6 +49,28 @@ diperagakan dari antarmuka, rumus terkait lulus uji otomatis, dan tidak ada gala
 - [x] Uji: 23 feature (kandang, siklus, kontrak, CSV, parameter, otorisasi)
 
 Catatan: penguncian recording untuk siklus selesai (R12) diterapkan di Fase 3 saat recording dibuat.
+
+## Fase 3 — Recording harian (selesai)
+
+- [x] F2.1–F2.3 pakan masuk, terpakai, sisa fisik; stok gudang diturunkan dari akumulasi (R5), bukan kolom
+- [x] F2.4–F2.5 ayam mati dan afkir; sebab afkir wajib bila ada afkir
+- [x] F2.6 nilai standar di bawah nilai aktual (pakan kumulatif, bobot, FCR, feed intake)
+- [x] F2.7–F2.8 feed intake kumulatif per ekor, deplesi kumulatif, FCR berjalan; ditampilkan setelah simpan
+- [x] F2.9 suhu pagi/sore dibandingkan rentang target umur (ditulis sebagai kata, bukan hanya warna)
+- [x] F2.10 OVK pagi dan sore terpisah
+- [x] F2.11 / R11 paraf PPL + tanggal; baris diparaf terkunci di kebijakan dan di model
+- [x] F2.12 subtotal mingguan pakan dan deplesi
+- [x] F2.13 entri ganda pada hari umur sama ditolak (aplikasi dan indeks unik DB)
+- [x] F2.14 pakan terpakai melebihi stok: peringatan, bukan penghalang
+- [x] F2.15 entri mundur; hari terlewat ditampilkan dengan tautan "Isi sekarang"
+- [x] R12 siklus selesai dikunci dari entri baru dan penyuntingan (paraf tetap boleh); penjaga di model
+- [x] Form 4 bidang wajib, isian lain dalam "Isian lain"; umpan balik Alpine (deplesi, stok) hanya petunjuk, angka tersimpan dihitung server
+- [x] Uji: 33 feature (aturan R1/R5/R11/R12, angka berjalan, subtotal, otorisasi), total 100 lulus
+
+Keputusan yang perlu dikonfirmasi:
+- Siklus berstatus *dihentikan* tidak ikut terkunci (R12 PRD hanya menyebut *selesai*).
+- FCR berjalan memakai bobot aktual hari itu dan hanya tampil pada hari yang bobotnya dicatat.
+- Akses ABK ke entri harian menunggu Fase 6 (otorisasi ABK); sementara hanya peternak.
 
 ## Menjalankan
 
