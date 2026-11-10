@@ -13,6 +13,44 @@ diperagakan dari antarmuka, rumus terkait lulus uji otomatis, dan tidak ada gala
 | 5 | M5 | Panen bertahap dan performa (F5.x): FCR, IP, umur panen berbobot, selisih populasi | Belum |
 | 6 | M6 | Rekonsiliasi RHPP, laporan cetak, otorisasi ABK (F6.x, F7.x, F8.2) | Selesai |
 
+## Antarmuka (UI) — mengikuti `NOA_V.01.pen`
+
+Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI menerapkan desain tim
+(117 layar, 14 section) di atas fungsi itu. Berkas desain mentah ada di `design/` (tidak ikut git).
+
+| UI | Lingkup | Status |
+|----|---------|--------|
+| 1 | Token, font, komponen dasar, shell (sidebar, topbar, navigasi bawah), autentikasi | Selesai |
+| 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Menunggu konfirmasi lingkup |
+| 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Belum |
+| 4 | Recording (desktop dan ponsel), Sampling, OVK | Belum |
+| 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Belum |
+| 6 | Peran Pengawas (baca-saja) dan akses per siklus | Belum |
+
+### UI Fase 1 — Fondasi dan autentikasi (selesai)
+
+- [x] Token desain (warna terang dan gelap, status, border, radius) sebagai variabel CSS dan nama semantik Tailwind (`bg-surface`, `text-ink`, `bg-brand`, `border-line`, `bg-success-soft`, ...)
+- [x] Font Space Grotesk dan Manrope dihosting sendiri (subset latin, ±47 KB), tanpa layanan font pihak ketiga
+- [x] Logo dioptimalkan dari PNG sumber 1 MB menjadi WebP 8 KB (tanda), 7 KB (wordmark), 52 KB (panel merek)
+- [x] Ikon Lucide sebagai peta PHP kecil (`resources/icons/lucide.php`) dan komponen `<x-icon>`
+- [x] Komponen: `x-button` (primary, secondary, ghost, danger), `x-field` (ikon, tampilkan kata sandi, galat, bantuan), `x-alert`, `x-badge`, `x-logo`, serta komponen Breeze lama yang digayakan ulang
+- [x] Shell: topbar dengan remah roti dan judul, sidebar per peran (penuh mulai 1280 px, ikon saja di tablet atau bila diciutkan dan diingat), drawer dan navigasi bawah di ponsel
+- [x] Menu per peran di `App\Support\Navigasi` (Peternak: Dashboard, Kandang dan Siklus, Pengguna dan Akses, Pengaturan; ABK: Siklus Ditugaskan); hanya halaman yang sudah ada
+- [x] Autentikasi: masuk (galat, memproses, ponsel), lupa kata sandi dan "Cek email Anda", atur ulang dan "Kata sandi diperbarui", registrasi peternak, konfirmasi kata sandi, verifikasi email
+- [x] Terjemahan Indonesia untuk validasi, auth, dan passwords (`lang/id`), awalan huruf kapital
+- [x] Lupa kata sandi menjawab sama untuk email terdaftar atau tidak (tidak membocorkan akun)
+- [x] Syarat kata sandi: minimal 8 karakter, memuat huruf dan angka (ditegakkan server; daftar syarat di layar mengikuti)
+- [x] Halaman Fase 1–6 tetap berfungsi di dalam shell baru; palet indigo lama dipetakan ke hijau merek sampai tiap halaman disesuaikan
+- [x] Uji: 35 baru, total 253 lulus; diperiksa di browser desktop 1440, tablet 1024, dan ponsel 390
+
+Penyimpangan dari desain (disengaja, perlu persetujuan):
+- Teks isian 16 px (desain 14 px) karena PRD mewajibkan minimal 16 px; tinggi isian tetap 46 px
+- Panel merek login memakai Manrope untuk teks (desain memakai Inter) agar tidak membawa font ketiga
+- Tombol notifikasi di topbar tidak dibuat (tidak ada dasar di PRD; audit desain juga menyarankan menyembunyikannya)
+- Item sidebar "Laporan" belum ada sampai halaman Laporan global dibuat (UI Fase 5)
+- Tema gelap baru berupa token; belum ada pengalih dan halaman lama belum disesuaikan
+- Syarat "mengandung huruf besar" pada layar atur ulang desain tidak dipakai (audit menyebutnya contoh yang belum dikonfirmasi)
+
 ## Fase 1 — Fondasi (selesai)
 
 - [x] Laravel 13 + Breeze (Blade, Alpine, Tailwind), locale `id`, zona waktu `Asia/Jakarta`
