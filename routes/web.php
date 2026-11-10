@@ -13,9 +13,8 @@ use App\Http\Controllers\SiklusAcuanController;
 use App\Http\Controllers\SiklusController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Satu pintu masuk: tamu ke halaman masuk, pengguna yang sudah masuk ke dashboard.
+Route::get('/', fn () => redirect()->route(auth()->check() ? 'dashboard' : 'login'));
 
 Route::get('/dashboard', function () {
     return view('dashboard');

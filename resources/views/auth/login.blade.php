@@ -1,47 +1,51 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@php
+    // Gagal masuk ditampilkan sebagai alert di atas formulir; galat format tetap di bawah isian.
+    $gagalMasuk = $errors->first('email') === __('auth.failed');
+@endphp
 
-    <form method="POST" action="{{ route('login') }}">
+<x-guest-layout title="Masuk">
+    <div class="space-y-2">
+        <h1 class="font-heading text-[26px] font-semibold tracking-[-0.4px]">Masuk ke NOA</h1>
+        <p class="text-sm leading-[21px] text-ink-secondary">Satu pintu masuk untuk Peternak, ABK, dan Pengawas Inti. Akses menyesuaikan peran akun Anda.</p>
+    </div>
+
+    @if (session('status'))
+        <x-alert variant="success">{{ session('status') }}</x-alert>
+    @endif
+    @if ($gagalMasuk)
+        <x-alert variant="error">{{ $errors->first('email') }}</x-alert>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}" class="space-y-6" x-data="{ memproses: false }" @submit="memproses = true">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <div class="space-y-4">
+            {{-- Pesan gagal-masuk sudah ada di alert; field hanya menandai merah. --}}
+            <x-field name="email" label="Email" type="email" icon="mail" placeholder="nama@email.com" required autofocus autocomplete="username" :senyap="$gagalMasuk" />
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-field name="password" label="Kata sandi" type="password" icon="lock" placeholder="Masukkan kata sandi" required autocomplete="current-password">
+                <x-slot name="aux">
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-[13px] font-semibold text-ink-brand hover:underline">Lupa kata sandi?</a>
+                    @endif
+                </x-slot>
+            </x-field>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+            <label for="remember_me" class="flex min-h-11 items-center gap-2.5 text-[13px] text-ink-secondary">
+                <input id="remember_me" type="checkbox" name="remember" class="size-[18px] rounded-[5px] border-line-control text-brand focus:ring-brand">
+                Ingat saya di perangkat ini
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        <x-button class="w-full" x-bind:disabled="memproses">
+            <span :class="memproses ? 'hidden' : ''" class="inline-flex items-center gap-2"><x-icon name="arrow-right" class="size-4" /> Masuk</span>
+            <span x-cloak :class="memproses ? 'inline-flex' : 'hidden'" class="items-center gap-2"><x-icon name="loader-circle" class="size-4 animate-spin" /> Memproses…</span>
+        </x-button>
     </form>
+
+    @if (Route::has('register'))
+        <p class="text-center text-[13px] text-ink-secondary">
+            Peternak baru? <a href="{{ route('register') }}" class="font-semibold text-ink-brand hover:underline">Daftar akun</a>
+        </p>
+    @endif
 </x-guest-layout>
