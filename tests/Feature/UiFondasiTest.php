@@ -122,14 +122,6 @@ class UiFondasiTest extends TestCase
         }
     }
 
-    public function test_pengawas_hanya_mendapat_menu_siklus_dibagikan(): void
-    {
-        $pengawas = User::factory()->create(['role' => User::ROLE_PENGAWAS]);
-
-        $this->assertSame(['Siklus Dibagikan'], array_column(Navigasi::grup($pengawas)[0]['items'], 'label'));
-        $this->actingAs($pengawas)->get(route('dashboard'))->assertOk()->assertDontSee('Kandang &amp; Siklus', false);
-    }
-
     public function test_inisial_dan_label_peran(): void
     {
         $this->assertSame('PB', $this->peternak->inisial());
@@ -222,7 +214,7 @@ class UiFondasiTest extends TestCase
     {
         $this->get(route('login'))->assertOk()
             ->assertSee('Masuk ke NOA')
-            ->assertSee('Satu pintu masuk untuk Peternak, ABK, dan Pengawas Inti')
+            ->assertSee('Satu pintu masuk untuk Peternak dan ABK')
             ->assertSee('Lupa kata sandi?')
             ->assertSee('Ingat saya di perangkat ini')
             ->assertSee('Peternak baru?')

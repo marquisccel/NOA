@@ -14,7 +14,7 @@ class OvkController extends Controller
     /** F4.3: riwayat OVK satu siklus dalam satu halaman, dengan total biaya (F4.2). */
     public function index(Siklus $siklus): View
     {
-        Gate::authorize('lihatCatatan', $siklus);
+        Gate::authorize('view', $siklus);
 
         $riwayat = $siklus->pemberianOvk()->orderByDesc('tanggal')->orderByDesc('id')->get();
         $recording = $siklus->recordings()->get()->keyBy(fn ($r) => $r->tanggal->toDateString());
@@ -39,8 +39,7 @@ class OvkController extends Controller
             'penanda' => $penanda,
             'totalBiaya' => (float) $riwayat->sum('biaya'),
             'biayaPerJenis' => $riwayat->groupBy('jenis')->map(fn ($g) => (float) $g->sum('biaya')),
-            'bisaCatat' => Gate::allows('update', $siklus) && ! $siklus->isTerkunci(),
-            'bacaSaja' => ! Gate::allows('view', $siklus),
+            'bisaCatat' => ! $siklus->isTerkunci(),
         ] + $this->ringkas($siklus, $riwayat));
     }
 

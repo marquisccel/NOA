@@ -26,7 +26,7 @@ class PanenController extends Controller
 
     public function index(Siklus $siklus): View
     {
-        Gate::authorize('lihatCatatan', $siklus);
+        Gate::authorize('view', $siklus);
 
         $p = $this->performa->hitung($siklus);
 
@@ -34,9 +34,8 @@ class PanenController extends Controller
             'siklus' => $siklus->load('kandang'),
             'panen' => $siklus->panen()->orderBy('tanggal')->orderBy('id')->get(),
             'p' => $p,
-            'bacaSaja' => ! Gate::allows('view', $siklus),
-            'bisaCatat' => Gate::allows('view', $siklus) && ! $siklus->isTerkunci(),
-            'bisaSelesai' => Gate::allows('view', $siklus) && $siklus->status === Siklus::STATUS_BERJALAN && $p['jumlah_tahap'] > 0,
+            'bisaCatat' => ! $siklus->isTerkunci(),
+            'bisaSelesai' => $siklus->status === Siklus::STATUS_BERJALAN && $p['jumlah_tahap'] > 0,
             'tanggalTerakhir' => $siklus->panen()->max('tanggal'),
         ]);
     }

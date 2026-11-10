@@ -125,7 +125,7 @@
                     <ul class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
                         <li>Mengubah standar harian memperbarui kolom standar di semua layar siklus ini.</li>
                         <li>Bobot per sak dipakai untuk konversi sak ↔ kg; perubahan memengaruhi FCR dan stok pakan.</li>
-                        <li>Kontrak &amp; skema bonus tidak terlihat oleh ABK dan Pengawas Inti.</li>
+                        <li>Kontrak &amp; skema bonus tidak terlihat oleh ABK.</li>
                         <li>Ubah tidak tersedia setelah siklus ditutup.</li>
                     </ul>
                 </section>

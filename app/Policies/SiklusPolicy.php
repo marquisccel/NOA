@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\AksesPengawas;
 use App\Models\Siklus;
 use App\Models\User;
 
@@ -48,25 +47,5 @@ class SiklusPolicy
             && $user->aktif
             && $user->siklus_id === $siklus->id
             && $user->peternak_id === $siklus->kandang->user_id;
-    }
-
-    /** Pengawas Inti aktif dengan akses yang belum dicabut ke siklus ini (hanya-baca). */
-    public function bacaSaja(User $user, Siklus $siklus): bool
-    {
-        return $user->isPengawas()
-            && $user->aktif
-            && AksesPengawas::aktif()->where('pengawas_id', $user->id)->where('siklus_id', $siklus->id)->exists();
-    }
-
-    /** Halaman catatan baca-saja (sampling, OVK, panen): peternak pemilik atau Pengawas yang diberi akses. */
-    public function lihatCatatan(User $user, Siklus $siklus): bool
-    {
-        return $this->view($user, $siklus) || $this->bacaSaja($user, $siklus);
-    }
-
-    /** Riwayat recording: pencatat (peternak pemilik, ABK yang ditugaskan) atau Pengawas yang diberi akses. */
-    public function lihatRecording(User $user, Siklus $siklus): bool
-    {
-        return $this->catat($user, $siklus) || $this->bacaSaja($user, $siklus);
     }
 }

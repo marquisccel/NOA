@@ -24,9 +24,7 @@ class User extends Authenticatable
 
     public const ROLE_ABK = 'abk';
 
-    public const ROLE_PENGAWAS = 'pengawas';
-
-    public const ROLES = [self::ROLE_PETERNAK, self::ROLE_ABK, self::ROLE_PENGAWAS];
+    public const ROLES = [self::ROLE_PETERNAK, self::ROLE_ABK];
 
     public function kandang(): HasMany
     {
@@ -51,12 +49,6 @@ class User extends Authenticatable
         return $this->hasMany(self::class, 'peternak_id');
     }
 
-    /** Akses hanya-baca (Pengawas Inti) pada siklus-siklus yang dibagikan. */
-    public function aksesPengawas(): HasMany
-    {
-        return $this->hasMany(AksesPengawas::class, 'pengawas_id');
-    }
-
     /** Id peternak pemilik data yang boleh dicatat akun ini: dirinya sendiri, atau peternak majikan ABK. */
     public function idPemilikData(): ?int
     {
@@ -69,7 +61,6 @@ class User extends Authenticatable
         return match ($this->role) {
             self::ROLE_PETERNAK => 'Peternak Plasma',
             self::ROLE_ABK => 'ABK',
-            self::ROLE_PENGAWAS => 'Pengawas Inti',
             default => ucfirst((string) $this->role),
         };
     }
@@ -85,11 +76,6 @@ class User extends Authenticatable
     public function isPeternak(): bool
     {
         return $this->role === self::ROLE_PETERNAK;
-    }
-
-    public function isPengawas(): bool
-    {
-        return $this->role === self::ROLE_PENGAWAS;
     }
 
     public function isAbk(): bool

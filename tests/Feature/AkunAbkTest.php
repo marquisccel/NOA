@@ -194,13 +194,6 @@ class AkunAbkTest extends TestCase
         $this->actingAs($abkLain)->put(route('recording.update', $r), ['pakan_pakai_sak' => 1, 'mati' => 0, 'afkir' => 0])->assertForbidden();
     }
 
-    public function test_akun_pengawas_tidak_punya_akses_recording(): void
-    {
-        $pengawas = User::factory()->create(['role' => User::ROLE_PENGAWAS]);
-
-        $this->actingAs($pengawas)->get(route('recording.index', $this->siklus))->assertForbidden();
-    }
-
     // ---- R13: ABK tidak melihat kontrak, biaya, rekonsiliasi ----
 
     public function test_r13_abk_ditolak_di_semua_halaman_komersial(): void

@@ -2,7 +2,7 @@
 
 <x-wizard-siklus :kandang="$kandang" :langkah="2" :konteks="$konteks">
     <h2 class="text-lg font-bold">Kontrak siklus</h2>
-    <p class="mt-1 text-[13px] text-ink-secondary">Harga sesuai kontrak dengan inti. Hanya terlihat oleh peternak (tidak oleh ABK atau Pengawas Inti).</p>
+    <p class="mt-1 text-[13px] text-ink-secondary">Harga sesuai kontrak dengan inti. Hanya terlihat oleh peternak (tidak oleh ABK).</p>
 
     <form method="POST" action="{{ route('siklus.baru.simpan', [$kandang, 2]) }}" novalidate class="mt-5 space-y-5">
         @csrf
@@ -17,7 +17,7 @@
             <x-field name="harga_kontrak_ayam" label="Harga kontrak ayam (Rp / kg) *" type="number" min="0" step="0.01" inputmode="decimal" :value="$d['harga_kontrak_ayam'] ?? null" placeholder="19500" required />
         </div>
 
-        <p class="flex gap-2 text-xs text-ink-muted"><x-icon name="lock" class="mt-0.5 size-3.5" /> Data kontrak, biaya, dan bonus disembunyikan dari akun ABK dan Pengawas Inti.</p>
+        <p class="flex gap-2 text-xs text-ink-muted"><x-icon name="lock" class="mt-0.5 size-3.5" /> Data kontrak, biaya, dan bonus disembunyikan dari akun ABK.</p>
 
         <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-4">
             <x-button variant="secondary" :href="route('siklus.baru.langkah', [$kandang, 1])">Kembali</x-button>

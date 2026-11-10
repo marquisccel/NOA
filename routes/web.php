@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AbkController;
-use App\Http\Controllers\AksesPengawasController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
@@ -35,13 +34,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('recording/{recording}/paraf', [RecordingController::class, 'paraf'])->name('recording.paraf');
 });
 
-// Halaman catatan baca-saja: peternak, atau Pengawas Inti yang diberi akses ke siklus (dijaga kebijakan, bukan peran).
-Route::middleware('auth')->group(function () {
-    Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
-    Route::get('siklus/{siklus}/panen', [PanenController::class, 'index'])->name('panen.index');
-    Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
-});
-
 // Kontrak, biaya, panen, dan rekonsiliasi memuat angka komersial: hanya peternak (R13).
 Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('kandang/{kandang}/riwayat', [KandangController::class, 'riwayat'])->name('kandang.riwayat');
@@ -62,6 +54,10 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::post('siklus/{siklus}/tutup-tanpa-rhpp', [SiklusAlurController::class, 'tutupTanpaRhpp'])->name('siklus.tutup-tanpa-rhpp.simpan');
     Route::get('siklus/{siklus}/hentikan', [SiklusAlurController::class, 'hentikanForm'])->name('siklus.hentikan');
     Route::post('siklus/{siklus}/hentikan', [SiklusAlurController::class, 'hentikan'])->name('siklus.hentikan.simpan');
+
+    Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
+    Route::get('siklus/{siklus}/panen', [PanenController::class, 'index'])->name('panen.index');
+    Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
 
     Route::get('siklus/{siklus}/standar', [SiklusAcuanController::class, 'standar'])->name('siklus.standar');
     Route::post('siklus/{siklus}/standar', [SiklusAcuanController::class, 'unggahStandar'])->name('siklus.standar.unggah');
@@ -109,9 +105,6 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::post('abk', [AbkController::class, 'store'])->name('abk.store');
     Route::get('abk/{abk}/edit', [AbkController::class, 'edit'])->name('abk.edit');
     Route::put('abk/{abk}', [AbkController::class, 'update'])->name('abk.update');
-    Route::get('akses-pengawas', [AksesPengawasController::class, 'index'])->name('akses.index');
-    Route::post('akses-pengawas', [AksesPengawasController::class, 'store'])->name('akses.store');
-    Route::delete('akses-pengawas/{akses}', [AksesPengawasController::class, 'cabut'])->name('akses.cabut');
     Route::post('abk/{abk}/reset-sandi', [AbkController::class, 'resetSandi'])->name('abk.reset');
     Route::patch('abk/{abk}/status', [AbkController::class, 'status'])->name('abk.status');
 });

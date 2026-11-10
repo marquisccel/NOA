@@ -26,15 +26,6 @@ class Navigasi
             ]];
         }
 
-        if ($user->isPengawas()) {
-            return [[
-                'label' => 'Pengawasan',
-                'items' => [
-                    self::item('Siklus Dibagikan', 'shield-check', 'dashboard', ['dashboard', 'recording.index', 'sampling.index', 'ovk.index', 'panen.index']),
-                ],
-            ]];
-        }
-
         if (! $user->isPeternak()) {
             return [];
         }
@@ -53,7 +44,7 @@ class Navigasi
                 'label' => 'Manajemen',
                 'items' => [
                     self::item('Laporan', 'chart-column', 'laporan.index', ['laporan.index']),
-                    self::item('Pengguna & Akses', 'users', 'abk.index', ['abk.*', 'akses.*']),
+                    self::item('Pengguna & Akses', 'users', 'abk.index', ['abk.*']),
                     self::item('Pengaturan', 'settings', 'profile.edit', ['profile.*']),
                 ],
             ],
@@ -67,10 +58,6 @@ class Navigasi
      */
     public static function bawah(User $user): array
     {
-        if ($user->isPengawas()) {
-            return [self::item('Siklus Dibagikan', 'shield-check', 'dashboard', ['dashboard', 'recording.index', 'sampling.index', 'ovk.index', 'panen.index'])];
-        }
-
         if (! $user->isPeternak()) {
             return [];
         }
