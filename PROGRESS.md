@@ -9,7 +9,7 @@ diperagakan dari antarmuka, rumus terkait lulus uji otomatis, dan tidak ada gala
 | 1 | M1 | Fondasi: Laravel 13 + Breeze, PostgreSQL (Docker), skema, model, relasi, seeder siklus contoh, kalkulator performa + uji | Selesai |
 | 2 | M2 | Kandang, siklus, kontrak (F1.1–F1.9, F8.1): CRUD, skema bonus dapat dipilih, unggah standar CSV | Selesai |
 | 3 | M3 | Recording harian (F2.x): entri < 1 menit, angka berjalan, validasi R1/R5 | Selesai |
-| 4 | M4 | Sampling bobot dan OVK (F3.x, F4.x): ABW, ADG, peringatan sampel < 5% | Belum |
+| 4 | M4 | Sampling bobot dan OVK (F3.x, F4.x): ABW, ADG, peringatan sampel < 5% | Selesai |
 | 5 | M5 | Panen bertahap dan performa (F5.x): FCR, IP, umur panen berbobot, selisih populasi | Belum |
 | 6 | M6 | Rekonsiliasi RHPP, laporan cetak, otorisasi ABK (F6.x, F7.x, F8.2) | Belum |
 
@@ -71,6 +71,25 @@ Keputusan yang perlu dikonfirmasi:
 - Siklus berstatus *dihentikan* tidak ikut terkunci (R12 PRD hanya menyebut *selesai*).
 - FCR berjalan memakai bobot aktual hari itu dan hanya tampil pada hari yang bobotnya dicatat.
 - Akses ABK ke entri harian menunggu Fase 6 (otorisasi ABK); sementara hanya peternak.
+
+## Fase 4 — Sampling bobot dan OVK (selesai)
+
+- [x] F3.1 catat sampling: tanggal, jumlah ekor ditimbang, total bobot (kg); ubah dan hapus (soft delete)
+- [x] F3.2 ABW = total bobot / jumlah sampel
+- [x] F3.3 / R8 sampel < 5% ayam hidup pada hari itu: peringatan dan penanda "kurang representatif", tetap tersimpan
+- [x] F3.4 pertambahan bobot harian (ADG) terhadap sampling sebelumnya
+- [x] F3.5 ABW dibandingkan dengan standar pada umur sama (selisih gram dan persen); kosong bila standar belum diunggah
+- [x] F4.1 catat obat, vaksin, atau kimia: tanggal, jenis, produk, dosis, biaya
+- [x] F4.2 biaya OVK dijumlahkan per jenis dan total (masuk biaya produksi di laporan Fase 6)
+- [x] F4.3 riwayat OVK satu siklus dalam satu halaman
+- [x] ABW sampling dipakai sebagai bobot untuk FCR berjalan pada hari sampling yang sama (bobot aktual recording didahulukan)
+- [x] Validasi: sampel tidak boleh melebihi ayam hidup; bobot rata-rata > 10 kg ditolak (salah satuan)
+- [x] Uji: 28 baru (27 feature + 1 unit), total 128 lulus
+
+Keputusan yang perlu dikonfirmasi:
+- Sampling dan OVK tidak dikunci saat siklus selesai (R12 PRD hanya menyebut recording).
+- Sampling dua kali pada hari yang sama diizinkan; ADG antar keduanya kosong.
+- ABW sampling hanya dipinjam untuk FCR berjalan pada hari yang sama, tidak dibawa ke hari lain agar tidak basi.
 
 ## Menjalankan
 
