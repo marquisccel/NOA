@@ -1,101 +1,81 @@
-@php use App\Support\Format as F; @endphp
+@php
+    use App\Support\Format as F;
 
-<x-app-layout :siklus="$siklus">
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Sampling bobot · {{ $siklus->kandang->nama_farm }}</h2>
-        <p class="mt-1 text-base text-gray-700">
-            Ayam hidup saat ini {{ F::angka($ayamHidup, 0) }} ekor · sampel minimal 5% ({{ F::angka(ceil($ayamHidup * 0.05), 0) }} ekor)
-            · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a>
-        </p>
-    </x-slot>
+    $hasil = $hasilId ? collect($baris)->first(fn ($b) => $b['sampling']->id === $hasilId) : null;
+    $tanda = fn ($n, $d = 1) => $n === null ? '–' : ($n >= 0 ? '+' : '−').F::angka(abs($n), $d);
+@endphp
 
-    <div class="py-8">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            @if ($terakhir)
-                <dl class="grid grid-cols-2 gap-4 lg:grid-cols-4 text-base">
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">ABW terakhir (hari {{ $terakhir['hari_ke'] }})</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ F::angka($terakhir['abw_gram'], 0) }} g</dd>
-                        @if ($terakhir['std_gram'] !== null)<dd class="text-sm text-gray-600">standar {{ F::angka($terakhir['std_gram'], 0) }} g</dd>@endif
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Pertambahan harian</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ $terakhir['adg_gram'] === null ? '-' : F::angka($terakhir['adg_gram'], 1).' g/hari' }}</dd>
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Selisih dengan standar</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">
-                            {{ $terakhir['selisih_std_gram'] === null ? '-' : ($terakhir['selisih_std_gram'] >= 0 ? '+' : '').F::angka($terakhir['selisih_std_gram'], 0).' g' }}
-                        </dd>
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Jumlah sampling</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ count($baris) }}</dd>
-                    </div>
-                </dl>
-            @endif
-
-            @unless ($standarAda)
-                <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800">
-                    Tabel standar belum diunggah, jadi perbandingan ABW dengan standar kosong.
-                    <a href="{{ route('siklus.standar', $siklus) }}" class="text-indigo-700 underline">Unggah tabel standar</a>
-                </p>
-            @endunless
-
-            <section>
-                <h3 class="mb-3 text-lg font-semibold text-gray-900">Catat sampling</h3>
-                @include('sampling._form', ['sampling' => new \App\Models\SamplingBobot, 'siklus' => $siklus, 'ayamHidup' => $ayamHidup])
-            </section>
-
-            <section class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Riwayat sampling</h3>
-                @if (empty($baris))
-                    <p class="mt-2 text-base text-gray-600">Belum ada sampling.</p>
-                @else
-                    <div class="mt-4 overflow-x-auto">
-                        <table class="min-w-full text-base text-left align-top">
-                            <caption class="sr-only">Riwayat sampling bobot, terbaru di atas</caption>
-                            <thead class="text-gray-600 border-b border-gray-200">
-                                <tr>
-                                    <th scope="col" class="py-2 pe-4">Hari</th>
-                                    <th scope="col" class="py-2 pe-4">Sampel</th>
-                                    <th scope="col" class="py-2 pe-4">Total (kg)</th>
-                                    <th scope="col" class="py-2 pe-4">ABW (g)</th>
-                                    <th scope="col" class="py-2 pe-4">Selisih standar</th>
-                                    <th scope="col" class="py-2 pe-4">ADG (g/hari)</th>
-                                    <th scope="col" class="py-2"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-gray-900">
-                                @foreach ($baris as $b)
-                                    @php $s = $b['sampling']; @endphp
-                                    <tr>
-                                        <td class="py-2 pe-4 whitespace-nowrap">{{ $b['hari_ke'] }}<div class="text-sm text-gray-600">{{ $s->tanggal->translatedFormat('j M Y') }}</div></td>
-                                        <td class="py-2 pe-4">
-                                            {{ F::angka($s->jumlah_sampel, 0) }}
-                                            <div class="text-sm {{ $b['representatif'] ? 'text-gray-600' : 'text-amber-800 font-medium' }}">
-                                                {{ F::angka($b['persen_populasi']) }}%{{ $b['representatif'] ? '' : ' · kurang representatif' }}
-                                            </div>
-                                        </td>
-                                        <td class="py-2 pe-4">{{ F::angka($s->total_bobot_kg, 3) }}</td>
-                                        <td class="py-2 pe-4">{{ F::angka($b['abw_gram'], 0) }}@if ($b['std_gram'] !== null)<div class="text-sm text-gray-600">std {{ F::angka($b['std_gram'], 0) }}</div>@endif</td>
-                                        <td class="py-2 pe-4">
-                                            @if ($b['selisih_std_gram'] === null)
-                                                -
-                                            @else
-                                                {{ $b['selisih_std_gram'] >= 0 ? '+' : '' }}{{ F::angka($b['selisih_std_gram'], 0) }} g
-                                                <div class="text-sm text-gray-600">{{ $b['selisih_std_persen'] >= 0 ? '+' : '' }}{{ F::angka($b['selisih_std_persen'], 1) }}%</div>
-                                            @endif
-                                        </td>
-                                        <td class="py-2 pe-4">{{ $b['adg_gram'] === null ? '-' : F::angka($b['adg_gram'], 1) }}</td>
-                                        <td class="py-2"><a href="{{ route('sampling.edit', $s) }}" class="text-indigo-700 underline min-h-11 inline-flex items-center">Ubah</a></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+<x-app-layout title="Sampling bobot" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Sampling']]">
+    <x-page>
+        <x-page-header title="Riwayat sampling"
+            :subtitle="count($baris).' sampling'.($interval ? ' · interval '.$interval.' hari' : '')">
+            <x-slot name="actions">
+                @if ($bisaCatat)
+                    <x-button :href="route('sampling.create', $siklus)"><x-icon name="plus" class="size-4" /> Sampling baru</x-button>
                 @endif
-            </section>
-        </div>
-    </div>
+            </x-slot>
+        </x-page-header>
+
+        @if ($hasil)
+            <x-alert variant="success">
+                <p class="font-semibold">Sampling hari ke-{{ $hasil['hari_ke'] }} tersimpan</p>
+                <p>
+                    ABW {{ F::angka($hasil['abw_gram'], 0) }} g
+                    @if ($hasil['adg_gram'] !== null)· ADG {{ F::angka($hasil['adg_gram'], 0) }} g/hari @endif
+                    @if ($hasil['selisih_std_persen'] !== null)· {{ $tanda($hasil['selisih_std_persen']) }}% {{ $hasil['selisih_std_persen'] >= 0 ? 'di atas' : 'di bawah' }} standar @endif.
+                    ABW terakhir di Ringkasan ikut diperbarui.
+                </p>
+            </x-alert>
+        @endif
+
+        @unless ($standarAda)
+            <x-alert variant="info">
+                Tabel standar belum diunggah, jadi perbandingan ABW dengan standar kosong.
+                @if (auth()->user()->isPeternak())<a href="{{ route('siklus.standar', $siklus) }}" class="font-semibold underline">Unggah tabel standar</a>@endif
+            </x-alert>
+        @endunless
+
+        @if (empty($baris))
+            <x-empty-state icon="scale" title="Belum ada sampling bobot"
+                text="Timbang minimal 5% populasi hidup (± {{ F::angka(ceil($siklus->populasi * 0.05), 0) }} ekor untuk {{ F::angka($siklus->populasi, 0) }} ekor). ABW, ADG, dan perbandingan dengan standar muncul setelah sampling pertama.">
+                @if ($bisaCatat)<x-button :href="route('sampling.create', $siklus)">Sampling pertama</x-button>@endif
+            </x-empty-state>
+        @else
+            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <table class="tabel min-w-[900px]">
+                    <caption class="sr-only">Riwayat sampling bobot, terbaru di atas</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Hari</th><th scope="col">Tanggal</th><th scope="col" class="text-right">Sampel</th><th scope="col" class="text-right">% populasi</th>
+                            <th scope="col" class="text-right">Total bobot</th><th scope="col" class="text-right">ABW</th><th scope="col" class="text-right">Standar</th>
+                            <th scope="col" class="text-right">Selisih</th><th scope="col" class="text-right">ADG</th><th scope="col">Keterangan</th>
+                            @if ($bisaCatat)<th scope="col">Aksi</th>@endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($baris as $b)
+                            @php $s = $b['sampling']; @endphp
+                            <tr @class(['!bg-tint' => $hasil && $hasil['sampling']->is($s)])>
+                                <th scope="row">{{ $b['hari_ke'] }}</th>
+                                <td class="whitespace-nowrap">{{ $s->tanggal->translatedFormat('j M') }}</td>
+                                <td class="text-right">{{ F::angka($s->jumlah_sampel, 0) }} ekor</td>
+                                <td class="text-right {{ $b['representatif'] ? '' : 'font-semibold text-warning-text' }}">{{ F::angka($b['persen_populasi']) }}%</td>
+                                <td class="text-right">{{ F::angka($s->total_bobot_kg, 1) }} kg</td>
+                                <td class="text-right font-semibold">{{ F::angka($b['abw_gram'], 0) }} g</td>
+                                <td class="text-right text-ink-secondary">{{ $b['std_gram'] === null ? '–' : F::angka($b['std_gram'], 0).' g' }}</td>
+                                <td class="text-right font-semibold {{ $b['selisih_std_persen'] === null ? '' : ($b['selisih_std_persen'] >= 0 ? 'text-success-text' : 'text-warning-text') }}">{{ $b['selisih_std_persen'] === null ? '–' : $tanda($b['selisih_std_persen']).'%' }}</td>
+                                <td class="text-right">{{ $b['adg_gram'] === null ? '–' : F::angka($b['adg_gram'], 0).' g/hari' }}</td>
+                                <td>@if (! $b['representatif'])<x-badge variant="warning">Kurang representatif</x-badge>@else<span class="text-ink-muted">–</span>@endif</td>
+                                @if ($bisaCatat)
+                                    <td><a href="{{ route('sampling.edit', $s) }}" class="inline-flex min-h-11 items-center font-semibold text-ink-brand hover:underline">Ubah</a></td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-ink-muted">ABW = total bobot ÷ jumlah sampel. ADG dihitung dari sampling sebelumnya. Sampel di bawah 5% populasi hidup ditandai kurang representatif.</p>
+        @endif
+    </x-page>
 </x-app-layout>

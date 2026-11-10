@@ -91,8 +91,10 @@ class SamplingOvkTest extends TestCase
     {
         $this->sampling('2026-11-07', 150, 27);
 
-        $this->sampling('2026-11-14', 150, 67.5)
-            ->assertSessionHas('status', fn ($p) => str_contains($p, 'ABW 450 g') && str_contains($p, 'pertambahan 38,6 g/hari'));
+        $this->sampling('2026-11-14', 150, 67.5)->assertSessionHas('hasil_sampling');
+
+        $this->actingAs($this->peternak)->get(route('sampling.index', $this->siklus))
+            ->assertSee('Sampling hari ke-14 tersimpan')->assertSee('ABW 450 g')->assertSee('ADG 39 g/hari');
     }
 
     public function test_f3_4_adg_terhadap_sampling_sebelumnya(): void
@@ -280,7 +282,8 @@ class SamplingOvkTest extends TestCase
             $this->ovk(['jenis' => $jenis, 'nama_produk' => "Produk {$jenis}", 'tanggal' => '2026-11-0'.($i + 2)])->assertSessionDoesntHaveErrors();
         }
 
-        $this->assertSame(3, PemberianOvk::count());
+        $this->assertSame(4, PemberianOvk::count());
+        $this->assertDatabaseHas('pemberian_ovk', ['jenis' => 'vitamin']);
         $this->assertDatabaseHas('pemberian_ovk', ['jenis' => 'kimia', 'nama_produk' => 'Produk kimia']);
     }
 
@@ -292,7 +295,7 @@ class SamplingOvkTest extends TestCase
     public function test_ovk_wajib_punya_tanggal_dan_nama_produk(): void
     {
         $this->actingAs($this->peternak)->post(route('ovk.store', $this->siklus), ['jenis' => 'obat'])
-            ->assertSessionHasErrors(['tanggal', 'nama_produk']);
+            ->assertSessionHasErrors(['tanggal', 'nama_produk', 'dosis']);
         $this->ovk(['tanggal' => '2026-10-31'])->assertSessionHasErrors('tanggal');
         $this->ovk(['tanggal' => '2026-11-16'])->assertSessionHasErrors('tanggal');
     }
@@ -335,7 +338,7 @@ class SamplingOvkTest extends TestCase
         $this->ovk();
         $o = PemberianOvk::firstOrFail();
 
-        $this->actingAs($this->peternak)->put(route('ovk.update', $o), ['tanggal' => '2026-11-05', 'jenis' => 'obat', 'nama_produk' => 'Vitamin', 'biaya' => 5000])
+        $this->actingAs($this->peternak)->put(route('ovk.update', $o), ['tanggal' => '2026-11-05', 'jenis' => 'obat', 'nama_produk' => 'Vitamin', 'dosis' => '1 g/L', 'biaya' => 5000])
             ->assertRedirect(route('ovk.index', $this->siklus));
         $this->assertSame('Vitamin', $o->fresh()->nama_produk);
 
@@ -352,7 +355,7 @@ class SamplingOvkTest extends TestCase
 
         foreach ([$abk, $lain] as $user) {
             $this->actingAs($user)->get(route('ovk.index', $this->siklus))->assertForbidden();
-            $this->actingAs($user)->post(route('ovk.store', $this->siklus), ['tanggal' => '2026-11-05', 'jenis' => 'obat', 'nama_produk' => 'X', 'biaya' => 1])->assertForbidden();
+            $this->actingAs($user)->post(route('ovk.store', $this->siklus), ['tanggal' => '2026-11-05', 'jenis' => 'obat', 'nama_produk' => 'X', 'dosis' => '1', 'biaya' => 1])->assertForbidden();
             $this->actingAs($user)->get(route('ovk.edit', $o))->assertForbidden();
             $this->actingAs($user)->delete(route('ovk.destroy', $o))->assertForbidden();
         }

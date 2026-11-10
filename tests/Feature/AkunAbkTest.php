@@ -140,7 +140,7 @@ class AkunAbkTest extends TestCase
         $this->actingAs($this->abk)->get(route('recording.create', $this->siklus))->assertOk();
 
         $this->actingAs($this->abk)->post(route('recording.store', $this->siklus), $this->entri('2026-11-02'))
-            ->assertRedirect(route('recording.index', $this->siklus))->assertSessionDoesntHaveErrors();
+            ->assertRedirectContains('/tersimpan')->assertSessionDoesntHaveErrors();
 
         $r = RecordingHarian::firstOrFail();
         $this->assertSame(2, $r->hari_ke);

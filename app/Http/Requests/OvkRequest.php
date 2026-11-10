@@ -28,7 +28,7 @@ class OvkRequest extends FormRequest
             'tanggal' => ['required', 'date', "after_or_equal:{$masuk}", 'before_or_equal:today'],
             'jenis' => ['required', Rule::in(PemberianOvk::JENIS)],
             'nama_produk' => ['required', 'string', 'max:255'],
-            'dosis' => ['nullable', 'string', 'max:255'],
+            'dosis' => ['required', 'string', 'max:255'],
             'biaya' => ['required', 'numeric', 'min:0', 'max:9999999999999'],
         ];
     }

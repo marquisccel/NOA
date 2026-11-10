@@ -66,7 +66,7 @@ class RecordingHarianTest extends TestCase
     public function test_entri_hari_pertama_menghitung_hari_ke_dan_deplesi(): void
     {
         $this->simpan('2026-11-01', ['pakan_masuk_sak' => 20])
-            ->assertRedirect(route('recording.index', $this->siklus));
+            ->assertRedirect(route('recording.tersimpan', [$this->siklus, 1]));
 
         $r = RecordingHarian::firstOrFail();
         $this->assertSame(1, $r->hari_ke);
@@ -77,12 +77,13 @@ class RecordingHarianTest extends TestCase
     public function test_angka_berjalan_muncul_setelah_simpan(): void
     {
         // 9 ekor / 3.000 = 0,30 persen; tanpa bobot aktual FCR belum bisa dihitung.
-        $this->simpan('2026-11-01')
-            ->assertSessionHas('status', fn ($pesan) => str_contains($pesan, 'Deplesi kumulatif 0,30 persen')
-                && str_contains($pesan, 'FCR berjalan belum bisa dihitung'));
+        $this->simpan('2026-11-01');
+        $this->actingAs($this->peternak)->get(route('recording.tersimpan', [$this->siklus, 1]))->assertOk()
+            ->assertSee('Recording hari ke-1 tersimpan')->assertSee('0,30%')->assertSee('Perlu bobot aktual atau sampling');
 
-        $this->simpan('2026-11-02', ['bobot_aktual_gram' => 60])
-            ->assertSessionHas('status', fn ($pesan) => str_contains($pesan, 'FCR berjalan'));
+        $this->simpan('2026-11-02', ['bobot_aktual_gram' => 60]);
+        $this->actingAs($this->peternak)->get(route('recording.tersimpan', [$this->siklus, 2]))->assertOk()
+            ->assertDontSee('Perlu bobot aktual atau sampling')->assertSee('FCR berjalan');
     }
 
     public function test_hanya_empat_bidang_wajib_mati_dan_afkir_kosong_berarti_nol(): void
@@ -190,7 +191,7 @@ class RecordingHarianTest extends TestCase
         $r = RecordingHarian::firstOrFail();
 
         $this->actingAs($this->peternak)->put(route('recording.update', $r), ['pakan_pakai_sak' => 15, 'mati' => 3, 'afkir' => 0])
-            ->assertRedirect(route('recording.index', $this->siklus));
+            ->assertRedirect(route('recording.tersimpan', [$this->siklus, 1]));
 
         $r->refresh();
         $this->assertSame('15.00', $r->pakan_pakai_sak);
@@ -286,7 +287,7 @@ class RecordingHarianTest extends TestCase
         $r = RecordingHarian::firstOrFail();
         $this->siklus->update(['status' => Siklus::STATUS_SELESAI, 'tanggal_panen' => '2026-11-10']);
 
-        $this->actingAs($this->peternak)->get(route('recording.edit', $r))->assertOk()->assertSee('Siklus sudah selesai');
+        $this->actingAs($this->peternak)->get(route('recording.edit', $r))->assertOk()->assertSee('Siklus sudah ditutup');
         $this->actingAs($this->peternak)->patch(route('recording.paraf', $r), ['tanggal_paraf' => '2026-11-12'])->assertSessionHasNoErrors();
 
         $this->assertTrue($r->fresh()->diparaf_ppl);
@@ -389,7 +390,7 @@ class RecordingHarianTest extends TestCase
         $peternak = $siklus->kandang->user;
         $r = $siklus->recordings()->where('diparaf_ppl', false)->first();
 
-        $this->actingAs($peternak)->get(route('recording.index', $siklus))->assertOk()->assertSee('Subtotal minggu 1');
+        $this->actingAs($peternak)->get(route('recording.index', $siklus))->assertOk()->assertSee('Minggu 1');
         // Siklus contoh sudah selesai: form baru ditolak, baris belum diparaf tampil mode baca-saja.
         $this->actingAs($peternak)->get(route('recording.create', $siklus))->assertForbidden();
         $this->actingAs($peternak)->get(route('recording.edit', $r))->assertOk();

@@ -23,7 +23,7 @@ Fase 1–6 di bawah menyelesaikan fungsi dengan tampilan bawaan Breeze. Tahap UI
 | 1 | Token, font, komponen dasar, shell (sidebar, topbar, navigasi bawah), autentikasi | Selesai |
 | 2 | Dashboard, Kandang, Akun dan ABK, Pengaturan profil | Selesai |
 | 3 | Siklus: wizard inisialisasi, ringkasan, tab, status siklus 7 tahap | Selesai |
-| 4 | Recording (desktop dan ponsel), Sampling, OVK | Belum |
+| 4 | Recording (desktop dan ponsel), Sampling, OVK | Selesai |
 | 5 | Panen, RHPP dan rekonsiliasi, laporan dan penutupan, halaman global dan galat | Belum |
 | 6 | Peran Pengawas (baca-saja) dan akses per siklus | Belum |
 
@@ -222,3 +222,24 @@ Perubahan perilaku yang perlu dikonfirmasi:
 - Nilai bonus hanya disimpan; perhitungan rupiah bonus belum ada
 - Ambang dan dampak rupiah di rekonsiliasi (Fase 6) bertentangan dengan desain ("Berbeda" saja); akan dibuang di UI Fase 5
 - Ukuran teks formulir 16 px (desain 14 px) mengikuti PRD
+
+### UI Fase 4 — Recording, Sampling, OVK (selesai)
+
+- [x] Riwayat Recording: kolom desain (Pakan std/akt., Ayam mati/afkir, Depl. std/akt., Stok pakan dengan tanda pakan masuk, Paraf PPL, Aksi), baris subtotal mingguan, baris "Hari ini" dan "Belum diisi", peringatan hari terlewat, keadaan kosong, tampilan siklus ditutup (semua terkunci)
+- [x] Standar pakan per hari diturunkan dari selisih standar kumulatif; deplesi standar dari `deplesi_std_persen`; angka di atas standar diberi warna dan teks pembaca layar
+- [x] Paraf PPL langsung dari riwayat (popover tanggal paraf); baris terparaf menampilkan nama PPL dan ikon kunci, dengan penjelasan R11
+- [x] Form entri satu halaman untuk desktop dan ponsel: tiga isian besar dengan satuan, standar hari itu, pemilih tanggal untuk entri mundur, umpan balik deplesi dan stok langsung, peringatan stok negatif ("Tetap simpan"), detail opsional (pakan masuk, sisa pakan, bobot, suhu, penanda OVK pagi/sore), tombol simpan menempel di ponsel
+- [x] Halaman "Recording tersimpan": angka berjalan terbaru (deplesi vs standar, populasi, stok, FCR) dan pengingat hari terlewat dengan tautan isi; entri ganda diarahkan ke entri yang ada dengan pesan desain
+- [x] Sampling: halaman riwayat (interval, Standar, Selisih, ADG, Keterangan), halaman Sampling baru dengan panel hasil langsung (ABW, selisih vs standar, ADG, proporsi) dan peringatan < 5%, kartu hasil setelah simpan, keadaan kosong
+- [x] OVK: riwayat dengan hari, penanda recording (Pagi/Sore) dan baris total; form dengan pilihan jenis Obat/Vitamin/Vaksin, dosis wajib, panel "Siklus sejauh ini" (total, jumlah, vaksin terakhir, biaya per ekor awal)
+- [x] Sampling dan OVK sekarang terkunci untuk siklus ditutup (R12)
+- [x] Migrasi: jenis OVK `vitamin` ditambahkan ke batasan basis data (`kimia` lama tetap sah)
+- [x] Perbaikan: pola `class="hidden"` + `:class` di wizard bonus dan form siklus tidak pernah menampilkan elemen; diganti `x-cloak`
+- [x] Uji: 26 baru, total 359 lulus; dicek di browser desktop dan ponsel
+
+Perubahan perilaku yang perlu dikonfirmasi:
+- Penanda OVK di recording kini kotak centang Pagi/Sore (desain); data teks lama tetap tersimpan dan tampil tercentang
+- Dosis OVK wajib diisi (desain); biaya kosong tetap dianggap nol
+- "Unduh CSV" di riwayat recording ada di desain tetapi belum dibuat (belum ada di PRD fase mana pun)
+- ADG sampling pertama dari bobot DOC (desain) belum ada: bobot DOC tidak disimpan, sampling pertama tampil "–"
+- Layar ABK khusus (E-09) memakai form yang sama; ABK tidak melihat tab komersial dan tidak melihat biaya

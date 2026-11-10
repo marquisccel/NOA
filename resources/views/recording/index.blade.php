@@ -1,172 +1,156 @@
 @php
     use App\Support\Format as F;
 
-    /** Sel "aktual di atas, standar di bawah" (F2.6). */
-    $sel = function ($aktual, $std, int $d = 2) {
-        return ['a' => $aktual === null ? '-' : F::angka($aktual, $d), 's' => $std === null ? null : F::angka($std, $d)];
-    };
+    $peternak = auth()->user()->isPeternak();
+    $ppl = $siklus->nama_ppl ?: 'PPL';
+    $angka = fn ($n, $d = 1) => $n === null ? '–' : F::angka($n, $d);
+    $persen = fn ($n) => $n === null ? '–' : F::angka($n, 2).'%';
+    $terparaf = collect($daftar)->where('jenis', 'hari')->filter(fn ($d) => $d['baris']['recording']->diparaf_ppl);
 @endphp
 
-<x-app-layout :siklus="$siklus">
-    <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Recording harian · {{ $siklus->kandang->nama_farm }}
-                </h2>
-                <p class="mt-1 text-base text-gray-700">
-                    Masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }} · {{ F::angka($siklus->populasi, 0) }} ekor
-                    @if (auth()->user()->isPeternak())
-                        · <a href="{{ route('siklus.show', $siklus) }}" class="text-indigo-700 underline">Detail siklus</a>
-                    @endif
-                </p>
-            </div>
-            @if ($bisaIsi)
-                <a href="{{ route('recording.create', $siklus) }}" class="inline-flex items-center min-h-11 px-4 py-2 bg-gray-800 rounded-md font-semibold text-sm text-white hover:bg-gray-700">Isi entri harian</a>
-            @elseif ($siklus->isTerkunci())
-                <span class="px-3 py-2 rounded-md bg-gray-100 text-base text-gray-800">Siklus selesai: recording dikunci</span>
-            @endif
-        </div>
-    </x-slot>
+<x-app-layout title="Recording harian" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording']]">
+    <x-page>
+        <x-page-header title="Recording harian"
+            :subtitle="$siklus->isTerkunci() ? 'Siklus ditutup · semua baris hanya dapat dilihat' : 'Kolom STD dari tabel standar kemitraan · angka oranye = di atas standar'">
+            <x-slot name="actions">
+                @if ($bisaIsi)
+                    <x-button :href="route('recording.create', $siklus)"><x-icon name="plus" class="size-4" /> Isi recording hari ini</x-button>
+                @endif
+            </x-slot>
+        </x-page-header>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            @if ($terakhir)
-                @php $t = $terakhir; @endphp
-                <dl class="grid grid-cols-2 gap-4 lg:grid-cols-5 text-base">
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Deplesi kumulatif</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ F::angka($t['deplesi_kum_persen']) }}%</dd>
-                        <dd class="text-sm text-gray-600">{{ F::angka($t['deplesi_kum'], 0) }} ekor</dd>
+        @if (empty($daftar))
+            <x-empty-state icon="clipboard-list" title="Belum ada recording"
+                text="Recording hari ke-1 ({{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}) dapat diisi mulai {{ $siklus->tanggal_masuk->isFuture() ? 'tanggal itu' : 'hari ini' }}. Isi pakan terpakai, ayam mati, dan ayam afkir — selesai kurang dari satu menit.">
+                @if ($bisaIsi)<x-button :href="route('recording.create', $siklus)">Isi recording hari ke-1</x-button>@endif
+            </x-empty-state>
+        @else
+            @if ($belumDiisi && $bisaIsi)
+                @php $tglBelum = $siklus->tanggal_masuk->copy()->addDays($belumDiisi - 1); @endphp
+                <x-alert variant="warning">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <p class="font-semibold">Hari ke-{{ $belumDiisi }} ({{ $tglBelum->translatedFormat('j M Y') }}) belum diisi</p>
+                            <p>Entri mundur diizinkan. Angka berjalan dihitung ulang setelah disimpan.</p>
+                        </div>
+                        <a href="{{ route('recording.create', [$siklus, 'tanggal' => $tglBelum->toDateString()]) }}" class="inline-flex min-h-11 items-center font-semibold underline">Isi hari ke-{{ $belumDiisi }}</a>
                     </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">FCR berjalan</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ F::angka($t['fcr_berjalan'], 3) }}</dd>
-                        @if ($t['standar'])<dd class="text-sm text-gray-600">standar {{ F::angka($t['standar']->fcr_std, 3) }}</dd>@endif
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Feed intake kumulatif</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ F::angka($t['feed_intake_gram'], 0) }} g</dd>
-                        @if ($t['standar'])<dd class="text-sm text-gray-600">standar {{ F::angka($t['standar']->feed_intake_std_gram, 0) }} g</dd>@endif
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Stok gudang</dt>
-                        <dd class="text-2xl font-semibold {{ $t['stok_sak'] < 0 ? 'text-red-700' : 'text-gray-900' }}">{{ F::angka($t['stok_sak']) }} sak</dd>
-                        @if ($t['stok_sak'] < 0)<dd class="text-sm text-red-700">Negatif: cek pengiriman yang belum dicatat</dd>@endif
-                    </div>
-                    <div class="bg-white shadow-sm sm:rounded-lg p-4">
-                        <dt class="text-gray-600">Ayam hidup</dt>
-                        <dd class="text-2xl font-semibold text-gray-900">{{ F::angka($t['ayam_hidup'], 0) }}</dd>
-                        <dd class="text-sm text-gray-600">per hari ke-{{ $t['hari_ke'] }}</dd>
-                    </div>
-                </dl>
+                </x-alert>
+            @endif
+
+            @if ($terparaf->isNotEmpty() && ! $siklus->isTerkunci())
+                <x-alert variant="info">
+                    <p class="font-semibold">Baris terparaf terkunci</p>
+                    <p>Baris yang sudah diparaf oleh {{ $ppl }} tidak dapat diubah agar tetap sah sebagai bukti saat rekonsiliasi (R11). Bila ada kesalahan, catat koreksi di hari berikutnya dan konfirmasi dengan PPL.</p>
+                </x-alert>
             @endif
 
             @unless ($standarAda)
-                <p class="rounded-md bg-gray-50 border border-gray-200 p-4 text-base text-gray-800">
+                <x-alert variant="info">
                     Tabel standar belum diunggah, jadi kolom standar kosong.
-                    @if (auth()->user()->isPeternak())
-                        <a href="{{ route('siklus.standar', $siklus) }}" class="text-indigo-700 underline">Unggah tabel standar</a>
-                    @else
-                        Minta peternak mengunggahnya.
-                    @endif
-                </p>
+                    @if ($peternak)<a href="{{ route('siklus.standar', $siklus) }}" class="font-semibold underline">Unggah tabel standar</a>@else Minta peternak mengunggahnya.@endif
+                </x-alert>
             @endunless
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6">
-                @if (empty($daftar))
-                    <p class="text-base text-gray-700">Belum ada entri. Mulai dari hari pertama dengan “Isi entri harian”.</p>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-base text-left align-top">
-                            <caption class="sr-only">Recording harian: nilai aktual dengan standar di bawahnya</caption>
-                            <thead class="text-gray-600 border-b border-gray-200">
-                                <tr>
-                                    <th scope="col" class="py-2 pe-4">Hari</th>
-                                    <th scope="col" class="py-2 pe-4">Pakan masuk (sak)</th>
-                                    <th scope="col" class="py-2 pe-4">Pakan terpakai (sak)</th>
-                                    <th scope="col" class="py-2 pe-4">Stok (sak)</th>
-                                    <th scope="col" class="py-2 pe-4">Mati / afkir</th>
-                                    <th scope="col" class="py-2 pe-4">Deplesi kum.</th>
-                                    <th scope="col" class="py-2 pe-4">Pakan kum. (sak)</th>
-                                    <th scope="col" class="py-2 pe-4">Bobot (g)</th>
-                                    <th scope="col" class="py-2 pe-4">FCR</th>
-                                    <th scope="col" class="py-2 pe-4">Feed intake (g)</th>
-                                    <th scope="col" class="py-2 pe-4">Suhu</th>
-                                    <th scope="col" class="py-2">Status</th>
+            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <table class="tabel min-w-[960px]">
+                    <caption class="sr-only">Recording harian: nilai aktual dan standar kemitraan</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Hari</th><th scope="col">Tanggal</th><th scope="col" class="text-right">Pakan std</th><th scope="col" class="text-right">Pakan akt.</th>
+                            <th scope="col" class="text-right">Ayam mati</th><th scope="col" class="text-right">Ayam afkir</th><th scope="col" class="text-right">Depl. std</th>
+                            <th scope="col" class="text-right">Depl. akt.</th><th scope="col" class="text-right">Stok pakan</th><th scope="col">Paraf PPL</th><th scope="col">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($daftar as $d)
+                            @if ($d['jenis'] === 'minggu')
+                                <tr class="!bg-tint font-semibold">
+                                    <th scope="row" class="!font-bold text-ink-brand">W</th>
+                                    <td>Minggu {{ $d['minggu'] }}</td>
+                                    <td></td>
+                                    <td class="text-right">{{ $angka($d['pakan_pakai_sak']) }}</td>
+                                    <td class="text-right" colspan="2">{{ F::angka($d['deplesi'], 0) }} ekor</td>
+                                    <td colspan="5"></td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-gray-900">
-                                @foreach ($daftar as $d)
-                                    @if ($d['jenis'] === 'minggu')
-                                        <tr class="bg-gray-50 font-medium">
-                                            <td class="py-2 pe-4" colspan="2">Subtotal minggu {{ $d['minggu'] }}</td>
-                                            <td class="py-2 pe-4">{{ F::angka($d['pakan_pakai_sak']) }}</td>
-                                            <td class="py-2 pe-4"></td>
-                                            <td class="py-2 pe-4" colspan="2">Deplesi {{ F::angka($d['deplesi'], 0) }} ekor</td>
-                                            <td class="py-2" colspan="6"></td>
-                                        </tr>
-                                    @elseif ($d['jenis'] === 'kosong')
-                                        <tr>
-                                            <td class="py-2 pe-4 whitespace-nowrap">{{ $d['hari_ke'] }}<div class="text-sm text-gray-600">{{ $d['tanggal']->translatedFormat('j M') }}</div></td>
-                                            <td class="py-2" colspan="10">
-                                                <span class="text-gray-600">Belum diisi.</span>
-                                                @if ($bisaIsi)
-                                                    <a href="{{ route('recording.create', [$siklus, 'tanggal' => $d['tanggal']->toDateString()]) }}" class="ms-2 text-indigo-700 underline">Isi sekarang</a>
-                                                @endif
-                                            </td>
-                                            <td class="py-2"></td>
-                                        </tr>
-                                    @else
-                                        @php
-                                            $b = $d['baris'];
-                                            $r = $b['recording'];
-                                            $std = $b['standar'];
-                                            $pakan = $sel($b['pakan_kum_sak'], $std?->pakan_std_sak);
-                                            $bobot = $sel($b['bobot_gram'], $std?->bobot_std_gram);
-                                            $fcr = $sel($b['fcr_berjalan'], $std?->fcr_std, 3);
-                                            $fi = $sel($b['feed_intake_gram'], $std?->feed_intake_std_gram, 0);
-                                        @endphp
-                                        <tr>
-                                            <td class="py-2 pe-4 whitespace-nowrap">{{ $b['hari_ke'] }}<div class="text-sm text-gray-600">{{ $b['tanggal']->translatedFormat('j M') }}</div></td>
-                                            <td class="py-2 pe-4">{{ F::angka($b['pakan_masuk_sak']) }}</td>
-                                            <td class="py-2 pe-4">{{ F::angka($b['pakan_pakai_sak']) }}</td>
-                                            <td class="py-2 pe-4 {{ $b['stok_sak'] < 0 ? 'text-red-700 font-medium' : '' }}">
-                                                {{ F::angka($b['stok_sak']) }}
-                                                @if ($b['stok_sak'] < 0)<div class="text-sm">Stok negatif</div>@endif
-                                            </td>
-                                            <td class="py-2 pe-4 whitespace-nowrap">{{ $r->mati }} / {{ $r->afkir }}@if ($r->afkir)<div class="text-sm text-gray-600">{{ $r->sebab_afkir }}</div>@endif</td>
-                                            <td class="py-2 pe-4">{{ F::angka($b['deplesi_kum_persen']) }}%</td>
-                                            <td class="py-2 pe-4"><div>{{ $pakan['a'] }}</div>@if ($pakan['s'] !== null)<div class="text-sm text-gray-600">std {{ $pakan['s'] }}</div>@endif</td>
-                                            <td class="py-2 pe-4"><div>{{ $bobot['a'] }}</div>@if ($bobot['s'] !== null)<div class="text-sm text-gray-600">std {{ $bobot['s'] }}</div>@endif</td>
-                                            <td class="py-2 pe-4"><div>{{ $fcr['a'] }}</div>@if ($fcr['s'] !== null)<div class="text-sm text-gray-600">std {{ $fcr['s'] }}</div>@endif</td>
-                                            <td class="py-2 pe-4"><div>{{ $fi['a'] }}</div>@if ($fi['s'] !== null)<div class="text-sm text-gray-600">std {{ $fi['s'] }}</div>@endif</td>
-                                            <td class="py-2 pe-4 text-sm">
-                                                @foreach (['suhu_pagi' => 'Pagi', 'suhu_sore' => 'Sore'] as $kolom => $teks)
-                                                    @if ($r->{$kolom} !== null)
-                                                        <div>{{ $teks }} {{ F::angka($r->{$kolom}, 1) }}°
-                                                            @if ($b[$kolom])<span class="{{ $b[$kolom]['status'] === 'sesuai target' ? 'text-gray-600' : 'text-amber-800 font-medium' }}">({{ $b[$kolom]['status'] }} {{ $b[$kolom]['target'] }})</span>@endif
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </td>
-                                            <td class="py-2 whitespace-nowrap">
-                                                @if ($r->diparaf_ppl)
-                                                    <span class="px-2 py-1 rounded-md bg-gray-100 text-sm text-gray-800">Diparaf PPL {{ $r->tanggal_paraf?->translatedFormat('j M') }}</span>
-                                                @elseif ($siklus->isTerkunci())
-                                                    <a href="{{ route('recording.edit', $r) }}" class="text-indigo-700 underline">Paraf</a>
-                                                @else
-                                                    <a href="{{ route('recording.edit', $r) }}" class="text-indigo-700 underline min-h-11 inline-flex items-center">Ubah</a>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
+                            @elseif ($d['jenis'] === 'kosong')
+                                @php $hariIniBaris = $d['hari_ke'] === $hariIni; @endphp
+                                <tr>
+                                    <th scope="row">{{ $d['hari_ke'] }}</th>
+                                    <td class="whitespace-nowrap">{{ $d['tanggal']->translatedFormat('j M') }}</td>
+                                    <td class="text-right text-ink-secondary">{{ $angka($stdHari[$d['hari_ke']] ?? null) }}</td>
+                                    <td class="text-right text-ink-muted">–</td><td class="text-right text-ink-muted">–</td><td class="text-right text-ink-muted">–</td>
+                                    <td class="text-right text-ink-secondary">{{ $persen($stdPersen[$d['hari_ke']] ?? null) }}</td>
+                                    <td class="text-right text-ink-muted">–</td><td class="text-right text-ink-muted">–</td>
+                                    <td>
+                                        @if ($hariIniBaris)<x-badge variant="info">Hari ini</x-badge>
+                                        @else<x-badge variant="warning">Belum diisi</x-badge>@endif
+                                    </td>
+                                    <td>
+                                        @if ($bisaIsi)
+                                            <a href="{{ route('recording.create', [$siklus, 'tanggal' => $d['tanggal']->toDateString()]) }}" class="inline-flex min-h-11 items-center font-semibold text-ink-brand hover:underline">Isi</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @else
+                                @php
+                                    $b = $d['baris'];
+                                    $r = $b['recording'];
+                                    $stdP = $b['standar']?->deplesi_std_persen;
+                                    $deplDiAtas = $stdP !== null && $b['deplesi_kum_persen'] > (float) $stdP;
+                                    $pakanDiAtas = $b['pakan_std_hari_sak'] !== null && $b['pakan_pakai_sak'] > $b['pakan_std_hari_sak'] + 0.0001;
+                                @endphp
+                                <tr>
+                                    <th scope="row">{{ $b['hari_ke'] }}</th>
+                                    <td class="whitespace-nowrap">{{ $b['tanggal']->translatedFormat('j M') }}</td>
+                                    <td class="text-right text-ink-secondary">{{ $angka($b['pakan_std_hari_sak']) }}</td>
+                                    <td class="text-right font-semibold {{ $pakanDiAtas ? 'text-warning-text' : '' }}">{{ $angka($b['pakan_pakai_sak']) }}@if ($pakanDiAtas)<span class="sr-only"> (di atas standar)</span>@endif</td>
+                                    <td class="text-right">{{ $r->mati }}</td>
+                                    <td class="text-right" @if ($r->afkir && $r->sebab_afkir) title="{{ ucfirst($r->sebab_afkir) }}" @endif>{{ $r->afkir }}</td>
+                                    <td class="text-right text-ink-secondary">{{ $persen($stdP !== null ? (float) $stdP : null) }}</td>
+                                    <td class="text-right font-semibold {{ $deplDiAtas ? 'text-warning-text' : '' }}">{{ F::angka($b['deplesi_kum_persen']) }}%@if ($deplDiAtas)<span class="sr-only"> (di atas standar)</span>@endif</td>
+                                    <td class="text-right font-semibold {{ $b['stok_sak'] < 0 ? 'text-danger-text' : '' }}">
+                                        {{ F::angka($b['stok_sak']) }}
+                                        @if ($b['pakan_masuk_sak'] > 0)<span class="ml-1 text-xs font-semibold text-success-text">↑{{ F::angka($b['pakan_masuk_sak'], 0) }}</span>@endif
+                                        @if ($b['stok_sak'] < 0)<span class="block text-xs font-medium">Stok negatif</span>@endif
+                                    </td>
+                                    <td>
+                                        @if ($r->diparaf_ppl)
+                                            <span class="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-secondary" title="Diparaf {{ $r->tanggal_paraf?->translatedFormat('j M Y') }}">
+                                                <x-icon name="lock" class="size-3.5" /> {{ $ppl }}
+                                            </span>
+                                        @elseif ($peternak && Gate::allows('paraf', $r))
+                                            <form method="POST" action="{{ route('recording.paraf', $r) }}" class="relative" x-data="{ buka: false }" @keydown.escape="buka = false" @click.outside="buka = false">
+                                                @csrf @method('PATCH')
+                                                <button type="button" @click="buka = ! buka" :aria-expanded="buka.toString()" class="inline-flex min-h-11 items-center rounded-md border border-line-control px-3 text-[13px] font-semibold text-ink hover:bg-state-hover">Tandai paraf</button>
+                                                <div x-cloak :class="buka ? 'block' : 'hidden'" class="absolute left-0 top-full z-20 mt-1 w-60 space-y-2.5 rounded-md border border-line bg-surface p-3 shadow-lg">
+                                                    <label for="paraf-{{ $r->id }}" class="block text-xs font-semibold">Tanggal paraf PPL</label>
+                                                    <input id="paraf-{{ $r->id }}" type="date" name="tanggal_paraf" value="{{ now()->toDateString() }}" min="{{ $r->tanggal->toDateString() }}" max="{{ now()->toDateString() }}" required class="block min-h-11 w-full rounded-md border border-line-control bg-surface px-3 text-base">
+                                                    <p class="text-xs text-ink-muted">Setelah ditandai, baris ini terkunci (R11).</p>
+                                                    <x-button class="w-full">Tandai diparaf</x-button>
+                                                </div>
+                                            </form>
+                                        @else
+                                            <x-badge variant="neutral">Belum diparaf</x-badge>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($r->diparaf_ppl)
+                                            <span class="inline-flex items-center gap-1 text-[13px] text-ink-muted"><x-icon name="lock" class="size-3.5" /> Terkunci</span>
+                                        @elseif (Gate::allows('update', $r))
+                                            <a href="{{ route('recording.edit', $r) }}" class="inline-flex min-h-11 items-center font-semibold text-ink-brand hover:underline">Ubah</a>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-[13px] text-ink-muted"><x-icon name="lock" class="size-3.5" /> Terkunci</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
+            <p class="text-xs text-ink-muted">Pakan dalam sak. Stok pakan = pakan masuk − pakan terpakai, kumulatif; tanda ↑ menunjukkan pakan masuk pada hari itu.</p>
+        @endif
+    </x-page>
 </x-app-layout>

@@ -20,19 +20,32 @@ class SamplingController extends Controller
         Gate::authorize('view', $siklus);
 
         $baris = $this->ringkasan->baris($siklus, $siklus->samplings()->get(), $siklus->standarHarian()->get());
+        $hari = array_column($baris, 'hari_ke');
+        $interval = count($hari) >= 2 ? $hari[count($hari) - 1] - $hari[count($hari) - 2] : null;
 
         return view('sampling.index', [
             'siklus' => $siklus->load('kandang'),
             'baris' => array_reverse($baris),
             'terakhir' => $baris ? end($baris) : null,
-            'ayamHidup' => $siklus->populasi - (int) $siklus->recordings()->sum('deplesi_harian'),
+            'interval' => $interval,
+            'hasilId' => session('hasil_sampling'),
+            'bisaCatat' => Gate::allows('update', $siklus) && ! $siklus->isTerkunci(),
             'standarAda' => $siklus->standarHarian()->exists(),
         ]);
+    }
+
+    public function create(Siklus $siklus): View
+    {
+        Gate::authorize('update', $siklus);
+        abort_if($siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
+
+        return view('sampling.form', $this->dataForm($siklus, new SamplingBobot));
     }
 
     public function store(SamplingRequest $request, Siklus $siklus): RedirectResponse
     {
         Gate::authorize('update', $siklus);
+        abort_if($siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
 
         $sampling = $siklus->samplings()->create($request->validated() + ['hari_ke' => $request->hariKe($siklus)]);
 
@@ -42,12 +55,30 @@ class SamplingController extends Controller
     public function edit(SamplingBobot $sampling): View
     {
         Gate::authorize('update', $sampling);
+        abort_if($sampling->siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
 
-        return view('sampling.edit', [
-            'siklus' => $sampling->siklus->load('kandang'),
+        return view('sampling.form', $this->dataForm($sampling->siklus, $sampling));
+    }
+
+    /**
+     * Data untuk hasil langsung di form: standar per hari, sampling terdahulu (untuk ADG), dan ayam hidup.
+     *
+     * @return array<string, mixed>
+     */
+    private function dataForm(Siklus $siklus, SamplingBobot $sampling): array
+    {
+        $baris = $this->ringkasan->baris($siklus, $siklus->samplings()->get(), $siklus->standarHarian()->get());
+
+        return [
+            'siklus' => $siklus->load('kandang'),
             'sampling' => $sampling,
-            'ayamHidup' => $sampling->siklus->populasi - (int) $sampling->siklus->recordings()->sum('deplesi_harian'),
-        ]);
+            'ayamHidup' => $siklus->populasi - (int) $siklus->recordings()->sum('deplesi_harian'),
+            'standarPerHari' => $siklus->standarHarian()->pluck('bobot_std_gram', 'hari_ke')->map(fn ($g) => (float) $g)->all(),
+            'sebelumnya' => collect($baris)
+                ->reject(fn ($b) => $sampling->exists && $b['sampling']->is($sampling))
+                ->map(fn ($b) => ['hari' => $b['hari_ke'], 'abw' => $b['abw_gram']])->values()->all(),
+            'standarAda' => $siklus->standarHarian()->exists(),
+        ];
     }
 
     public function update(SamplingRequest $request, SamplingBobot $sampling): RedirectResponse
@@ -76,10 +107,7 @@ class SamplingController extends Controller
         $b = collect($this->ringkasan->baris($siklus, $siklus->samplings()->get(), $siklus->standarHarian()->get()))
             ->first(fn ($baris) => $baris['sampling']->is($sampling));
 
-        $pesan = "Sampling hari ke-{$sampling->hari_ke} tersimpan. ABW ".Format::angka($b['abw_gram'], 0).' g';
-        $pesan .= $b['adg_gram'] !== null ? ', pertambahan '.Format::angka($b['adg_gram'], 1).' g/hari.' : '.';
-
-        $redirect = redirect()->route('sampling.index', $siklus)->with('status', $pesan);
+        $redirect = redirect()->route('sampling.index', $siklus)->with('hasil_sampling', $sampling->id);
 
         if (! $b['representatif']) {
             $redirect->with('peringatan', 'Sampel hanya '.Format::angka($b['persen_populasi']).' persen dari '.Format::angka($b['ayam_hidup'], 0)

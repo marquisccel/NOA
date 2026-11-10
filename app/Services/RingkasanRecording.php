@@ -28,6 +28,7 @@ class RingkasanRecording
     public function baris(Siklus $siklus, Collection $recordings, Collection $standar, Collection $parameter, ?Collection $samplings = null): array
     {
         $standarPerHari = $standar->keyBy('hari_ke');
+        $stdHari = $this->pakanStdHarian($standar);
         // Bobot dari sampling pada hari yang sama dipakai bila recording hari itu tidak mencatat bobot aktual.
         $abwSampling = ($samplings ?? collect())
             ->sortBy('id')
@@ -67,12 +68,32 @@ class RingkasanRecording
                 // FCR berjalan memakai bobot hari itu; tanpa bobot aktual tidak bisa dihitung.
                 'fcr_berjalan' => $bobot && $hidup > 0 ? $this->calc->fcr($kumKg, $hidup * $bobot / 1000) : null,
                 'standar' => $std,
+                'pakan_std_hari_sak' => $stdHari[$r->hari_ke] ?? null,
                 'suhu_pagi' => $this->statusSuhu($r->suhu_pagi, $target),
                 'suhu_sore' => $this->statusSuhu($r->suhu_sore, $target),
             ];
         }
 
         return $baris;
+    }
+
+    /**
+     * Standar pakan per hari (sak) = selisih standar kumulatif hari itu dengan hari sebelumnya.
+     *
+     * @param  Collection<int, StandarHarian>  $standar
+     * @return array<int, float>
+     */
+    public function pakanStdHarian(Collection $standar): array
+    {
+        $kum = $standar->mapWithKeys(fn ($s) => [$s->hari_ke => (float) $s->pakan_std_sak])->all();
+        $hasil = [];
+
+        foreach ($kum as $hari => $nilai) {
+            $kemarin = $kum[$hari - 1] ?? 0.0;
+            $hasil[$hari] = max(0.0, $nilai - $kemarin);
+        }
+
+        return $hasil;
     }
 
     /**

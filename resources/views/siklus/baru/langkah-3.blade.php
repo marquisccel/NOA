@@ -22,7 +22,7 @@
                         <span x-text="aktif ? 'Aktif' : 'Nonaktif'"></span>
                     </label>
                 </div>
-                <div :class="aktif ? '' : 'hidden'" class="hidden sm:max-w-xs">
+                <div x-cloak :class="aktif ? 'sm:max-w-xs' : 'hidden'">
                     <x-field :name="'nilai_bonus_'.$k" :label="'Nilai bonus '.str_replace('_', ' ', $k).' (Rp / kg) *'" type="number" min="0" step="0.01" inputmode="decimal"
                              :value="$d['nilai_bonus_'.$k] ?? null" hint="Nilai per kg sesuai kontrak" />
                 </div>

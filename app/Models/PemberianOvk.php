@@ -22,7 +22,7 @@ class PemberianOvk extends Model
         ];
     }
 
-    public const JENIS = ['obat', 'vaksin', 'kimia'];
+    public const JENIS = ['obat', 'vitamin', 'vaksin', 'kimia'];
 
     public function siklus(): BelongsTo
     {

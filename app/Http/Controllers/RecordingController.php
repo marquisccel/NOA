@@ -30,6 +30,8 @@ class RecordingController extends Controller
         $rentang = max($baris ? array_key_last($baris) : 0, $siklus->status === Siklus::STATUS_BERJALAN ? $umurHariIni : 0);
 
         // Susun daftar hari 1..rentang: hari terisi, hari yang terlewat, dan subtotal tiap minggu (F2.12, F2.15).
+        $stdHari = $this->ringkasan->pakanStdHarian($siklus->standarHarian()->get());
+        $stdPersen = $siklus->standarHarian()->pluck('deplesi_std_persen', 'hari_ke')->all();
         $daftar = [];
         for ($hari = 1; $hari <= $rentang; $hari++) {
             $daftar[] = isset($baris[$hari])
@@ -50,6 +52,32 @@ class RecordingController extends Controller
             'terakhir' => $terakhir,
             'bisaIsi' => Gate::allows('create', [RecordingHarian::class, $siklus]),
             'standarAda' => $siklus->standarHarian()->exists(),
+            'stdHari' => $stdHari,
+            'stdPersen' => $stdPersen,
+            'hariIni' => $umurHariIni,
+            'belumDiisi' => $this->hariBelumDiisi($siklus, $baris),
+        ]);
+    }
+
+    /** Halaman sukses setelah simpan: angka berjalan terbaru dan pengingat hari yang terlewat (F2.8). */
+    public function tersimpan(Siklus $siklus, int $hari): View
+    {
+        Gate::authorize('catat', $siklus);
+
+        $baris = $this->hitung($siklus);
+        abort_unless(isset($baris[$hari]), 404);
+
+        $b = $baris[$hari];
+        $std = $b['standar'];
+        $terlewat = $this->hariBelumDiisi($siklus, $baris);
+
+        return view('recording.tersimpan', [
+            'siklus' => $siklus->load('kandang'),
+            'b' => $b,
+            'deplesiStd' => $std?->deplesi_std_persen !== null ? (float) $std->deplesi_std_persen : null,
+            'terlewat' => $terlewat,
+            'tanggalTerlewat' => $terlewat ? $siklus->tanggal_masuk->copy()->addDays($terlewat - 1) : null,
+            'fcrStd' => $std?->fcr_std !== null ? (float) $std->fcr_std : null,
         ]);
     }
 
@@ -67,7 +95,7 @@ class RecordingController extends Controller
 
         if ($ada = $siklus->recordings()->where('hari_ke', $hariKe)->first()) {
             return redirect()->route('recording.edit', $ada)
-                ->with('status', "Hari ke-{$hariKe} sudah punya entri; ubah entri yang ada.");
+                ->with('peringatan', "Hari ke-{$hariKe} sudah punya recording. Satu siklus hanya boleh punya satu entri per hari umur; ubah entri yang ada.");
         }
 
         return view('recording.form', $this->dataForm($siklus, new RecordingHarian(['mati' => 0, 'afkir' => 0]), $hariKe, $tanggal));
@@ -168,18 +196,25 @@ class RecordingController extends Controller
     {
         $b = $this->hitung($siklus)[$hariKe];
 
-        $pesan = "Hari ke-{$hariKe} tersimpan. Deplesi kumulatif ".Format::angka($b['deplesi_kum_persen']).' persen';
-        $pesan .= $b['fcr_berjalan'] !== null
-            ? ', FCR berjalan '.Format::angka($b['fcr_berjalan'], 3).'.'
-            : '. FCR berjalan belum bisa dihitung tanpa bobot aktual.';
-
-        $redirect = redirect()->route('recording.index', $siklus)->with('status', $pesan);
+        $redirect = redirect()->route('recording.tersimpan', [$siklus, $hariKe]);
 
         if ($b['stok_sak'] < 0) {
             $redirect->with('peringatan', 'Pakan terpakai melebihi stok gudang ('.Format::angka($b['stok_sak']).' sak). Mungkin ada pengiriman pakan yang belum dicatat.');
         }
 
         return $redirect;
+    }
+
+    /** Hari terkecil yang sudah lewat (sampai hari ini) tetapi belum punya recording; null bila tidak ada. */
+    private function hariBelumDiisi(Siklus $siklus, array $baris): ?int
+    {
+        for ($hari = 1; $hari <= $this->umurHariIni($siklus); $hari++) {
+            if (! isset($baris[$hari])) {
+                return $hari;
+            }
+        }
+
+        return null;
     }
 
     private function umurHariIni(Siklus $siklus): int
@@ -237,6 +272,9 @@ class RecordingController extends Controller
             'standar' => $siklus->standarHarian()->where('hari_ke', $hariKe)->first(),
             'target' => $siklus->parameterUmur()->where('umur_awal', '<=', $hariKe)->where('umur_akhir', '>=', $hariKe)->first(),
             'sebelum' => $sebelum,
+            'stdHariSak' => $this->ringkasan->pakanStdHarian($siklus->standarHarian()->get())[$hariKe] ?? null,
+            'hariIni' => $this->umurHariIni($siklus),
+            'belumDiisi' => $this->hariBelumDiisi($siklus, $this->hitung($siklus)),
             'bisaParaf' => $recording->exists && Gate::allows('paraf', $recording),
         ];
     }

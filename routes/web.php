@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('siklus/{siklus}/recording', [RecordingController::class, 'index'])->name('recording.index');
     Route::get('siklus/{siklus}/recording/create', [RecordingController::class, 'create'])->name('recording.create');
     Route::post('siklus/{siklus}/recording', [RecordingController::class, 'store'])->name('recording.store');
+    Route::get('siklus/{siklus}/recording/{hari}/tersimpan', [RecordingController::class, 'tersimpan'])->whereNumber('hari')->name('recording.tersimpan');
     Route::get('recording/{recording}/edit', [RecordingController::class, 'edit'])->name('recording.edit');
     Route::put('recording/{recording}', [RecordingController::class, 'update'])->name('recording.update');
     Route::delete('recording/{recording}', [RecordingController::class, 'destroy'])->name('recording.destroy');
@@ -53,6 +54,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::put('siklus/{siklus}/acuan', [SiklusAcuanController::class, 'simpanAcuan'])->name('siklus.acuan.simpan');
 
     Route::get('siklus/{siklus}/sampling', [SamplingController::class, 'index'])->name('sampling.index');
+    Route::get('siklus/{siklus}/sampling/baru', [SamplingController::class, 'create'])->name('sampling.create');
     Route::post('siklus/{siklus}/sampling', [SamplingController::class, 'store'])->name('sampling.store');
     Route::get('sampling/{sampling}/edit', [SamplingController::class, 'edit'])->name('sampling.edit');
     Route::put('sampling/{sampling}', [SamplingController::class, 'update'])->name('sampling.update');
@@ -67,6 +69,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('panen/{panen}/foto', [PanenController::class, 'foto'])->name('panen.foto');
 
     Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
+    Route::get('siklus/{siklus}/ovk/baru', [OvkController::class, 'create'])->name('ovk.create');
     Route::post('siklus/{siklus}/ovk', [OvkController::class, 'store'])->name('ovk.store');
     Route::get('ovk/{ovk}/edit', [OvkController::class, 'edit'])->name('ovk.edit');
     Route::put('ovk/{ovk}', [OvkController::class, 'update'])->name('ovk.update');

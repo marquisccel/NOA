@@ -59,7 +59,7 @@
                                 <input type="checkbox" name="kontrak[bonus_{{ $k }}]" value="1" x-model="aktif" class="size-5 rounded border-line-control text-brand focus:ring-brand">
                                 {{ $label }}
                             </label>
-                            <div :class="aktif ? '' : 'hidden'" class="hidden">
+                            <div x-cloak :class="aktif ? '' : 'hidden'">
                                 <x-field name="kontrak[nilai_bonus_{{ $k }}]" label="Nilai (Rp / kg)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('nilai_bonus_'.$k)" />
                             </div>
                         </div>
