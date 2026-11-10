@@ -3,6 +3,7 @@
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OvkController;
+use App\Http\Controllers\PanenController;
 use App\Http\Controllers\RecordingController;
 use App\Http\Controllers\SamplingController;
 use App\Http\Controllers\SiklusAcuanController;
@@ -41,6 +42,14 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('sampling/{sampling}/edit', [SamplingController::class, 'edit'])->name('sampling.edit');
     Route::put('sampling/{sampling}', [SamplingController::class, 'update'])->name('sampling.update');
     Route::delete('sampling/{sampling}', [SamplingController::class, 'destroy'])->name('sampling.destroy');
+
+    Route::get('siklus/{siklus}/panen', [PanenController::class, 'index'])->name('panen.index');
+    Route::post('siklus/{siklus}/panen', [PanenController::class, 'store'])->name('panen.store');
+    Route::patch('siklus/{siklus}/retur', [PanenController::class, 'simpanRetur'])->name('panen.retur');
+    Route::get('panen/{panen}/edit', [PanenController::class, 'edit'])->name('panen.edit');
+    Route::put('panen/{panen}', [PanenController::class, 'update'])->name('panen.update');
+    Route::delete('panen/{panen}', [PanenController::class, 'destroy'])->name('panen.destroy');
+    Route::get('panen/{panen}/foto', [PanenController::class, 'foto'])->name('panen.foto');
 
     Route::get('siklus/{siklus}/ovk', [OvkController::class, 'index'])->name('ovk.index');
     Route::post('siklus/{siklus}/ovk', [OvkController::class, 'store'])->name('ovk.store');

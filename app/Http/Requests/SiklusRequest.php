@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Siklus;
+use App\Services\PerformanceCalculator;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,6 +26,7 @@ class SiklusRequest extends FormRequest
             'nama_ppl' => ['nullable', 'string', 'max:255'],
             'nama_inti' => ['nullable', 'string', 'max:255'],
             'bobot_sak_kg' => ['required', 'numeric', 'gt:0', 'max:9999'],
+            'rumus_ip' => ['sometimes', 'required', Rule::in(array_keys(PerformanceCalculator::RUMUS_IP))],
 
             'kontrak.harga_doc' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],
             'kontrak.harga_pakan_sak' => ['nullable', 'numeric', 'min:0', 'max:9999999999999'],

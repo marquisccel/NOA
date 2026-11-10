@@ -6,6 +6,7 @@ use App\Http\Requests\SelesaiSiklusRequest;
 use App\Http\Requests\SiklusRequest;
 use App\Models\Kandang;
 use App\Models\Siklus;
+use App\Services\RingkasanPerforma;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -103,7 +104,17 @@ class SiklusController extends Controller
 
         $siklus->update($request->validated());
 
-        return redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditandai '.$siklus->status.'.');
+        $redirect = redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditandai '.$siklus->status.'.');
+
+        // Peringatan saat siklus ditutup: data panen belum lengkap atau populasi tidak seimbang (R7, R10).
+        $p = app(RingkasanPerforma::class)->hitung($siklus);
+        if ($p['jumlah_tahap'] === 0) {
+            $redirect->with('peringatan', 'Belum ada catatan panen, jadi FCR dan IP belum bisa dihitung.');
+        } elseif ($p['selisih_populasi'] !== 0) {
+            $redirect->with('peringatan', 'Ekor panen ditambah deplesi berselisih '.abs($p['selisih_populasi']).' ekor dari populasi awal. Periksa catatan panen dan deplesi.');
+        }
+
+        return $redirect;
     }
 
     public function destroy(Siklus $siklus): RedirectResponse
