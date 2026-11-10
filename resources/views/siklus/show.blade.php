@@ -57,6 +57,19 @@
 
             <div class="grid gap-6 sm:grid-cols-2">
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Sampling bobot</h3>
+                    <p class="mt-2 text-base text-gray-700">Timbang sampel berkala; ABW dan pertambahan harian dibandingkan dengan standar.</p>
+                    <a href="{{ route('sampling.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka sampling bobot</a>
+                </div>
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900">OVK</h3>
+                    <p class="mt-2 text-base text-gray-700">Obat, vaksin, dan kimia beserta biayanya.</p>
+                    <a href="{{ route('ovk.index', $siklus) }}" class="mt-3 inline-flex items-center min-h-11 text-base text-indigo-700 underline">Buka catatan OVK</a>
+                </div>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2">
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900">Tabel standar harian</h3>
                     <p class="mt-2 text-base text-gray-700">
                         @if ($standarJumlah > 0)
