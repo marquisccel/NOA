@@ -63,6 +63,7 @@ class SiklusController extends Controller
             'siklus' => $siklus,
             'nomor' => Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1,
             'r' => $ringkasan->hitung($siklus),
+            'kurva' => app(\App\Services\LaporanSiklus::class)->grafik($siklus),
         ]);
     }
 

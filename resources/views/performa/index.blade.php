@@ -54,9 +54,9 @@
                 <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6 lg:gap-4">
                     <x-kpi label="Siklus dipanen" :value="F::angka($performa['jumlah_siklus'], 0)" caption="Dengan catatan panen" />
                     <x-kpi label="Total panen" :value="F::angka($performa['total_ekor'], 0).' ekor'" :caption="F::angka($performa['total_tonase'], 0).' kg'" />
-                    <x-kpi label="FCR" istilah="fcr" :value="F::angka($performa['fcr'], 3)" :caption="$banding('fcr').' · makin kecil makin baik'" />
-                    <x-kpi label="IP rata-rata" istilah="ip" :value="F::angka($performa['ip'], 0)" :caption="$banding('ip', 0).' · makin besar makin baik'" />
-                    <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($performa['deplesi_persen']).'%'" :caption="$banding('deplesi_persen', 2, '%')" />
+                    <x-kpi label="FCR" istilah="fcr" :spark="$seri['fcr']" :naik-bagus="false" :value="F::angka($performa['fcr'], 3)" :caption="$banding('fcr').' · makin kecil makin baik'" />
+                    <x-kpi label="IP rata-rata" istilah="ip" :spark="$seri['ip']" :value="F::angka($performa['ip'], 0)" :caption="$banding('ip', 0).' · makin besar makin baik'" />
+                    <x-kpi label="Deplesi" istilah="deplesi" :spark="$seri['deplesi']" :naik-bagus="false" :value="F::angka($performa['deplesi_persen']).'%'" :caption="$banding('deplesi_persen', 2, '%')" />
                     <x-kpi label="Biaya per kg" :value="$performa['biaya_per_kg'] === null ? '–' : 'Rp '.F::angka($performa['biaya_per_kg'], 0)" :caption="$performa['biaya_per_kg'] === null ? 'Harga kontrak belum lengkap' : $banding('biaya_per_kg', 0)" />
                 </div>
             </section>
@@ -97,10 +97,34 @@
                 @endif
             </section>
 
-            <div class="grid gap-4 lg:grid-cols-2">
-                <x-bar-chart :judul="'IP per siklus'.($grafikKandang ? ' · '.$grafikKandang->nama_farm : '')" sub="Makin besar makin baik" :item="$grafikIp" :std-ada="false" kosong="Grafik muncul setelah ada siklus yang sudah panen." />
-                <x-bar-chart :judul="'FCR per siklus'.($grafikKandang ? ' · '.$grafikKandang->nama_farm : '')" sub="Makin kecil makin baik" :item="$grafikFcr" :std-ada="false" :desimal="3" kosong="Grafik muncul setelah ada siklus yang sudah panen." />
-            </div>
+            <section aria-labelledby="tren-performa" class="space-y-3">
+                <div class="flex flex-wrap items-end justify-between gap-2">
+                    <div>
+                        <h2 id="tren-performa" class="text-base font-bold">Tren antar-siklus{{ $grafikKandang ? ' · '.$grafikKandang->nama_farm : '' }}</h2>
+                        <p class="text-[13px] text-ink-secondary">Naik-turunnya hasil dari satu siklus ke siklus berikutnya di kandang ini.</p>
+                    </div>
+                    <x-button variant="secondary" :href="route('performa.bandingkan')"><x-icon name="columns-2" class="size-4" /> Bandingkan dua siklus</x-button>
+                </div>
+                @if (count($tren['labels']) >= 2)
+                    <div class="grid gap-4 lg:grid-cols-2">
+                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                            <h3 class="text-sm font-bold">IP per siklus</h3><p class="text-xs text-ink-secondary">Makin besar makin baik</p>
+                            <div class="mt-2 h-56"><canvas id="grafik-ip" role="img" aria-label="Tren IP per siklus"></canvas></div>
+                        </div>
+                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                            <h3 class="text-sm font-bold">FCR per siklus</h3><p class="text-xs text-ink-secondary">Makin kecil makin baik</p>
+                            <div class="mt-2 h-56"><canvas id="grafik-fcr" role="img" aria-label="Tren FCR per siklus"></canvas></div>
+                        </div>
+                    </div>
+                    <script type="application/json" id="data-tren">@json($tren)</script>
+                    @vite('resources/js/laporan.js')
+                @else
+                    <div class="grid gap-4 lg:grid-cols-2">
+                        <x-bar-chart :judul="'IP per siklus'.($grafikKandang ? ' · '.$grafikKandang->nama_farm : '')" sub="Makin besar makin baik" :item="$grafikIp" :std-ada="false" kosong="Tren muncul setelah ada minimal dua siklus yang sudah dipanen di kandang ini." />
+                        <x-bar-chart :judul="'FCR per siklus'.($grafikKandang ? ' · '.$grafikKandang->nama_farm : '')" sub="Makin kecil makin baik" :item="$grafikFcr" :std-ada="false" :desimal="3" kosong="Tren muncul setelah ada minimal dua siklus yang sudah dipanen di kandang ini." />
+                    </div>
+                @endif
+            </section>
         @endif
     </x-page>
 </x-app-layout>

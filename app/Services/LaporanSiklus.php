@@ -66,13 +66,15 @@ class LaporanSiklus
         $standar = $siklus->standarHarian()->orderBy('hari_ke')->pluck('bobot_std_gram', 'hari_ke');
         $akhir = max($baris ? array_key_last($baris) : 0, $standar->keys()->max() ?? 0);
 
-        $out = ['labels' => [], 'bobot' => [], 'bobot_standar' => [], 'deplesi' => []];
+        $out = ['labels' => [], 'bobot' => [], 'bobot_standar' => [], 'deplesi' => [], 'deplesi_standar' => []];
+        $deplesiStd = $siklus->standarHarian()->pluck('deplesi_std_persen', 'hari_ke');
         for ($hari = 1; $hari <= $akhir; $hari++) {
             $b = $baris[$hari] ?? null;
             $out['labels'][] = $hari;
             $out['bobot'][] = $b && $b['bobot_gram'] !== null ? round($b['bobot_gram'], 2) : null;
             $out['bobot_standar'][] = $standar->has($hari) ? round((float) $standar[$hari], 2) : null;
             $out['deplesi'][] = $b ? round($b['deplesi_kum_persen'], 2) : null;
+            $out['deplesi_standar'][] = $deplesiStd->get($hari) !== null ? round((float) $deplesiStd[$hari], 2) : null;
         }
 
         return $out;

@@ -80,6 +80,29 @@
                 kosong="Grafik muncul setelah recording harian pertama." />
         </div>
 
+            @if (collect($kurva['labels'])->isNotEmpty())
+                <section aria-labelledby="kurva-harian" class="space-y-3">
+                    <div>
+                        <h2 id="kurva-harian" class="text-base font-bold">Kurva harian</h2>
+                        <p class="text-[13px] text-ink-secondary">Bandingkan bobot dan deplesi ayam Anda dengan target dari inti, hari demi hari.</p>
+                    </div>
+                    <div class="grid gap-4 lg:grid-cols-2">
+                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                            <h3 class="text-sm font-bold">Bobot rata-rata</h3>
+                            <p class="text-xs text-ink-secondary">Garis putus = target (standar)</p>
+                            <div class="mt-2 h-64"><canvas id="grafik-bobot" role="img" aria-label="Kurva bobot rata-rata aktual dibandingkan standar menurut umur"></canvas></div>
+                        </div>
+                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                            <h3 class="text-sm font-bold">Deplesi kumulatif</h3>
+                            <p class="text-xs text-ink-secondary">Ayam mati + afkir, dibagi jumlah ayam awal</p>
+                            <div class="mt-2 h-64"><canvas id="grafik-deplesi" role="img" aria-label="Kurva deplesi kumulatif menurut umur"></canvas></div>
+                        </div>
+                    </div>
+                    <script type="application/json" id="data-grafik">@json($kurva)</script>
+                    @vite('resources/js/laporan.js')
+                </section>
+            @endif
+
         @if ($siklus->isTerbuka())
             <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-perhatian">
                 <h2 id="judul-perhatian" class="text-sm font-bold">Perlu perhatian</h2>

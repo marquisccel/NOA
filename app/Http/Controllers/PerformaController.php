@@ -46,8 +46,46 @@ class PerformaController extends Controller
             'filter' => ['periode' => $periode, 'kandang' => $kandangId, 'status' => $status],
             'belumPanen' => Siklus::whereIn('kandang_id', $kandang->modelKeys())->whereDoesntHave('panen')->count(),
             'grafikKandang' => $grafikKandang,
+            'tren' => [
+                'labels' => $untukGrafik->map(fn ($b) => 'Siklus '.$b['nomor'].' · '.$b['siklus']->tanggal_masuk->translatedFormat('M Y'))->all(),
+                'ip' => $untukGrafik->map(fn ($b) => $b['p']['ip'] === null ? null : round($b['p']['ip'], 1))->all(),
+                'fcr' => $untukGrafik->map(fn ($b) => $b['p']['fcr'] === null ? null : round($b['p']['fcr'], 3))->all(),
+            ],
+            'seri' => [
+                'ip' => $baris->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->map(fn ($b) => $b['p']['ip'])->values()->all(),
+                'fcr' => $baris->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->map(fn ($b) => $b['p']['fcr'])->values()->all(),
+                'deplesi' => $baris->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->map(fn ($b) => $b['p']['deplesi_persen'])->values()->all(),
+            ],
             'grafikIp' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['ip'], 'std' => null])->all(),
             'grafikFcr' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['fcr'], 'std' => null])->all(),
         ]);
+    }
+
+    /** Bandingkan dua siklus yang sudah dipanen, berdampingan, dengan penanda yang lebih baik pada tiap ukuran. */
+    public function bandingkan(Request $request, RingkasanPerforma $performa, \App\Services\LaporanSiklus $laporan): View
+    {
+        $user = $request->user();
+        abort_unless($user->isPeternak(), 403);
+
+        $kandang = Kandang::where('user_id', $user->id)->pluck('id');
+        $nomor = Siklus::nomorMap($kandang->all());
+        $pilihan = Siklus::whereIn('kandang_id', $kandang)->whereHas('panen')->with('kandang')->orderByDesc('tanggal_masuk')->get();
+
+        $ambil = fn (?int $id) => $id ? $pilihan->firstWhere('id', $id) : null;
+        $a = $ambil($request->integer('a'));
+        $b = $ambil($request->integer('b'));
+
+        $hitung = function (?Siklus $s) use ($performa, $laporan, $nomor) {
+            if (! $s) {
+                return null;
+            }
+            $s->loadMissing('kontrak');
+            $p = $performa->hitung($s);
+            $biaya = $laporan->biaya($s, $p);
+
+            return ['siklus' => $s, 'nomor' => $nomor[$s->id] ?? 1, 'p' => $p, 'biaya' => $biaya];
+        };
+
+        return view('performa.bandingkan', ['pilihan' => $pilihan, 'nomor' => $nomor, 'a' => $hitung($a), 'b' => $hitung($b), 'idA' => $a?->id, 'idB' => $b?->id]);
     }
 }

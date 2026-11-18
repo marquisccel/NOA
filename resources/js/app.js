@@ -52,6 +52,22 @@ Alpine.data('jam', (zona = 'Asia/Jakarta') => ({
     },
 }));
 
+// Tema terang atau gelap; pilihan diingat di perangkat dan mengikuti pengaturan sistem bila belum dipilih.
+Alpine.data('tema', () => ({
+    gelap: document.documentElement.dataset.theme === 'dark',
+
+    alternatif() {
+        this.gelap = !this.gelap;
+        document.documentElement.dataset.theme = this.gelap ? 'dark' : 'light';
+
+        try {
+            localStorage.setItem('noa.tema', this.gelap ? 'dark' : 'light');
+        } catch (e) {
+            // diabaikan
+        }
+    },
+}));
+
 // Tur panduan: menyorot elemen bertanda data-tur="Judul|Penjelasan" (urutan: data-tur-urut) satu per satu.
 const KUNCI_TUR = 'noa.tur.selesai';
 

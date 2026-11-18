@@ -111,10 +111,36 @@
     --border-subtle: #ffffff0f;
     --border-strong: #ffffff2e;
 
+    --text-disabled: #5f6662;
+    --brand-primary: #2f8f77;
+    --brand-primary-active: #1f6b5b;
+    --border-control: #5d6561;
+
+    --status-success: #5fc16f;
+    --status-success-soft: #5fc16f1f;
+    --status-success-text: #8fdc9c;
+    --status-success-border: #5fc16f40;
+    --status-warning: #e0b53a;
+    --status-warning-soft: #e0b53a1f;
+    --status-warning-text: #f0cf72;
+    --status-warning-border: #e0b53a40;
     --status-danger: #f2807a;
     --status-danger-soft: #f2807a1f;
+    --status-danger-text: #f7a39e;
+    --status-danger-border: #f2807a40;
     --status-info: #7fb2e8;
     --status-info-soft: #7fb2e81f;
+    --status-info-text: #a8cdf3;
+    --status-info-border: #7fb2e840;
+    --status-neutral: #8a918c;
+    --status-neutral-soft: #ffffff12;
+    --status-neutral-text: #c4cac6;
+    --status-neutral-border: #ffffff26;
+
+    --state-hover: #ffffff0d;
+    --state-pressed: #ffffff17;
+    --state-selected: #7ed6b01f;
+    color-scheme: dark;
 }
 
 @layer base {

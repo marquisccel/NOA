@@ -104,6 +104,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
 
     Route::get('aktivitas', AktivitasController::class)->name('aktivitas.index');
     Route::get('performa', PerformaController::class)->name('performa.index');
+    Route::get('performa/bandingkan', [PerformaController::class, 'bandingkan'])->name('performa.bandingkan');
     Route::get('siklus/{siklus}/laporan', [LaporanController::class, 'siklus'])->name('laporan.siklus');
     Route::get('siklus/{siklus}/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     Route::get('siklus/{siklus}/laporan/csv', [LaporanController::class, 'csv'])->name('laporan.csv');

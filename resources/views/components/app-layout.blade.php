@@ -24,6 +24,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ $judul ? $judul.' · NOA' : 'NOA' }}</title>
         <link rel="icon" href="{{ asset('images/noa-mark.webp') }}" type="image/webp">
+        <script>(function(){try{var t=localStorage.getItem('noa.tema');if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}if(t){document.documentElement.dataset.theme=t}}catch(e){}})()</script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-page font-sans text-ink antialiased print:bg-white" x-data="shell()" @keydown.escape.window="drawer = false"
@@ -73,10 +74,17 @@
                     </div>
                 </div>
 
+                <div class="flex shrink-0 items-center gap-3">
+                    <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'" :aria-pressed="gelap.toString()"
+                        class="grid size-11 shrink-0 place-items-center rounded-md text-ink-secondary hover:bg-state-hover">
+                        <x-icon name="moon" class="size-5" x-show="! gelap" />
+                        <x-icon name="sun" class="size-5" x-show="gelap" x-cloak />
+                    </button>
                 {{-- Jam dan tanggal (langsung menempel di topbar, tanpa kartu) --}}
                 <div x-data="jam(@js(config('app.timezone')))" class="shrink-0 text-center leading-tight" role="timer" aria-label="Waktu sekarang">
                     <p class="font-heading text-lg font-bold tabular-nums text-ink" x-text="waktu">{{ now()->format('H.i.s') }}</p>
                     <p class="text-xs text-ink-secondary" x-text="tanggal">{{ now()->translatedFormat('D, j M') }}</p>
+                </div>
                 </div>
             </header>
 
@@ -89,6 +97,10 @@
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-heading text-lg font-semibold leading-snug">{{ $judul ?? 'NOA' }}</p>
                 </div>
+                <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'" class="grid size-11 shrink-0 place-items-center rounded-md text-ink-secondary hover:bg-state-hover">
+                    <x-icon name="moon" class="size-5" x-show="! gelap" />
+                    <x-icon name="sun" class="size-5" x-show="gelap" x-cloak />
+                </button>
                 <div x-data="jam(@js(config('app.timezone')))" class="shrink-0 pr-1 text-center leading-tight" role="timer" aria-label="Waktu sekarang">
                     <p class="font-heading text-sm font-bold tabular-nums" x-text="waktu">{{ now()->format('H.i.s') }}</p>
                     <p class="text-[11px] text-ink-secondary" x-text="tanggal">{{ now()->translatedFormat('D, j M') }}</p>

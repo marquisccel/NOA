@@ -45,7 +45,9 @@ class DemoController extends Controller
 
     private function siapkan(bool $paksa): void
     {
-        set_time_limit(120);
+        if (! app()->runningUnitTests()) {
+            set_time_limit(120);
+        }
         Artisan::call('noa:siapkan-demo', $paksa ? ['--paksa' => true] : []);
     }
 }
