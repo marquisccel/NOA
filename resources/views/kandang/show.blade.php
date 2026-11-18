@@ -30,6 +30,19 @@
                     <div><dt class="text-xs text-ink-muted">Pemilik</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->user->name }}</dd></div>
                     <div class="sm:col-span-2"><dt class="text-xs text-ink-muted">Alamat</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->alamat ?: 'Belum diisi' }}</dd></div>
                 </dl>
+
+                @if ($kandang->alamat)
+                    {{-- Peta langsung dari Google Maps berdasarkan alamat (tanpa kunci API); dimuat saat terlihat. --}}
+                    <div class="mt-4 space-y-2" data-peta>
+                        <div class="overflow-hidden rounded-md border border-line-subtle">
+                            <iframe title="Lokasi {{ $kandang->nama_farm }} di Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block h-52 w-full border-0"
+                                src="https://maps.google.com/maps?q={{ rawurlencode($kandang->alamat) }}&amp;z=14&amp;output=embed"></iframe>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query={{ rawurlencode($kandang->alamat) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
+                            <x-icon name="map-pin" class="size-4" /> Buka di Google Maps
+                        </a>
+                    </div>
+                @endif
             </section>
 
             @if ($berjalan)

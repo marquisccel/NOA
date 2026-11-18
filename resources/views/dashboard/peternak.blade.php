@@ -65,7 +65,7 @@
                         @foreach ($perhatian as $h)
                             <li>
                                 <a href="{{ $h['tautan'] }}" class="group flex min-h-[60px] items-center gap-3.5 px-4 py-3 transition-colors hover:bg-state-hover">
-                                    <span class="size-2 shrink-0 rounded-full {{ $h['tingkat'] === 'penting' ? 'bg-warning' : 'bg-info' }}" aria-hidden="true"></span>
+                                    <x-icon name="triangle-alert" class="size-5 shrink-0 text-warning-text" />
                                     <span class="min-w-0 flex-1">
                                         <span class="block truncate text-sm font-semibold text-ink">{{ $h['judul'] }}</span>
                                         <span class="block truncate text-[13px] text-ink-muted">{{ $h['siklus'] }}</span>

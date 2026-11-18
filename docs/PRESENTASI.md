@@ -13,7 +13,7 @@ Saran: slide sedikit teks, banyak gambar (gunakan `docs/img/`). Waktu tiap slide
 | 7 | **Mudah dipahami awam** | Tanda tanya istilah, Bantuan, Langkah berikutnya, Perlu perhatian, tur, rumus dengan angka sendiri | `01-dashboard.jpg`, `09-bantuan.jpg` |
 | 8 | **Insight** | Performa, kurva vs target, tren, bandingkan periode, "Bagaimana kalau?" | `02-performa.jpg`, `05-kurva-harian.jpg`, `07-simulasi-bagaimana-kalau.jpg` |
 | 9 | **Arsitektur** | Laravel 13 + PostgreSQL; Blade + Alpine + Tailwind; Policy; layanan perhitungan | ERD dari `ERD.md` |
-| 10 | **Kualitas** | Aturan bisnis R1–R13 dijaga basis data; 449 tes; CI; data simulasi | Tabel `PENGUJIAN.md` |
+| 10 | **Kualitas** | Aturan bisnis R1–R13 dijaga basis data; 450 tes; CI; data simulasi | Tabel `PENGUJIAN.md` |
 | 11 | **Tantangan dan keputusan** | Menolak role inti, tidak menghitung bonus, nilai turunan tidak disimpan, Vercel + PHP | `KEPUTUSAN-DESAIN.md` |
 | 12 | **Penutup dan demo** | Ringkasan, pengembangan lanjutan (offline, pengingat, paraf digital PPL), tautan repositori + demo langsung | QR ke alamat demo |
 

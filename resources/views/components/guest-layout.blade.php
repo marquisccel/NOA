@@ -32,7 +32,7 @@
                     <img src="{{ asset('images/noa-logo.webp') }}" alt="" width="520" height="237" class="h-auto w-full max-w-[420px] dark:hidden" loading="lazy">
                     <span class="hidden items-center gap-5 dark:inline-flex">
                         <img src="{{ asset('images/noa-mark.webp') }}" alt="" width="80" height="102" class="h-[102px] w-[80px]">
-                        <span class="block h-[66px] w-[190px] bg-gold" style="-webkit-mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat; mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat;"></span>
+                        <span class="block h-[66px] w-[190px] bg-brand" style="-webkit-mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat; mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat;"></span>
                     </span>
                 </div>
                 <div class="space-y-3.5">

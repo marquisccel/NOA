@@ -8,7 +8,8 @@
             <tr>
                 <th scope="col">Periode</th>
                 <th scope="col">DOC masuk</th>
-                <th scope="col">Jumlah ayam awal</th>
+                <th scope="col">Ayam awal</th>
+                <th scope="col">Ayam dipanen</th>
                 <th scope="col">Status akhir</th>
                 <th scope="col">Panen terakhir</th>
                 <th scope="col">Re-chick-in</th>
@@ -21,6 +22,7 @@
                     <th scope="row" class="font-bold">Periode {{ $nomor[$s->id] ?? 1 }}</th>
                     <td class="whitespace-nowrap">{{ $s->tanggal_masuk->translatedFormat('j M Y') }}</td>
                     <td class="whitespace-nowrap">{{ F::angka($s->populasi, 0) }} ekor</td>
+                    <td class="whitespace-nowrap">{{ isset($ayamDipanen[$s->id]) ? F::angka($ayamDipanen[$s->id], 0).' ekor' : '—' }}</td>
                     <td><x-status-siklus :siklus="$s" /></td>
                     <td class="whitespace-nowrap">{{ ($panenTerakhir[$s->id] ?? null)?->translatedFormat('j M Y') ?? '—' }}</td>
                     <td class="whitespace-nowrap">{{ $s->tanggal_rechick?->translatedFormat('j M Y') ?? '—' }}</td>
@@ -39,7 +41,7 @@
                     <span class="font-heading text-base font-semibold">Periode {{ $nomor[$s->id] ?? 1 }}</span>
                     <x-status-siklus :siklus="$s" />
                 </span>
-                <span class="text-[13px] text-ink-secondary">DOC {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · {{ F::angka($s->populasi, 0) }} ekor</span>
+                <span class="text-[13px] text-ink-secondary">DOC {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · awal {{ F::angka($s->populasi, 0) }} ekor · dipanen {{ isset($ayamDipanen[$s->id]) ? F::angka($ayamDipanen[$s->id], 0).' ekor' : '—' }}</span>
                 <span class="text-[13px] text-ink-secondary">Panen terakhir {{ ($panenTerakhir[$s->id] ?? null)?->translatedFormat('j M Y') ?? '—' }} · Re-chick-in {{ $s->tanggal_rechick?->translatedFormat('j M Y') ?? '—' }}</span>
             </a>
         </li>

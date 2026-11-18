@@ -62,7 +62,7 @@ Di halaman masuk tekan **Masuk sebagai peternak** atau **Masuk sebagai ABK** (ta
 - **Backend:** Laravel 13, PHP 8.3, PostgreSQL 17 (batasan CHECK, indeks unik parsial, kolom turunan di basis data)
 - **Frontend:** Blade (komponen anonim), Alpine.js, Tailwind CSS 3 (token desain CSS variabel, tema terang/gelap), Vite, Chart.js (hanya di halaman grafik)
 - **Autentikasi:** Laravel Breeze, kebijakan (`Policy`) per sumber daya
-- **Pengujian:** PHPUnit, **449 tes fitur dan unit** (lihat [docs/PENGUJIAN.md](docs/PENGUJIAN.md))
+- **Pengujian:** PHPUnit, **450 tes fitur dan unit** (lihat [docs/PENGUJIAN.md](docs/PENGUJIAN.md))
 - **Penayangan:** Vercel (runtime PHP komunitas) atau Render/Docker ([docs/DEPLOY.md](docs/DEPLOY.md))
 
 ## Menjalankan secara lokal
@@ -107,7 +107,7 @@ app/
 database/             migrasi, pabrik, dan seeder (termasuk SimulasiSeeder)
 resources/views/      tampilan Blade + komponen (x-kpi, x-alert, x-input-satuan, ...)
 resources/js|css/     Alpine.js, Chart.js, token desain Tailwind
-tests/Feature/        449 tes
+tests/Feature/        450 tes
 docs/                 dokumentasi dan tangkapan layar
 ```
 

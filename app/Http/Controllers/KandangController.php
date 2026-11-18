@@ -80,6 +80,7 @@ class KandangController extends Controller
             'nomor' => $nomor,
             'nomorBerikutnya' => count($nomor) + 1,
             'panenTerakhir' => $this->panenTerakhir($siklus->pluck('id')),
+            'ayamDipanen' => $this->ayamDipanen($siklus->pluck('id')),
         ]);
     }
 
@@ -98,6 +99,7 @@ class KandangController extends Controller
             'status' => $status,
             'nomor' => Siklus::nomorMap([$kandang->id]),
             'panenTerakhir' => $this->panenTerakhir($semua->pluck('id')),
+            'ayamDipanen' => $this->ayamDipanen($semua->pluck('id')),
         ]);
     }
 
@@ -128,6 +130,16 @@ class KandangController extends Controller
         $kandang->delete();
 
         return redirect()->route('kandang.index')->with('status', 'Kandang dihapus.');
+    }
+
+    /** @return Collection<int, int> id siklus => total ekor yang dipanen (jumlah ayam akhir, dari BTPA) */
+    private function ayamDipanen(Collection $siklusIds): Collection
+    {
+        return Panen::whereIn('siklus_id', $siklusIds)
+            ->selectRaw('siklus_id, sum(jumlah_ekor) as total')
+            ->groupBy('siklus_id')
+            ->pluck('total', 'siklus_id')
+            ->map(fn ($t) => (int) $t);
     }
 
     /** @return Collection<int, Carbon> id siklus => tanggal panen terakhir */

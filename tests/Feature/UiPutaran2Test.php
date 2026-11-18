@@ -33,11 +33,11 @@ class UiPutaran2Test extends TestCase
         $this->assertStringNotContainsString('Kandang &amp; Periode', $html);
     }
 
-    public function test_logo_tanpa_kartu_dan_wordmark_berwarna_emas(): void
+    public function test_logo_tanpa_kartu_dan_wordmark_berwarna_hijau(): void
     {
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('bg-gold', $html);
+        $this->assertStringContainsString('bg-brand" style="-webkit-mask', $html);
         $this->assertStringContainsString('noa-wordmark.webp', $html);
         $this->assertStringNotContainsString('bg-[#FAF8F0] ring-1', $html);
     }
@@ -96,5 +96,18 @@ class UiPutaran2Test extends TestCase
 
         $this->assertStringContainsString('divide-y', $view);
         $this->assertStringNotContainsString('md:grid-cols-2 xl:grid-cols-3">' . "\n" . '                        @foreach ($perhatian', $view);
+    }
+
+    public function test_detail_kandang_menampilkan_peta_dan_riwayat_ayam_dipanen(): void
+    {
+        $kandang = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Peta', 'alamat' => 'Desa Uji, Kec. Uji', 'kapasitas' => 5000, 'tipe' => Kandang::TIPE_CLOSED_HOUSE]);
+
+        $html = $this->actingAs($this->peternak)->get(route('kandang.show', $kandang))->assertOk()->getContent();
+
+        $this->assertStringContainsString('maps.google.com/maps?q=Desa%20Uji%2C%20Kec.%20Uji', $html);
+        $this->assertStringContainsString('Buka di Google Maps', $html);
+
+        $kandang->update(['alamat' => null]);
+        $this->actingAs($this->peternak)->get(route('kandang.show', $kandang))->assertOk()->assertDontSee('Buka di Google Maps');
     }
 }

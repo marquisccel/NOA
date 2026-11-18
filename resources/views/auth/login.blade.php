@@ -47,8 +47,8 @@
         <div class="space-y-3 rounded-md border border-brand-border bg-tint p-4" data-demo>
             <p class="text-sm font-bold text-ink-brand">Coba demo tanpa daftar</p>
             <div class="grid gap-2">
-                <form method="POST" action="{{ route('demo.masuk', 'plasma') }}">@csrf<x-button variant="secondary" class="w-full"><x-icon name="warehouse" class="size-4" /> Masuk sebagai peternak</x-button></form>
-                <form method="POST" action="{{ route('demo.masuk', 'abk') }}">@csrf<x-button variant="secondary" class="w-full"><x-icon name="clipboard-list" class="size-4" /> Masuk sebagai ABK</x-button></form>
+                <form method="POST" action="{{ route('demo.masuk', 'plasma') }}">@csrf<x-button variant="secondary" class="w-full !border-brand !text-ink-brand"><x-icon name="warehouse" class="size-4" /> Masuk sebagai peternak</x-button></form>
+                <form method="POST" action="{{ route('demo.masuk', 'abk') }}">@csrf<x-button variant="secondary" class="w-full !border-brand !text-ink-brand"><x-icon name="clipboard-list" class="size-4" /> Masuk sebagai ABK</x-button></form>
             </div>
         </div>
     @endif
