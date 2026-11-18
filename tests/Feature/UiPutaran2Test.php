@@ -37,7 +37,7 @@ class UiPutaran2Test extends TestCase
     {
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('noa-mark.webp', $html);
+        $this->assertStringContainsString('noa-mark.svg', $html);
         $this->assertStringContainsString('bg-brand" style="-webkit-mask', $html);
         $this->assertStringNotContainsString('bg-[#FAF8F0] ring-1', $html);
     }
@@ -119,7 +119,7 @@ class UiPutaran2Test extends TestCase
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
         $this->assertStringNotContainsString('<canvas', $html);
-        $this->assertStringContainsString('noa-mark.webp', $html);
+        $this->assertStringContainsString('noa-mark.svg', $html);
         $this->assertStringContainsString('noa-wordmark.webp', $html);
         $this->assertFileDoesNotExist(resource_path('js/masuk.js'));
     }
