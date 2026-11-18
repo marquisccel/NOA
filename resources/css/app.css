@@ -295,37 +295,32 @@ select:not([multiple]) {
 
 [data-theme='dark'] .halo { border-color: rgb(140 230 195 / 0.22); }
 
-/* Kartu statistik di dalam gambar: kaca kecil dengan garis penunjuk berujung titik. */
+/* Kartu keunggulan di dalam gambar: bergeser halus mengikuti kursor, dan saat disorot sedikit membesar serta naik. */
 .statistik {
     position: absolute;
     translate: calc(var(--px, 0) * var(--k, 8) * 1px) calc(var(--py, 0) * var(--k, 8) * 1px);
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    cursor: default;
 }
 
-.statistik::before {
-    content: '';
-    position: absolute;
-    left: var(--gx, 50%);
-    width: 1px;
-    height: var(--gt, 46px);
-    background: linear-gradient(var(--gb, to bottom), rgb(60 110 90 / 0), rgb(60 110 90 / 0.55));
-    top: var(--gy, 100%);
+.statistik:hover {
+    transform: translateY(-6px) scale(1.06);
+    z-index: 20;
 }
 
-.statistik::after {
-    content: '';
-    position: absolute;
-    left: calc(var(--gx, 50%) - 4px);
-    top: calc(var(--gy, 100%) + var(--gt, 46px) - 4px);
-    width: 9px;
-    height: 9px;
-    border-radius: 9999px;
-    background: #fff;
-    border: 2px solid var(--brand-primary);
-    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.35);
+.statistik .kaca-chip {
+    transition: box-shadow 0.35s, background-color 0.35s;
 }
 
-[data-theme='dark'] .statistik::before { background: linear-gradient(var(--gb, to bottom), rgb(140 230 195 / 0), rgb(140 230 195 / 0.55)); }
-[data-theme='dark'] .statistik::after { background: #0b2a22; }
+.statistik:hover .kaca-chip {
+    background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), 0 22px 40px -14px rgb(20 50 40 / 0.45);
+}
+
+[data-theme='dark'] .statistik:hover .kaca-chip {
+    background: rgb(20 44 38 / 0.8);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 22px 40px -14px rgb(0 0 0 / 0.7);
+}
 
 @keyframes melayang { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 .melayang { animation: melayang 7s ease-in-out infinite; }
