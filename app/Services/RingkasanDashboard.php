@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Kandang;
+use App\Support\Format;
 use App\Models\PemberianOvk;
 use App\Models\Panen;
 use App\Models\RecordingHarian;
@@ -18,6 +19,9 @@ use Illuminate\Support\Collection;
  */
 class RingkasanDashboard
 {
+    /** Jenis aktivitas yang dicatat, dipakai sebagai pilihan filter. */
+    public const JENIS = ['Recording harian', 'Sampling bobot', 'Pemberian OVK', 'Panen'];
+
     /**
      * @return array{total_kandang: int, kandang_aktif: int, siklus_berjalan: int, populasi_aktif: int, siklus: Collection<int, array<string, mixed>>}
      */
@@ -62,21 +66,25 @@ class RingkasanDashboard
      *
      * @return Collection<int, array{jenis: string, ikon: string, keterangan: string, tanggal: Carbon}>
      */
-    public function aktivitas(User $user, int $batas = 5): Collection
+    public function aktivitas(User $user, int $batas = 5, ?string $jenisFilter = null, ?int $kandangFilter = null): Collection
     {
-        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
+        $kandangIds = Kandang::where('user_id', $user->id)->when($kandangFilter, fn ($q) => $q->whereKey($kandangFilter))->pluck('id');
         $siklusIds = Siklus::whereIn('kandang_id', $kandangIds)->pluck('id');
-        $nomor = Siklus::nomorMap($kandangIds);
+        $nomor = Siklus::nomorMap(Kandang::where('user_id', $user->id)->pluck('id'));
 
         $sumber = [
-            ['Recording harian', 'clipboard-list', RecordingHarian::class, fn ($r) => 'Hari ke-'.$r->hari_ke],
-            ['Sampling bobot', 'scale', SamplingBobot::class, fn ($r) => 'Hari ke-'.$r->hari_ke],
-            ['Pemberian OVK', 'syringe', PemberianOvk::class, fn ($r) => 'Hari ke-'.($r->siklus->umurHari($r->tanggal))],
-            ['Panen', 'truck', Panen::class, fn ($r) => 'umur '.$r->umur_hari.' hari'],
+            ['Recording harian', 'clipboard-list', RecordingHarian::class, fn ($r) => 'Hari ke-'.$r->hari_ke, 'recording.index', fn ($r) => 'Pakan '.Format::angka($r->pakan_pakai_sak).' sak · mati '.$r->mati.' · afkir '.$r->afkir],
+            ['Sampling bobot', 'scale', SamplingBobot::class, fn ($r) => 'Hari ke-'.$r->hari_ke, 'sampling.index', fn ($r) => $r->jumlah_sampel.' ekor ditimbang · '.Format::angka((float) $r->total_bobot_kg).' kg'],
+            ['Pemberian OVK', 'syringe', PemberianOvk::class, fn ($r) => 'Hari ke-'.($r->siklus->umurHari($r->tanggal)), 'ovk.index', fn ($r) => ucfirst($r->jenis).' · '.$r->nama_produk],
+            ['Panen', 'truck', Panen::class, fn ($r) => 'umur '.$r->umur_hari.' hari', 'panen.index', fn ($r) => Format::angka($r->jumlah_ekor, 0).' ekor · '.Format::angka((float) $r->tonase_kg, 0).' kg'],
         ];
 
         $semua = collect();
-        foreach ($sumber as [$jenis, $ikon, $model, $detail]) {
+        foreach ($sumber as [$jenis, $ikon, $model, $detail, $rute, $ringkas]) {
+            if ($jenisFilter && $jenisFilter !== $jenis) {
+                continue;
+            }
+
             $model::whereIn('siklus_id', $siklusIds)
                 ->with('siklus.kandang')
                 ->orderByDesc('tanggal')->orderByDesc('id')
@@ -86,6 +94,8 @@ class RingkasanDashboard
                     'jenis' => $jenis,
                     'ikon' => $ikon,
                     'keterangan' => $r->siklus->kandang->nama_farm.' · Siklus '.($nomor[$r->siklus_id] ?? 1).' · '.$detail($r),
+                    'ringkas' => $ringkas($r),
+                    'url' => route($rute, $r->siklus_id),
                     'tanggal' => Carbon::parse($r->tanggal),
                     'urut' => $r->id,
                 ]));

@@ -39,7 +39,7 @@
                 <x-kpi label="Total ekor panen" icon="truck" :value="F::angka($p['total_ekor'], 0).' ekor'" :caption="$p['jumlah_tahap'].' tahap'" />
                 <x-kpi label="Total tonase" icon="scale" :value="$kg($p['total_tonase'])" :caption="'Jumlah BTPA '.($p['jumlah_tahap'] - $p['tahap_tanpa_btpa'])" />
                 <x-kpi label="Umur panen" icon="timer" :value="F::angka($p['umur_panen']).' hari'" caption="Rata-rata berbobot jumlah ekor" />
-                <x-kpi label="ABW panen" icon="chart-column" :value="F::angka($p['abw'], 3).' kg'" caption="Tonase ÷ ekor" />
+                <x-kpi label="ABW panen" istilah="abw" icon="chart-column" :value="F::angka($p['abw'], 3).' kg'" caption="Tonase ÷ ekor" />
             </div>
 
             @if ($selisih !== 0)
@@ -47,7 +47,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
                             @if ($selisih > 0)
-                                <p class="font-semibold">Selisih populasi: {{ F::angka($selisih, 0) }} ekor belum tercatat</p>
+                                <p class="font-semibold">Selisih jumlah ayam: {{ F::angka($selisih, 0) }} ekor belum tercatat</p>
                                 <p>Panen {{ F::angka($p['total_ekor'], 0) }} + deplesi {{ F::angka($p['deplesi'], 0) }} = {{ F::angka($p['total_ekor'] + $p['deplesi'], 0) }} ekor, populasi awal {{ F::angka($p['populasi'], 0) }} ekor. NOA tidak menyeimbangkan angka otomatis.</p>
                             @else
                                 <p class="font-semibold">Panen + deplesi melebihi populasi awal sebanyak {{ F::angka(abs($selisih), 0) }} ekor</p>

@@ -31,7 +31,7 @@
                 {{ $siklus->kandang->nama_farm }}@if ($siklus->kandang->labelTipe()) · {{ $siklus->kandang->labelTipe() }}@endif
                 · DOC masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}
                 @if ($siklus->isTerbuka()) · Hari ke-{{ $siklus->umurHari() }} @elseif ($siklus->tanggal_panen) · Panen terakhir {{ $siklus->tanggal_panen->translatedFormat('j M Y') }} @endif
-                · Populasi awal {{ F::angka($siklus->populasi, 0) }} ekor
+                · Jumlah ayam awal {{ F::angka($siklus->populasi, 0) }} ekor
             </p>
         </div>
     </div>

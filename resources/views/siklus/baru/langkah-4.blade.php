@@ -10,13 +10,13 @@
 @endphp
 
 <x-wizard-siklus :kandang="$kandang" :langkah="4" :konteks="$konteks">
-    <h2 class="text-lg font-bold">Standar harian kemitraan</h2>
-    <p class="mt-1 text-[13px] text-ink-secondary">Unggah tabel standar dari kemitraan Anda (disalin ke siklus ini). Dipakai untuk membandingkan catatan harian dengan standar.</p>
+    <h2 class="text-lg font-bold">Target harian dari inti <span class="text-sm font-medium text-ink-secondary">(boleh dilewati)</span></h2>
+    <p class="mt-1 text-[13px] text-ink-secondary">Bila inti memberi tabel target bobot, pakan, dan deplesi per hari (berkas CSV/Excel), unggah di sini supaya catatan harian Anda bisa dibandingkan dengan target. Belum punya? Pilih “Lewati” dan unggah nanti kapan saja.</p>
 
     <div class="mt-5 space-y-5">
         <div class="rounded-md border border-dashed border-line-control bg-page p-4">
             <p class="text-[13px] text-ink-secondary">Format: <code class="text-xs">hari, bobot_std_gram, feed_intake_std_gram, deplesi_std_persen</code></p>
-            <p class="mt-1 text-xs text-ink-muted">Format PRD (hari_ke, pakan_std_sak, bobot_std_gram, fcr_std, feed_intake_std_gram) juga diterima. Feed intake dicatat kumulatif per ekor.</p>
+            <p class="mt-1 text-xs text-ink-muted">Format PRD (hari_ke, pakan_std_sak, bobot_std_gram, fcr_std, feed_intake_std_gram) juga diterima. Pakan per ekor dicatat kumulatif per ekor.</p>
             <a href="{{ route('siklus.standar.template') }}" class="mt-2 inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline"><x-icon name="download" class="size-4" /> Unduh template CSV</a>
 
             <form method="POST" action="{{ route('siklus.baru.standar', $kandang) }}" enctype="multipart/form-data" class="mt-3 flex flex-wrap items-end gap-3">
@@ -53,7 +53,7 @@
                     <div class="mt-1.5 overflow-x-auto rounded-md border border-line">
                         <table class="tabel">
                             <caption class="sr-only">Pratinjau tabel standar</caption>
-                            <thead><tr><th scope="col">Hari</th><th scope="col">Bobot standar (g)</th><th scope="col">Feed intake standar (g/ekor)</th><th scope="col">Deplesi standar (%)</th></tr></thead>
+                            <thead><tr><th scope="col">Hari</th><th scope="col">Bobot standar (g)</th><th scope="col">Pakan per ekor standar (g/ekor)</th><th scope="col">Deplesi standar (%)</th></tr></thead>
                             <tbody>
                                 @foreach ($pratinjau as $r)
                                     <tr><th scope="row">{{ $r['hari_ke'] }}</th><td>{{ $koma($r['bobot_std_gram'], 0) }}</td><td>{{ $koma($r['feed_intake_std_gram'], 0) }}</td><td>{{ $koma($r['deplesi_std_persen'] ?? null, 2) }}</td></tr>
@@ -75,7 +75,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-4">
             <x-button variant="secondary" :href="route('siklus.baru.langkah', [$kandang, 3])">Kembali</x-button>
             <div class="flex flex-wrap gap-2.5">
-                <form method="POST" action="{{ route('siklus.baru.lewati', $kandang) }}">@csrf<x-button variant="secondary">Lewati, isi nanti</x-button></form>
+                <form method="POST" action="{{ route('siklus.baru.lewati', $kandang) }}">@csrf<x-button :variant="$adaFile ? 'secondary' : 'primary'">Lewati, isi nanti</x-button></form>
                 <form method="POST" action="{{ route('siklus.baru.simpan', [$kandang, 4]) }}">@csrf<x-button :disabled="! $adaFile || $galat">Lanjut: Konfirmasi <x-icon name="arrow-right" class="size-4" /></x-button></form>
             </div>
         </div>

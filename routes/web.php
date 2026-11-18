@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbkController;
+use App\Http\Controllers\AktivitasController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('siklus/{siklus}/rhpp/lampiran', [RhppController::class, 'lampiran'])->name('rhpp.lampiran');
     Route::get('siklus/{siklus}/rhpp/cetak', [RhppController::class, 'cetak'])->name('rhpp.cetak');
 
+    Route::get('aktivitas', AktivitasController::class)->name('aktivitas.index');
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('siklus/{siklus}/laporan', [LaporanController::class, 'siklus'])->name('laporan.siklus');
     Route::get('siklus/{siklus}/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
@@ -110,6 +112,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('bantuan', fn () => view('bantuan.index', ['istilah' => config('istilah')]))->name('bantuan');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

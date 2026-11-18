@@ -19,7 +19,7 @@
             <div><dt class="inline font-semibold">Alamat:</dt> <dd class="inline">{{ $siklus->kandang->alamat ?: '–' }}</dd></div>
             <div><dt class="inline font-semibold">DOC masuk:</dt> <dd class="inline">{{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}</dd></div>
             <div><dt class="inline font-semibold">Panen:</dt> <dd class="inline">{{ $rentangPanen }}</dd></div>
-            <div><dt class="inline font-semibold">Populasi awal:</dt> <dd class="inline">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
+            <div><dt class="inline font-semibold">Jumlah ayam awal:</dt> <dd class="inline">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
         </dl>
     </header>
 
@@ -34,7 +34,7 @@
             <tr><th>ABW panen</th><td>{{ F::angka($p['abw'], 3) }} kg</td><td>{{ F::angka($p['total_ekor'], 0) }} ekor</td></tr>
             <tr><th>Umur panen</th><td>{{ F::angka($p['umur_panen']) }} hari</td><td>Rata-rata berbobot</td></tr>
             <tr><th>IP</th><td>{{ F::angka($p['ip'], 0) }}</td><td>Rumus kemitraan</td></tr>
-            <tr><th>Selisih populasi</th><td>{{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</td><td>Tidak diseimbangkan</td></tr>
+            <tr><th>Selisih jumlah ayam</th><td>{{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</td><td>Tidak diseimbangkan</td></tr>
         </tbody>
     </table>
 

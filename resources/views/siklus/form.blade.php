@@ -21,7 +21,7 @@
                 <h2 class="text-base font-bold">Identitas &amp; DOC</h2>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <x-field name="tanggal_masuk" label="Tanggal DOC masuk *" type="date" :value="$siklus->tanggal_masuk?->toDateString()" required />
-                    <x-field name="populasi" label="Populasi awal (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$siklus->populasi" required />
+                    <x-field name="populasi" label="Jumlah ayam awal (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$siklus->populasi" required />
                     <x-field name="strain_doc" label="Strain DOC" :value="$siklus->strain_doc" />
                     <x-field name="jenis_pakan" label="Jenis pakan" :value="$siklus->jenis_pakan" />
                     <x-field name="nama_ppl" label="Nama PPL" :value="$siklus->nama_ppl" />

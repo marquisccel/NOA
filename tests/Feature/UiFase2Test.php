@@ -94,7 +94,7 @@ class UiFase2Test extends TestCase
             ->assertSee('Siklus 1')->assertSee('Hari ke-25')
             ->assertSee('4.906 ekor')   // 5.000 - (90 + 4)
             ->assertSee('Buka detail siklus')
-            ->assertSee('Recording harian')->assertSee('Aktivitas terbaru');
+            ->assertDontSee('Aktivitas terbaru');
         $ringkas = app(\App\Services\RingkasanDashboard::class)->peternak($this->peternak);
         $this->assertSame([2, 1, 1, 4906], [$ringkas['total_kandang'], $ringkas['kandang_aktif'], $ringkas['siklus_berjalan'], $ringkas['populasi_aktif']]);
     }
@@ -110,7 +110,7 @@ class UiFase2Test extends TestCase
         $this->siklus($this->kandang(), '2026-05-01', 'selesai');
 
         $this->actingAs($this->peternak)->get(route('dashboard'))
-            ->assertSee('Belum ada siklus berjalan')->assertSee('Belum ada aktivitas', false)->assertSee('Tidak ada siklus terbuka');
+            ->assertSee('Belum ada siklus berjalan')->assertSee('Tidak ada siklus terbuka');
     }
 
     public function test_sapaan_menurut_jam(): void

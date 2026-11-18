@@ -45,7 +45,7 @@
                     <dl class="mt-4 grid grid-cols-2 gap-4 rounded-md bg-page p-3.5 text-[13px]">
                         <div><dt class="text-ink-secondary">DOC masuk</dt><dd class="mt-0.5 font-bold">{{ $berjalan->tanggal_masuk->translatedFormat('j M Y') }}</dd></div>
                         <div><dt class="text-ink-secondary">Umur ayam</dt><dd class="mt-0.5 font-bold">Hari ke-{{ $berjalan->umurHari() }}</dd></div>
-                        <div><dt class="text-ink-secondary">Populasi awal</dt><dd class="mt-0.5 font-bold">{{ F::angka($berjalan->populasi, 0) }} ekor</dd></div>
+                        <div><dt class="text-ink-secondary">Jumlah ayam awal</dt><dd class="mt-0.5 font-bold">{{ F::angka($berjalan->populasi, 0) }} ekor</dd></div>
                         <div><dt class="text-ink-secondary">Status</dt><dd class="mt-0.5 font-bold">{{ $berjalan->labelStatus() }}</dd></div>
                     </dl>
                     <p class="mt-3 text-xs text-ink-muted">Siklus baru dapat dibuka setelah {{ $namaSiklus($berjalan) }} ditutup.</p>
@@ -58,7 +58,7 @@
                             <h2 id="judul-saat-ini" class="text-base font-bold">Tidak ada siklus terbuka</h2>
                             <p class="text-[13px] leading-[19px] text-ink-secondary">
                                 @if ($terakhir)
-                                    {{ $namaSiklus($terakhir) }} sudah {{ $terakhir->status === 'dihentikan' ? 'dihentikan' : 'ditutup' }}@if ($terakhir->tanggal_rechick) (rencana re-chick-in {{ $terakhir->tanggal_rechick->translatedFormat('j M Y') }})@endif.
+                                    {{ $namaSiklus($terakhir) }} sudah {{ $terakhir->status === 'dihentikan' ? 'dihentikan' : 'ditutup' }}@if ($terakhir->tanggal_rechick) (rencana ayam masuk berikutnya {{ $terakhir->tanggal_rechick->translatedFormat('j M Y') }})@endif.
                                     Buka siklus baru untuk mulai mencatat.
                                 @else
                                     Kandang ini belum pernah dipakai. Buka siklus pertama untuk mulai mencatat.

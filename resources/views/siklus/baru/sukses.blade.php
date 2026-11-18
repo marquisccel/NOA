@@ -11,7 +11,7 @@
 
             <dl class="grid grid-cols-2 gap-3 rounded-md bg-page p-4 text-left text-[13px]">
                 <div><dt class="text-ink-muted">Status</dt><dd class="mt-0.5"><x-status-siklus :siklus="$siklus" /></dd></div>
-                <div><dt class="text-ink-muted">Populasi awal</dt><dd class="mt-0.5 font-semibold">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
+                <div><dt class="text-ink-muted">Jumlah ayam awal</dt><dd class="mt-0.5 font-semibold">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
                 <div><dt class="text-ink-muted">Strain</dt><dd class="mt-0.5 font-semibold">{{ $siklus->strain_doc ?: '–' }}</dd></div>
                 <div><dt class="text-ink-muted">Standar</dt><dd class="mt-0.5 font-semibold">{{ $standar ? $standar.' baris' : 'Belum ada' }}</dd></div>
             </dl>

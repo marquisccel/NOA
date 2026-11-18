@@ -44,7 +44,7 @@
                                     <th class="py-2 pe-4">Pakan kumulatif (sak)</th>
                                     <th class="py-2 pe-4">Bobot (g)</th>
                                     <th class="py-2 pe-4">FCR</th>
-                                    <th class="py-2">Feed intake (g/ekor)</th>
+                                    <th class="py-2">Pakan per ekor (g/ekor)</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-gray-900">

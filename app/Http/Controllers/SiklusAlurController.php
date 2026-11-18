@@ -152,7 +152,7 @@ class SiklusAlurController extends Controller
         return $request->validate([
             'tanggal_panen' => ['required', 'date', 'after_or_equal:'.$siklus->tanggal_masuk->toDateString()],
             'tanggal_rechick' => ['nullable', 'date', 'after_or_equal:tanggal_panen'],
-        ], [], ['tanggal_panen' => 'tanggal panen terakhir', 'tanggal_rechick' => 'rencana re-chick-in']);
+        ], [], ['tanggal_panen' => 'tanggal panen terakhir', 'tanggal_rechick' => 'rencana ayam masuk berikutnya']);
     }
 
     /** @return array<string, mixed> */

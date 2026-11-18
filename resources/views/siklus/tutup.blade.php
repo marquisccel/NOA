@@ -41,7 +41,7 @@
                 <h2 class="text-base font-bold">Data penutupan</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-field name="tanggal_panen" label="Tanggal panen terakhir *" type="date" :value="$panenTerakhir" required />
-                    <x-field name="tanggal_rechick" label="Rencana re-chick-in" type="date" />
+                    <x-field name="tanggal_rechick" label="Rencana ayam masuk berikutnya" type="date" />
                 </div>
                 <p class="text-xs text-ink-muted">Re-chick-in = tanggal DOC berikutnya masuk ke {{ $siklus->kandang->nama_farm }}. Kandang dapat membuka siklus baru setelah siklus ini ditutup.</p>
 
@@ -55,7 +55,7 @@
                             @else<x-icon name="info" class="size-4 text-warning" /> RHPP belum diinput — <a href="{{ route('rhpp.form', $siklus) }}" class="font-semibold text-ink-brand underline">input RHPP</a>@endif
                         </li>
                         <li class="flex items-center gap-2"><x-icon name="{{ $rhpp ? 'check' : 'minus' }}" class="size-4 {{ $rhpp ? 'text-success-text' : 'text-ink-muted' }}" /> Rekonsiliasi ditinjau</li>
-                        @if ($p['selisih_populasi'] !== 0)<li class="flex items-center gap-2"><x-icon name="info" class="size-4 text-info" /> Selisih populasi {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor tetap tercatat</li>@endif
+                        @if ($p['selisih_populasi'] !== 0)<li class="flex items-center gap-2"><x-icon name="info" class="size-4 text-info" /> Selisih jumlah ayam {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor tetap tercatat</li>@endif
                     </ul>
                 @endif
 
@@ -78,7 +78,7 @@
                         ['Deplesi', F::angka($p['deplesi_persen']).'%'],
                         ['FCR', F::angka($p['fcr'], 3)],
                         ['IP', F::angka($p['ip'], 0)],
-                        ['Selisih populasi', F::angka(abs($p['selisih_populasi']), 0).' ekor'],
+                        ['Selisih jumlah ayam', F::angka(abs($p['selisih_populasi']), 0).' ekor'],
                     ] as [$k, $v])
                         <div class="flex justify-between gap-3"><dt class="text-ink-secondary">{{ $k }}</dt><dd class="font-semibold">{{ $v }}</dd></div>
                     @endforeach

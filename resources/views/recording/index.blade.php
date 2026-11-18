@@ -43,7 +43,7 @@
             @if ($terparaf->isNotEmpty() && ! $siklus->isTerkunci())
                 <x-alert variant="info">
                     <p class="font-semibold">Baris terparaf terkunci</p>
-                    <p>Baris yang sudah diparaf oleh {{ $ppl }} tidak dapat diubah agar tetap sah sebagai bukti saat rekonsiliasi (R11). Bila ada kesalahan, catat koreksi di hari berikutnya dan konfirmasi dengan PPL.</p>
+                    <p>Baris yang sudah diparaf oleh {{ $ppl }} tidak dapat diubah agar tetap sah sebagai bukti saat dicocokkan dengan RHPP. Bila ada kesalahan, catat koreksi di hari berikutnya dan konfirmasi dengan PPL.</p>
                 </x-alert>
             @endif
 
@@ -129,7 +129,7 @@
                                                 <div x-cloak :class="buka ? 'block' : 'hidden'" class="absolute left-0 top-full z-20 mt-1 w-60 space-y-2.5 rounded-md border border-line bg-surface p-3 shadow-lg">
                                                     <label for="paraf-{{ $r->id }}" class="block text-xs font-semibold">Tanggal paraf PPL</label>
                                                     <input id="paraf-{{ $r->id }}" type="date" name="tanggal_paraf" value="{{ now()->toDateString() }}" min="{{ $r->tanggal->toDateString() }}" max="{{ now()->toDateString() }}" required class="block min-h-11 w-full rounded-md border border-line-control bg-surface px-3 text-base">
-                                                    <p class="text-xs text-ink-muted">Setelah ditandai, baris ini terkunci (R11).</p>
+                                                    <p class="text-xs text-ink-muted">Setelah ditandai, baris ini terkunci.</p>
                                                     <x-button class="w-full">Tandai diparaf</x-button>
                                                 </div>
                                             </form>

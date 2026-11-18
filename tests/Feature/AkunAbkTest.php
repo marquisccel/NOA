@@ -251,7 +251,7 @@ class AkunAbkTest extends TestCase
 
     public function test_dashboard_peternak_tetap_normal(): void
     {
-        $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->assertSee('Farm Rahasia Harga')->assertSee('Recording');
+        $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->assertSee('Farm Rahasia Harga')->assertSee('Buka detail siklus');
     }
 
     public function test_navigasi_peternak_memuat_menu_abk(): void

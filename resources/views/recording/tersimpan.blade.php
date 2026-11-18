@@ -36,7 +36,7 @@
                         @if ($deplesiStd !== null)<dd class="text-xs text-ink-muted">std {{ F::angka($deplesiStd) }}% · {{ $deplDiAtas ? 'di atas' : 'di bawah atau sama' }}</dd>@endif
                     </div>
                     <div class="rounded-md border border-line-subtle p-3.5">
-                        <dt class="text-xs text-ink-secondary">Populasi kini</dt>
+                        <dt class="text-xs text-ink-secondary">Ayam hidup kini</dt>
                         <dd class="mt-1 font-heading text-2xl font-semibold">{{ F::angka($b['ayam_hidup'], 0) }} <span class="text-sm font-medium text-ink-secondary">ekor</span></dd>
                         <dd class="text-xs text-ink-muted">dari {{ F::angka($siklus->populasi, 0) }}</dd>
                     </div>

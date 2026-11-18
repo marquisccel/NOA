@@ -35,7 +35,7 @@ class UiFondasiTest extends TestCase
     {
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
-        foreach (['Utama', 'Manajemen', 'Dashboard', 'Kandang &amp; Siklus', 'Pengguna &amp; Akses', 'Pengaturan', 'Peternak Plasma', 'Pak Budi Santoso', '>PB<', 'Ciutkan sidebar'] as $teks) {
+        foreach (['Utama', 'Manajemen', 'Dashboard', 'Kandang &amp; Siklus', 'Pengguna &amp; Akses', 'Pengaturan', 'Peternak Plasma', 'Pak Budi Santoso', 'Ciutkan sidebar'] as $teks) {
             $this->assertStringContainsString($teks, $html, "Shell peternak tidak memuat: {$teks}");
         }
     }
@@ -85,11 +85,11 @@ class UiFondasiTest extends TestCase
         $this->assertStringContainsString('id="drawer-menu"', $html);
     }
 
-    public function test_judul_halaman_dan_remah_roti(): void
+    public function test_topbar_hanya_judul_halaman_tanpa_remah_roti_dan_tanpa_avatar(): void
     {
         $this->actingAs($this->peternak)->get(route('dashboard'))
             ->assertSee('<title>Dashboard · NOA</title>', false)
-            ->assertSee('Jejak halaman', false);
+            ->assertDontSee('Jejak halaman', false)->assertDontSee('Beranda')->assertDontSee('>PB<', false);
     }
 
     public function test_judul_halaman_lama_diambil_dari_slot_header(): void

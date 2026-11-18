@@ -45,7 +45,7 @@
                 <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Data saat ini</p>
                 <dl class="space-y-2.5 text-sm">
                     @foreach ([
-                        ['Populasi awal', F::angka($siklus->populasi, 0).' ekor'],
+                        ['Jumlah ayam awal', F::angka($siklus->populasi, 0).' ekor'],
                         ['Deplesi'.($hari_terakhir ? ' s.d. hari ke-'.$hari_terakhir : ''), F::angka($deplesi, 0).' ekor · '.F::angka($deplesi_persen).'%'],
                         ['Populasi tersisa', F::angka($tersisa, 0).' ekor'],
                         ['Pakan terpakai', F::angka($pakan_sak).' sak'],

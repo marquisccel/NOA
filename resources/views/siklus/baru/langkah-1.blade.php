@@ -13,7 +13,7 @@
         <div class="grid gap-4 sm:grid-cols-2">
             <x-field name="tanggal_masuk" label="Tanggal DOC masuk *" type="date" :value="$d['tanggal_masuk'] ?? null" required autofocus />
             <div>
-                <x-field name="populasi" label="Populasi awal (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$d['populasi'] ?? null" required
+                <x-field name="populasi" label="Jumlah ayam awal (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$d['populasi'] ?? null" required
                          :hint="'Kapasitas kandang '.number_format($kandang->kapasitas, 0, ',', '.').' ekor.'" />
             </div>
             <x-field name="strain_doc" label="Strain DOC *" :value="$d['strain_doc'] ?? null" placeholder="CP 707" required />

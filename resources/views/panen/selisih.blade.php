@@ -4,7 +4,7 @@
     $selisih = $p['selisih_populasi'];
     $tanda = $selisih === 0 ? '' : ($selisih > 0 ? '−' : '+');
     $baris = [
-        ['Populasi awal (DOC)', F::angka($p['populasi'], 0).' ekor', false],
+        ['Jumlah ayam awal (DOC)', F::angka($p['populasi'], 0).' ekor', false],
         ['Ayam mati (recording)', F::angka($p['mati'], 0).' ekor', false],
         ['Ayam afkir (recording)', F::angka($p['afkir'], 0).' ekor', false],
         ['Total ekor panen ('.$p['jumlah_tahap'].' tahap)', F::angka($p['total_ekor'], 0).' ekor', false],
@@ -13,15 +13,15 @@
     ];
 @endphp
 
-<x-app-layout title="Selisih populasi" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Selisih populasi']]">
+<x-app-layout title="Selisih jumlah ayam" :siklus="$siklus"
+    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Selisih jumlah ayam']]">
     <x-page lebar="max-w-3xl">
-        <x-page-header title="Selisih populasi" subtitle="Panen + deplesi dibandingkan populasi awal" />
+        <x-page-header title="Selisih jumlah ayam" subtitle="Panen + deplesi dibandingkan populasi awal" />
 
         @if ($selisih === 0)
             <x-alert variant="success"><p class="font-semibold">Populasi seimbang</p><p>Ekor panen ditambah deplesi sama dengan populasi awal.</p></x-alert>
         @elseif ($selisih > 0)
-            <x-alert variant="warning"><p class="font-semibold">Selisih populasi: {{ F::angka($selisih, 0) }} ekor belum tercatat</p></x-alert>
+            <x-alert variant="warning"><p class="font-semibold">Selisih jumlah ayam: {{ F::angka($selisih, 0) }} ekor belum tercatat</p></x-alert>
         @else
             <x-alert variant="warning"><p class="font-semibold">Panen + deplesi melebihi populasi awal sebanyak {{ F::angka(abs($selisih), 0) }} ekor</p></x-alert>
         @endif

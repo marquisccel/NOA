@@ -34,24 +34,13 @@
                     <a href="{{ route('dashboard') }}" aria-label="NOA, ke dashboard"><x-logo /></a>
                     <span class="h-7 w-px bg-line" aria-hidden="true"></span>
                     <div class="min-w-0">
-                        <nav aria-label="Jejak halaman" class="flex items-center gap-1.5 text-[13px] font-medium text-ink-secondary">
-                            @foreach ($remah as $i => $r)
-                                @if ($i > 0)<span class="text-ink-disabled" aria-hidden="true">/</span>@endif
-                                @if (isset($r[1]) && $i < count($remah) - 1)
-                                    <a href="{{ $r[1] }}" class="truncate hover:text-ink">{{ $r[0] }}</a>
-                                @else
-                                    <span class="truncate" @if ($i === count($remah) - 1) aria-current="page" @endif>{{ $r[0] }}</span>
-                                @endif
-                            @endforeach
-                        </nav>
-                        <p class="truncate font-heading text-[17px] font-semibold leading-snug text-ink">{{ $judul ?? 'NOA' }}</p>
+                        <p class="truncate font-heading text-xl font-semibold leading-snug text-ink">{{ $judul ?? 'NOA' }}</p>
                     </div>
                 </div>
 
                 <div class="relative" x-data="{ buka: false }" @click.outside="buka = false" @keydown.escape="buka = false">
                     <button type="button" @click="buka = ! buka" :aria-expanded="buka.toString()" aria-haspopup="menu"
-                        class="flex h-11 items-center gap-2.5 rounded-md py-0 pl-1 pr-2.5 hover:bg-state-hover">
-                        <span class="grid size-9 place-items-center rounded-full bg-brand text-[13px] font-bold text-white">{{ $user->inisial() }}</span>
+                        class="flex h-11 items-center gap-2.5 rounded-md px-2.5 hover:bg-state-hover">
                         <span class="flex flex-col items-start gap-0.5 text-left">
                             <span class="text-[13px] font-semibold leading-none text-ink">{{ $user->name }}</span>
                             <x-badge variant="brand">{{ $user->labelPeran() }}</x-badge>
@@ -79,10 +68,8 @@
                     <x-icon name="menu" />
                 </button>
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs text-ink-muted">{{ collect($remah)->pluck(0)->slice(0, -1)->implode(' / ') ?: 'NOA' }}</p>
-                    <p class="truncate font-heading text-base font-semibold leading-snug">{{ $judul ?? 'NOA' }}</p>
+                    <p class="truncate font-heading text-lg font-semibold leading-snug">{{ $judul ?? 'NOA' }}</p>
                 </div>
-                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-[13px] font-bold text-white" aria-hidden="true">{{ $user->inisial() }}</span>
             </header>
 
             <div class="flex min-h-0 flex-1 gap-5 md:p-5 lg:gap-6 lg:p-6 print:p-0">
@@ -145,7 +132,6 @@
                     <button type="button" @click="drawer = false" aria-label="Tutup menu" class="grid size-11 place-items-center rounded-md hover:bg-state-hover"><x-icon name="x" /></button>
                 </div>
                 <div class="flex items-center gap-2.5 rounded-md bg-page p-3">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-[13px] font-bold text-white">{{ $user->inisial() }}</span>
                     <span class="min-w-0">
                         <span class="block truncate text-[13px] font-semibold">{{ $user->name }}</span>
                         <x-badge variant="brand" class="mt-1">{{ $user->labelPeran() }}</x-badge>

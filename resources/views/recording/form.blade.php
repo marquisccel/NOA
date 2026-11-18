@@ -178,7 +178,7 @@
                   onsubmit="return confirm('Tandai sudah diparaf PPL? Baris ini tidak bisa disunting lagi.')">
                 @csrf @method('PATCH')
                 <h2 class="font-heading text-base font-semibold">Tandai sudah diparaf PPL</h2>
-                <p class="text-[13px] text-ink-secondary">Paraf PPL berarti petugas inti sudah menyaksikan angka ini. Setelah ditandai, baris terkunci karena kekuatan buktinya ada di situ (R11).</p>
+                <p class="text-[13px] text-ink-secondary">Paraf PPL berarti petugas inti sudah menyaksikan angka ini. Setelah ditandai, baris terkunci karena kekuatan buktinya ada di situ.</p>
                 <x-field name="tanggal_paraf" label="Tanggal paraf" type="date" :value="now()->toDateString()"
                          min="{{ $recording->tanggal->toDateString() }}" max="{{ now()->toDateString() }}" required />
                 <x-button>Tandai diparaf</x-button>

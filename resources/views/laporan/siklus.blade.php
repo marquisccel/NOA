@@ -27,16 +27,16 @@
         @endif
 
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-            <x-kpi label="Deplesi" :value="F::angka($p['deplesi_persen']).'%'" :caption="F::angka($p['deplesi'], 0).' ekor · daya hidup '.F::angka($p['liveability']).'%'" />
-            <x-kpi label="FCR" :value="F::angka($p['fcr'], 3)" :caption="$sudahPanen ? F::angka($p['pakan_bersih_kg'], 0).' kg ÷ '.F::angka($p['total_tonase'], 0).' kg' : null" />
-            <x-kpi label="ABW panen" :value="F::angka($p['abw'], 3).' kg'" :caption="$sudahPanen ? F::angka($p['total_ekor'], 0).' ekor' : null" />
-            <x-kpi label="IP" :value="F::angka($p['ip'], 0)" caption="Rumus kemitraan" />
+            <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($p['deplesi_persen']).'%'" :caption="F::angka($p['deplesi'], 0).' ekor · daya hidup '.F::angka($p['liveability']).'%'" />
+            <x-kpi label="FCR" istilah="fcr" :value="F::angka($p['fcr'], 3)" :caption="$sudahPanen ? F::angka($p['pakan_bersih_kg'], 0).' kg ÷ '.F::angka($p['total_tonase'], 0).' kg' : null" />
+            <x-kpi label="ABW panen" istilah="abw" :value="F::angka($p['abw'], 3).' kg'" :caption="$sudahPanen ? F::angka($p['total_ekor'], 0).' ekor' : null" />
+            <x-kpi label="IP" istilah="ip" :value="F::angka($p['ip'], 0)" caption="Rumus kemitraan" />
             <x-kpi label="Umur panen" :value="F::angka($p['umur_panen']).' hari'" :caption="$sudahPanen ? 'Berbobot '.$p['jumlah_tahap'].' tahap' : null" />
             <x-kpi label="Biaya produksi" :value="$biaya['per_kg'] === null ? '–' : 'Rp '.F::angka($biaya['per_kg'], 0)" :caption="'per kg · total '.($biaya['lengkap'] ? $rp($biaya['total']) : $rp($biaya['total']).' (belum lengkap)')" />
         </div>
 
         @if ($p['selisih_populasi'] !== 0 && $sudahPanen)
-            <x-alert variant="warning"><p class="font-semibold">Selisih populasi {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</p><p>Panen + deplesi ≠ populasi awal. <a href="{{ route('panen.selisih', $siklus) }}" class="font-semibold underline">Lihat rincian</a></p></x-alert>
+            <x-alert variant="warning"><p class="font-semibold">Selisih jumlah ayam {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</p><p>Panen + deplesi ≠ populasi awal. <a href="{{ route('panen.selisih', $siklus) }}" class="font-semibold underline">Lihat rincian</a></p></x-alert>
         @endif
 
         <section class="space-y-3" aria-labelledby="biaya-judul">
@@ -78,7 +78,7 @@
                         ['Ayam mati', F::angka($p['mati'], 0).' ekor'],
                         ['Ayam afkir', F::angka($p['afkir'], 0).' ekor'],
                         ['Ayam dipanen', F::angka($p['total_ekor'], 0).' ekor'],
-                        ['Selisih populasi', F::angka(abs($p['selisih_populasi']), 0).' ekor'],
+                        ['Selisih jumlah ayam', F::angka(abs($p['selisih_populasi']), 0).' ekor'],
                         ['Tonase panen', F::angka($p['total_tonase'], 0).' kg'],
                         ['Pakan terpakai', F::angka($p['pakan_bersih_kg'], 0).' kg'],
                         ['Sisa pakan', F::angka($sisaSak, 1).' sak'],

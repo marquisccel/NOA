@@ -190,7 +190,7 @@ class PanenPerformaTest extends TestCase
         Panen::query()->delete();
         $this->panen('2026-12-03', 2900, 5750);
         $this->assertSame(4, $this->performa()['selisih_populasi']);
-        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('Selisih populasi: 4 ekor belum tercatat');
+        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()->assertSee('Selisih jumlah ayam: 4 ekor belum tercatat');
     }
 
     public function test_selisih_negatif_memunculkan_peringatan_saat_simpan(): void

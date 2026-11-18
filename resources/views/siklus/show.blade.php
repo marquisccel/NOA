@@ -13,11 +13,13 @@
         @if ($siklus->isTerbuka() && ! $r['standar_ada'])
             <x-alert variant="info">
                 <span class="flex flex-wrap items-center justify-between gap-2">
-                    <span>Tabel standar harian belum diunggah untuk siklus ini. Kolom standar tampil “–” dan perbandingan harian belum berjalan.</span>
-                    <a href="{{ route('siklus.standar', $siklus) }}" class="inline-flex min-h-11 items-center font-bold underline">Unggah standar</a>
+                    <span>Target harian dari inti belum diunggah (boleh menyusul). Tanpa itu, kolom target tampil “–” dan catatan Anda belum dibandingkan dengan target.</span>
+                    <a href="{{ route('siklus.standar', $siklus) }}" class="inline-flex min-h-11 items-center font-bold underline">Unggah target harian</a>
                 </span>
             </x-alert>
         @endif
+
+        <x-langkah-berikutnya :siklus="$siklus" />
 
         <x-page-header title="Ringkasan siklus"
             :subtitle="$tutup
@@ -38,29 +40,29 @@
             {{-- Angka final siklus (R10: kosong sampai ada panen) --}}
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
                 <x-kpi label="Total ekor panen" :value="$f['jumlah_tahap'] ? F::angka($f['total_ekor'], 0).' ekor' : '–'" :caption="'Dari '.F::angka($siklus->populasi, 0).' ekor DOC'" />
-                <x-kpi label="Deplesi" :value="F::angka($f['deplesi_persen']).'%'" :caption="F::angka($f['deplesi'], 0).' ekor · daya hidup '.F::angka($f['liveability']).'%'" />
-                <x-kpi label="FCR" :value="F::angka($f['fcr'], 3)" :caption="$f['fcr'] !== null ? 'Pakan '.F::angka($f['pakan_bersih_kg'], 0).' kg ÷ tonase' : 'Muncul setelah ada panen'" />
-                <x-kpi label="ABW panen" :value="$f['abw'] !== null ? F::angka($f['abw'], 2).' kg' : '–'" :caption="$f['jumlah_tahap'] ? 'Tonase '.F::angka($f['total_tonase'], 0).' kg' : null" />
+                <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($f['deplesi_persen']).'%'" :caption="F::angka($f['deplesi'], 0).' ekor · daya hidup '.F::angka($f['liveability']).'%'" />
+                <x-kpi label="FCR" istilah="fcr" :value="F::angka($f['fcr'], 3)" :caption="$f['fcr'] !== null ? 'Pakan '.F::angka($f['pakan_bersih_kg'], 0).' kg ÷ tonase' : 'Muncul setelah ada panen'" />
+                <x-kpi label="ABW panen" istilah="abw" :value="$f['abw'] !== null ? F::angka($f['abw'], 2).' kg' : '–'" :caption="$f['jumlah_tahap'] ? 'Tonase '.F::angka($f['total_tonase'], 0).' kg' : null" />
                 <x-kpi label="Umur panen" :value="$f['umur_panen'] !== null ? F::angka($f['umur_panen'], 1).' hari' : '–'" :caption="$f['jumlah_tahap'] ? 'Rata-rata berbobot '.$f['jumlah_tahap'].' tahap' : null" />
-                <x-kpi label="IP" :value="F::angka($f['ip'], 0)" caption="Dihitung dari data final" />
+                <x-kpi label="IP" istilah="ip" :value="F::angka($f['ip'], 0)" caption="Dihitung dari data final" />
             </div>
         @else
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
-                <x-kpi label="Populasi kini" :value="F::angka($r['populasi_kini'], 0).' ekor'" :caption="$r['ada_recording'] ? 'Dari '.F::angka($siklus->populasi, 0).' ekor DOC' : 'Populasi awal (DOC)'" />
-                <x-kpi label="Deplesi kumulatif" :value="$r['deplesi_persen'] !== null ? F::angka($r['deplesi_persen']).'%' : '–'">
+                <x-kpi label="Ayam hidup kini" istilah="populasi" :value="F::angka($r['populasi_kini'], 0).' ekor'" :caption="$r['ada_recording'] ? 'Dari '.F::angka($siklus->populasi, 0).' ekor DOC' : 'Jumlah ayam awal (DOC)'" />
+                <x-kpi label="Deplesi kumulatif" istilah="deplesi" :value="$r['deplesi_persen'] !== null ? F::angka($r['deplesi_persen']).'%' : '–'">
                     <p class="text-xs {{ $bandingWarna($r['deplesi_banding']) }}">
                         @if ($r['deplesi_persen'] === null) Muncul setelah recording pertama
                         @elseif ($r['deplesi_std'] === null) Standar –
                         @else Standar {{ F::angka($r['deplesi_std']) }}% · {{ $r['deplesi_banding'] }} @endif
                     </p>
                 </x-kpi>
-                <x-kpi label="FCR berjalan" :value="$r['fcr'] ? F::angka($r['fcr']['nilai'], 3) : '–'"
+                <x-kpi label="FCR berjalan" istilah="fcr" :value="$r['fcr'] ? F::angka($r['fcr']['nilai'], 3) : '–'"
                        :caption="$r['fcr'] ? 'Per hari ke-'.$r['fcr']['hari'].' · std '.($r['fcr']['std'] !== null ? F::angka($r['fcr']['std'], 3) : '–') : 'Butuh bobot (sampling)'" />
-                <x-kpi label="Feed intake" :value="$r['feed_intake'] !== null ? F::angka($r['feed_intake'], 0).' g/ekor' : '–'"
+                <x-kpi label="Pakan per ekor" :value="$r['feed_intake'] !== null ? F::angka($r['feed_intake'], 0).' g/ekor' : '–'"
                        :caption="$r['feed_intake'] !== null ? 'Standar '.($r['feed_intake_std'] !== null ? F::angka($r['feed_intake_std'], 0).' g/ekor' : '–') : 'Belum ada pakan terpakai'" />
-                <x-kpi label="Stok pakan" :value="$r['stok_sak'] !== null ? F::angka($r['stok_sak'], 0).' sak' : '–'"
+                <x-kpi label="Stok pakan" istilah="stok" :value="$r['stok_sak'] !== null ? F::angka($r['stok_sak'], 0).' sak' : '–'"
                        :caption="$r['stok_sak'] !== null ? 'Masuk '.F::angka($r['pakan_masuk_sak'], 0).' · terpakai '.F::angka($r['pakan_terpakai_sak'], 0).' sak' : 'Catat pakan masuk'" />
-                <x-kpi label="ABW terakhir" :value="$r['abw'] ? F::angka($r['abw']['gram'], 0).' g' : '–'"
+                <x-kpi label="ABW terakhir" istilah="abw" :value="$r['abw'] ? F::angka($r['abw']['gram'], 0).' g' : '–'"
                        :caption="$r['abw'] ? 'Hari ke-'.$r['abw']['hari'].' · std '.($r['abw']['std'] !== null ? F::angka($r['abw']['std'], 0).' g' : '–') : 'Belum ada sampling'" />
             </div>
         @endif

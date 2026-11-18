@@ -275,3 +275,14 @@ Fase ini sempat dikerjakan (commit 1e6342a) lalu **ditiadakan** atas keputusan p
 - Dipertahankan: `nama_ppl` dan `nama_inti` di data siklus, penanda "Diparaf PPL" yang dicatat plasma (R11)
 - Jika kelak diperlukan: akses tamu per siklus, undangan email, paraf digital PPL, dan dashboard inti opt-in sudah dipikirkan (lihat riwayat diskusi); tidak ada yang perlu dibongkar untuk menambahkannya
 - Migrasi: `2026_11_16_000001_hapus_peran_pengawas`; total 375 tes lulus
+
+### Perbaikan setelah uji coba pertama (18 Nov 2026)
+
+Masukan dari uji coba: istilah sulit dipahami orang awam, beberapa alur membingungkan, dan beberapa penyesuaian tampilan.
+
+- [x] Topbar hanya memuat judul halaman (tanpa remah roti "Beranda / ..."); gambar profil/inisial di samping nama pengguna dihapus (topbar desktop, topbar ponsel, dan drawer)
+- [x] "Aktivitas terbaru" pindah dari Dashboard menjadi menu sendiri **Aktivitas** (dikelompokkan per tanggal, tiap baris menaut ke halamannya, filter kandang dan jenis catatan, halaman per 25)
+- [x] Bahasa awam: tanda tanya "?" di samping istilah teknis (Deplesi, FCR, IP, ABW, Stok pakan, Selisih jumlah ayam, ...) berisi arti dan cara membaca; halaman **Bantuan** (menu baru) memuat alur satu siklus dalam 7 langkah dan 19 istilah; kamus ada di `config/istilah.php`
+- [x] Penggantian kata: "Populasi kini" → "Ayam hidup kini", "Populasi awal" → "Jumlah ayam awal", "Selisih populasi" → "Selisih jumlah ayam", "Feed intake" → "Pakan per ekor", "re-chick-in" → "ayam masuk berikutnya"; kode aturan internal (R10, R11) dibuang dari teks
+- [x] Alur: kartu **"Langkah berikutnya"** di Ringkasan Siklus menunjuk satu tindakan sesuai status dan data (isi catatan hari ini, timbang sampel/catat obat, panen, input RHPP, cocokkan, tutup, laporan/siklus baru); langkah target harian di wizard ditulis ulang dan "Lewati" menjadi tombol utama bila belum ada berkas
+- [x] Uji: 12 baru, total 387 lulus

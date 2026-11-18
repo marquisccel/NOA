@@ -97,9 +97,9 @@ class UiFase5Test extends TestCase
         $this->rekam();
         $this->panenTiga();
 
-        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertSee('Selisih populasi: 16 ekor belum tercatat')->assertSee('NOA tidak menyeimbangkan angka otomatis');
+        $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertSee('Selisih jumlah ayam: 16 ekor belum tercatat')->assertSee('NOA tidak menyeimbangkan angka otomatis');
         $this->actingAs($this->peternak)->get(route('panen.selisih', $this->siklus))->assertOk()
-            ->assertSee('Populasi awal (DOC)')->assertSee('Ayam mati (recording)')->assertSee('86 ekor')->assertSee('Ayam afkir (recording)')->assertSee('4.984 ekor')->assertSee('−16 ekor')
+            ->assertSee('Jumlah ayam awal (DOC)')->assertSee('Ayam mati (recording)')->assertSee('86 ekor')->assertSee('Ayam afkir (recording)')->assertSee('4.984 ekor')->assertSee('−16 ekor')
             ->assertSee('Periksa recording')->assertSee('Periksa tahap panen');
     }
 
@@ -109,7 +109,7 @@ class UiFase5Test extends TestCase
         $this->panenTiga();
 
         $this->actingAs($this->peternak)->get(route('panen.ringkasan', $this->siklus))->assertOk()
-            ->assertSee('Ringkasan panen')->assertSee('2,08%')->assertSee('97,92%')->assertSee('Cara hitung')->assertSee('1.400×29 + 1.600×32 + 1.880×35')->assertSee('10.016 ÷ 4.880')->assertSee('Selisih populasi');
+            ->assertSee('Ringkasan panen')->assertSee('2,08%')->assertSee('97,92%')->assertSee('Cara hitung')->assertSee('1.400×29 + 1.600×32 + 1.880×35')->assertSee('10.016 ÷ 4.880')->assertSee('Selisih jumlah ayam');
     }
 
     public function test_form_tahap_panen_memuat_umur_sisa_tercatat_dan_pratinjau(): void
@@ -208,9 +208,9 @@ class UiFase5Test extends TestCase
         $this->assertSame('rekonsiliasi', $this->siklus->fresh()->status);
 
         $this->actingAs($this->peternak)->get(route('siklus.tutup', $this->siklus))->assertOk()
-            ->assertSee('Tutup siklus')->assertSee('Langkah terakhir setelah rekonsiliasi')->assertSee('Tanggal panen terakhir *')->assertSee('Rencana re-chick-in')
+            ->assertSee('Tutup siklus')->assertSee('Langkah terakhir setelah rekonsiliasi')->assertSee('Tanggal panen terakhir *')->assertSee('Rencana ayam masuk berikutnya')
             ->assertSee('Ringkasan akhir')->assertSee('Diterima 8 Nov 2026')->assertSee('Ya, tutup &amp; kunci', false)->assertSee('Tutup Siklus 1?')
-            ->assertSee('Selisih populasi 16 ekor tetap tercatat');
+            ->assertSee('Selisih jumlah ayam 16 ekor tetap tercatat');
 
         $this->actingAs($this->peternak)->post(route('siklus.tutup.simpan', $this->siklus), ['tanggal_panen' => '2026-10-30', 'tanggal_rechick' => '2026-11-20'])->assertRedirect(route('siklus.show', $this->siklus));
 

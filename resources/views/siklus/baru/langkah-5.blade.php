@@ -19,7 +19,7 @@
         @foreach ([
             [1, 'Identitas & DOC', [
                 ['DOC masuk', $tgl($i['tanggal_masuk'] ?? null)],
-                ['Populasi awal', F::angka($i['populasi'] ?? 0, 0).' ekor'],
+                ['Jumlah ayam awal', F::angka($i['populasi'] ?? 0, 0).' ekor'],
                 ['Strain · pakan', ($i['strain_doc'] ?? '–').' · '.($i['jenis_pakan'] ?? '–')],
                 ['PPL · inti', ($i['nama_ppl'] ?? '–').' · '.($i['nama_inti'] ?? '–')],
                 ['Bobot per sak', rtrim(rtrim(number_format((float) ($i['bobot_sak_kg'] ?? 0), 2, ',', '.'), '0'), ',').' kg'],

@@ -8,7 +8,7 @@
             <tr>
                 <th scope="col">Siklus</th>
                 <th scope="col">DOC masuk</th>
-                <th scope="col">Populasi awal</th>
+                <th scope="col">Jumlah ayam awal</th>
                 <th scope="col">Status akhir</th>
                 <th scope="col">Panen terakhir</th>
                 <th scope="col">Re-chick-in</th>

@@ -8,7 +8,7 @@
 <x-app-layout title="Ringkasan panen" :siklus="$siklus"
     :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Ringkasan']]">
     <x-page>
-        <x-page-header title="Ringkasan panen" subtitle="FCR dan IP baru dihitung setelah ada catatan panen (R10)">
+        <x-page-header title="Ringkasan panen" subtitle="FCR dan IP baru dihitung setelah ada catatan panen">
             <x-slot name="actions"><x-button variant="secondary" :href="route('panen.index', $siklus)">Lihat tahap</x-button></x-slot>
         </x-page-header>
 
@@ -21,11 +21,11 @@
                 <x-kpi label="Total ekor panen" icon="truck" :value="F::angka($p['total_ekor'], 0).' ekor'" :caption="$p['jumlah_tahap'].' tahap'" />
                 <x-kpi label="Total tonase" icon="scale" :value="F::angka($p['total_tonase'], 0).' kg'" :caption="'Jumlah BTPA '.($p['jumlah_tahap'] - $p['tahap_tanpa_btpa'])" />
                 <x-kpi label="Umur panen" icon="timer" :value="F::angka($p['umur_panen']).' hari'" caption="Rata-rata berbobot jumlah ekor" />
-                <x-kpi label="ABW panen" icon="chart-column" :value="F::angka($p['abw'], 3).' kg'" caption="Tonase ÷ ekor" />
-                <x-kpi label="Deplesi" :value="F::angka($p['deplesi_persen']).'%'" :caption="F::angka($p['deplesi'], 0).' ekor · daya hidup '.F::angka($p['liveability']).'%'" />
-                <x-kpi label="FCR" :value="F::angka($p['fcr'], 3)" :caption="'Pakan '.F::angka($p['pakan_bersih_kg'], 0).' kg ÷ '.F::angka($p['total_tonase'], 0).' kg'" />
-                <x-kpi label="IP" :value="F::angka($p['ip'], 0)" caption="Rumus kemitraan" />
-                <x-kpi label="Selisih populasi" :value="F::angka(abs($selisih), 0).' ekor'" :caption="$selisih === 0 ? 'Seimbang' : 'Belum tercatat — lihat rincian'">
+                <x-kpi label="ABW panen" istilah="abw" icon="chart-column" :value="F::angka($p['abw'], 3).' kg'" caption="Tonase ÷ ekor" />
+                <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($p['deplesi_persen']).'%'" :caption="F::angka($p['deplesi'], 0).' ekor · daya hidup '.F::angka($p['liveability']).'%'" />
+                <x-kpi label="FCR" istilah="fcr" :value="F::angka($p['fcr'], 3)" :caption="'Pakan '.F::angka($p['pakan_bersih_kg'], 0).' kg ÷ '.F::angka($p['total_tonase'], 0).' kg'" />
+                <x-kpi label="IP" istilah="ip" :value="F::angka($p['ip'], 0)" caption="Rumus kemitraan" />
+                <x-kpi label="Selisih jumlah ayam" istilah="selisih_populasi" :value="F::angka(abs($selisih), 0).' ekor'" :caption="$selisih === 0 ? 'Seimbang' : 'Belum tercatat — lihat rincian'">
                     @if ($selisih !== 0)<a href="{{ route('panen.selisih', $siklus) }}" class="inline-flex min-h-11 items-center text-[13px] font-semibold text-ink-brand hover:underline">Lihat rincian</a>@endif
                 </x-kpi>
             </div>

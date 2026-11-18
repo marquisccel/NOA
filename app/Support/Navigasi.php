@@ -35,6 +35,7 @@ class Navigasi
                 'label' => 'Utama',
                 'items' => [
                     self::item('Dashboard', 'layout-dashboard', 'dashboard', ['dashboard']),
+                    self::item('Aktivitas', 'history', 'aktivitas.index', ['aktivitas.*']),
                     self::item('Kandang & Siklus', 'warehouse', 'kandang.index', [
                         'kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.siklus', 'laporan.cetak',
                     ]),
@@ -45,6 +46,7 @@ class Navigasi
                 'items' => [
                     self::item('Laporan', 'chart-column', 'laporan.index', ['laporan.index']),
                     self::item('Pengguna & Akses', 'users', 'abk.index', ['abk.*']),
+                    self::item('Bantuan', 'info', 'bantuan', ['bantuan']),
                     self::item('Pengaturan', 'settings', 'profile.edit', ['profile.*']),
                 ],
             ],

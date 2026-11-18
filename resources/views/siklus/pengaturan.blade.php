@@ -32,7 +32,7 @@
                     </div>
                     <dl class="mt-3 grid gap-x-6 gap-y-3 text-[13px] sm:grid-cols-2">
                         <div><dt class="text-ink-muted">DOC masuk</dt><dd class="mt-0.5 font-semibold">{{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}</dd></div>
-                        <div><dt class="text-ink-muted">Populasi awal</dt><dd class="mt-0.5 font-semibold">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
+                        <div><dt class="text-ink-muted">Jumlah ayam awal</dt><dd class="mt-0.5 font-semibold">{{ F::angka($siklus->populasi, 0) }} ekor</dd></div>
                         <div><dt class="text-ink-muted">Strain · pakan</dt><dd class="mt-0.5 font-semibold">{{ $siklus->strain_doc ?: '–' }} · {{ $siklus->jenis_pakan ?: '–' }}</dd></div>
                         <div><dt class="text-ink-muted">PPL · inti</dt><dd class="mt-0.5 font-semibold">{{ $siklus->nama_ppl ?: '–' }} · {{ $siklus->nama_inti ?: '–' }}</dd></div>
                         <div><dt class="text-ink-muted">Bobot per sak</dt><dd class="mt-0.5 font-semibold">{{ rtrim(rtrim(number_format((float) $siklus->bobot_sak_kg, 2, ',', '.'), '0'), ',') }} kg</dd></div>

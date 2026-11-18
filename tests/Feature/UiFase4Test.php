@@ -181,7 +181,7 @@ class UiFase4Test extends TestCase
 
         $this->actingAs($this->peternak)->get(route('recording.tersimpan', [$this->siklus, 5]))->assertOk()
             ->assertSee('Recording hari ke-5 tersimpan')->assertSee('pakan 12,50 sak')->assertSee('ayam mati 3 ekor')->assertSee('Angka berjalan terbaru')
-            ->assertSee('Deplesi kumulatif')->assertSee('0,08%')->assertSee('Populasi kini')->assertSee('4.996')->assertSee('Stok pakan')->assertSee('FCR berjalan')
+            ->assertSee('Deplesi kumulatif')->assertSee('0,08%')->assertSee('Ayam hidup kini')->assertSee('4.996')->assertSee('Stok pakan')->assertSee('FCR berjalan')
             ->assertSee('Recording hari ke-1 belum diisi')->assertSee('Isi hari ke-1')->assertSee('Lihat riwayat')->assertSee('Selesai')
             ->assertSee('Stok pakan -2,50 sak')->assertSee('pengiriman pakan yang belum dicatat');
     }
