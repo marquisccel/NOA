@@ -32,3 +32,26 @@ if (adegan && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 
         }
     });
 }
+
+// Maskot ayam 3D: dimuat malas (three.js) hanya di layar lebar dan bila WebGL tersedia.
+const wadahAyam = document.querySelector('[data-ayam3d]');
+
+if (wadahAyam && window.matchMedia('(min-width: 1024px)').matches) {
+    const bisaWebgl = (() => {
+        try {
+            const c = document.createElement('canvas');
+
+            return !!(c.getContext('webgl2') || c.getContext('webgl'));
+        } catch (e) {
+            return false;
+        }
+    })();
+
+    if (bisaWebgl) {
+        import('./ayam3d.js')
+            .then((m) => m.mulaiAyam(wadahAyam, { gerakMinimal: window.matchMedia('(prefers-reduced-motion: reduce)').matches }))
+            .catch(() => { wadahAyam.style.display = 'none'; });
+    } else {
+        wadahAyam.style.display = 'none';
+    }
+}

@@ -38,7 +38,8 @@ class UiPutaran2Test extends TestCase
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
         $this->assertStringContainsString('noa-mark.webp', $html);
-        $this->assertStringContainsString('bg-brand" style="-webkit-mask', $html);
+        $this->assertStringContainsString('noa-wordmark.webp', $html);
+        $this->assertStringContainsString('dark:bg-brand-mint', $html);
         $this->assertStringNotContainsString('bg-[#FAF8F0] ring-1', $html);
     }
 
@@ -115,13 +116,14 @@ class UiPutaran2Test extends TestCase
     {
         $html = $this->get(route('login'))->assertOk()->getContent();
 
-        foreach (['data-adegan', 'data-kandang', 'class="lapisan"', 'kaca-form', 'Untuk peternak plasma', 'Catat tiap hari', 'Lihat hasilnya', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil'] as $penanda) {
+        foreach (['data-adegan', 'data-kandang', 'class="lapisan"', 'kaca-form', 'Untuk peternak plasma', 'Catat tiap hari', 'Lihat hasilnya', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam3d', 'data-colek'] as $penanda) {
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
-        $this->assertStringNotContainsString('<canvas', $html);
         $this->assertStringContainsString('noa-mark.webp', $html);
         $this->assertStringContainsString('noa-wordmark.webp', $html);
         $this->assertFileExists(resource_path('js/masuk.js'));
+        $this->assertFileExists(resource_path('js/ayam3d.js'));
+        $this->assertStringContainsString("import('./ayam3d.js')", file_get_contents(resource_path('js/masuk.js')));
         $this->assertStringContainsString('prefers-reduced-motion', file_get_contents(resource_path('css/app.css')));
     }
 }

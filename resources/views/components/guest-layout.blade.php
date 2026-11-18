@@ -44,28 +44,6 @@
                                 <ellipse cx="7" cy="44" rx="2.8" ry="5.6" transform="rotate(-28 7 44)" /><ellipse cx="13" cy="44" rx="2.8" ry="5.6" transform="rotate(28 13 44)" />
                             </g>
                         </symbol>
-                        <symbol id="ayam-putih" viewBox="0 0 48 48">
-                            <path d="M9 24Q1 14 8 9Q9 18 15 22Z" fill="#fff" stroke="#0000001f" stroke-width=".8" />
-                            <ellipse cx="22" cy="28" rx="15" ry="11" fill="#fff" stroke="#0000001f" stroke-width=".8" />
-                            <ellipse cx="21" cy="29" rx="8" ry="5" fill="#eee5d0" />
-                            <circle cx="36" cy="17" r="7" fill="#fff" stroke="#0000001f" stroke-width=".8" />
-                            <path d="M32.5 11.5Q33.5 6 36 10Q38.5 6 40 11.5Z" fill="#d9392b" />
-                            <ellipse cx="40" cy="23" rx="2.2" ry="3" fill="#d9392b" />
-                            <path d="M42 16.2 48 18.2 42 20.2Z" fill="#f0a31a" />
-                            <circle cx="38.2" cy="15.6" r="1.1" fill="#222" />
-                            <path d="M19 38V46M26 38V46M16.5 46H21.5M23.5 46H28.5" stroke="#e09b2a" stroke-width="2" stroke-linecap="round" fill="none" />
-                        </symbol>
-                        <symbol id="ayam-coklat" viewBox="0 0 48 48">
-                            <path d="M9 24Q1 14 8 9Q9 18 15 22Z" fill="#8f4f26" />
-                            <ellipse cx="22" cy="28" rx="15" ry="11" fill="#c47a3d" />
-                            <ellipse cx="21" cy="29" rx="8" ry="5" fill="#a6622d" />
-                            <circle cx="36" cy="17" r="7" fill="#c47a3d" />
-                            <path d="M32.5 11.5Q33.5 6 36 10Q38.5 6 40 11.5Z" fill="#d9392b" />
-                            <ellipse cx="40" cy="23" rx="2.2" ry="3" fill="#d9392b" />
-                            <path d="M42 16.2 48 18.2 42 20.2Z" fill="#f0a31a" />
-                            <circle cx="38.2" cy="15.6" r="1.1" fill="#222" />
-                            <path d="M19 38V46M26 38V46M16.5 46H21.5M23.5 46H28.5" stroke="#d99a2a" stroke-width="2" stroke-linecap="round" fill="none" />
-                        </symbol>
                     </defs>
 
                     <g class="bintang">
@@ -128,7 +106,7 @@
                     </g>
                 </svg>
 
-                {{-- Lapisan 4: ladang depan dengan barisan tanaman, dan ayam --}}
+                {{-- Lapisan 4: ladang depan dengan barisan tanaman --}}
                 <svg class="lapisan" style="--z:26" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
                     <path d="M-60 762C250 732 600 760 900 752S1400 738 1660 762V900H-60Z" fill="url(#g-tanah)" />
                     <g style="stroke:var(--baris)" stroke-width="2" opacity=".3" fill="none">
@@ -136,9 +114,8 @@
                             <path d="M{{ 800 + ($k * 200 - 800) * 0.22 }} 768L{{ $k * 200 }} 910" />
                         @endforeach
                     </g>
-                    <use href="#ayam-putih" x="330" y="792" width="80" height="80" class="ayam-patuk" />
-                    <use href="#ayam-coklat" x="470" y="812" width="66" height="66" class="ayam-patuk" style="animation-delay:-2.4s" />
-                    <use href="#ayam-putih" x="600" y="798" width="72" height="72" class="ayam-patuk" style="animation-delay:-4s" />
+
+
                 </svg>
 
                 {{-- Lapisan 5: gandum depan yang bergoyang --}}
@@ -158,13 +135,8 @@
         <div class="relative z-10 grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(480px,540px)]">
             {{-- Sisi kiri (layar lebar): sambutan --}}
             <section class="relative hidden flex-col px-10 py-8 lg:flex xl:px-16" data-hero>
-                <div class="naik flex items-center justify-between" style="--d:.05s">
+                <div class="naik flex items-center" style="--d:.05s">
                     <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="inline-flex"><x-logo /></a>
-                    <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
-                        class="kaca-chip grid size-11 place-items-center rounded-full text-ink-secondary transition hover:text-ink active:scale-95">
-                        <x-icon name="moon" class="size-[18px]" x-show="! gelap" />
-                        <x-icon name="sun" class="size-[18px]" x-show="gelap" x-cloak />
-                    </button>
                 </div>
 
                 <div class="mt-[clamp(1rem,5vh,3.5rem)] max-w-[640px] space-y-5">
@@ -186,28 +158,24 @@
                     </ol>
                 </div>
 
-                {{-- Kartu info melayang di atas ladang: gambaran isi aplikasi dengan bahasa peternak --}}
-                <div class="pointer-events-none absolute bottom-[13%] right-[3%] hidden w-[min(290px,36%)] space-y-3 xl:block [@media(max-height:700px)]:hidden" aria-hidden="true">
-                    <div class="naik" style="--d:.7s"><div class="chip-melayang kaca-chip flex items-center gap-3 rounded-2xl py-2.5 pl-3 pr-5" style="animation-delay:-1s">
-                        <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand-soft text-ink-brand"><x-icon name="clipboard-list" class="size-[18px]" /></span>
-                        <span><span class="block text-[11px] text-ink-muted">Kandang A · Hari ke-23</span><span class="block text-sm font-bold">Catatan hari ini terisi</span></span>
-                    </div></div>
-                    <div class="naik ml-8" style="--d:.85s"><div class="chip-melayang kaca-chip flex items-center gap-3 rounded-2xl py-2.5 pl-3 pr-5" style="animation-delay:-3.5s">
-                        <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-gold-soft text-ink-gold"><x-icon name="feather" class="size-[18px]" /></span>
-                        <span><span class="block text-[11px] text-ink-muted">Ayam hidup</span><span class="block text-sm font-bold">7.796 ekor · deplesi 2,1%</span></span>
-                    </div></div>
+                {{-- Maskot ayam 3D (three.js, dimuat malas hanya di layar lebar). Matanya mengikuti kursor; bila gagal dimuat, area ini kosong. --}}
+                <div data-ayam3d class="pointer-events-none absolute inset-x-0 bottom-[1%] h-[60%] [@media(max-height:600px)]:hidden" style="opacity:0;transition:opacity 1.2s">
+                    <canvas class="size-full"></canvas>
+                    <button type="button" data-colek tabindex="-1" aria-label="Colek ayam maskot" class="pointer-events-auto absolute rounded-full" style="cursor:pointer"></button>
                 </div>
             </section>
 
             {{-- Sisi kanan: kartu kaca berisi formulir --}}
-            <div class="auth relative flex min-h-screen flex-col items-center justify-center px-4 pb-8 pt-[84px] sm:px-8 lg:py-6">
-                <div class="absolute inset-x-4 top-5 flex items-center justify-between sm:inset-x-8 lg:hidden">
-                    <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk"><x-logo /></a>
-                    <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
-                        class="kaca-chip ml-auto grid size-11 place-items-center rounded-full text-ink-secondary transition hover:text-ink active:scale-95">
-                        <x-icon name="moon" class="size-[18px]" x-show="! gelap" />
-                        <x-icon name="sun" class="size-[18px]" x-show="gelap" x-cloak />
-                    </button>
+            <div class="auth relative flex min-h-screen flex-col items-center justify-center px-4 pb-8 pt-[84px] sm:px-8 lg:pb-6 lg:pt-[76px]">
+                <div class="absolute inset-x-4 top-5 sm:inset-x-8">
+                    <div class="mx-auto flex w-full max-w-[440px] items-center justify-between lg:justify-end">
+                        <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="lg:hidden"><x-logo /></a>
+                        <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
+                            class="kaca-chip grid size-11 place-items-center rounded-full text-ink-secondary transition hover:text-ink active:scale-95">
+                            <x-icon name="moon" class="size-[18px]" x-show="! gelap" />
+                            <x-icon name="sun" class="size-[18px]" x-show="gelap" x-cloak />
+                        </button>
+                    </div>
                 </div>
 
                 <main class="kaca-form naik flex w-full max-w-[440px] flex-col gap-5 p-7 sm:p-9 [@media(max-height:780px)]:gap-3.5 [@media(max-height:780px)]:p-6 [@media(max-height:780px)]:sm:p-7" style="--d:.2s">

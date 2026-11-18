@@ -6,7 +6,7 @@
 <x-guest-layout title="Masuk">
     <div class="space-y-2">
         <h1 class="font-heading text-[34px] font-semibold leading-[1.1] [@media(max-height:780px)]:text-[30px] tracking-[-0.035em]">Masuk ke NOA</h1>
-        <p class="text-[15px] leading-[22px] text-ink-secondary">Satu pintu masuk untuk Peternak dan ABK. Akses menyesuaikan peran akun Anda.</p>
+        <p class="text-[15px] leading-[22px] text-ink-secondary [@media(max-height:780px)]:hidden">Satu pintu masuk untuk Peternak dan ABK. Akses menyesuaikan peran akun Anda.</p>
     </div>
 
     @if (session('status'))
