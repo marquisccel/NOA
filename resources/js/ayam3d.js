@@ -311,6 +311,59 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
     bayangan.scale.set(3.8, 2.6, 1);
     adegan.add(bayangan);
 
+    // ---------- model GLB opsional ----------
+    // Bila ada berkas public/models/ayam.glb (hasil pahatan/AI), ia menggantikan ayam buatan kode di atas.
+    // Tanpa berkas itu, ayam kode tetap dipakai. Kepala dikenali dari nama simpul (head/kepala) bila ada.
+    let model = null;
+
+    (async () => {
+        const url = wadah.dataset.model || '/models/ayam.glb';
+        try {
+            const cek = await fetch(url, { method: 'HEAD' });
+            const jenis = cek.headers.get('content-type') || '';
+            if (!cek.ok || /html|json|text/i.test(jenis)) return;
+
+            const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+            const gltf = await new GLTFLoader().loadAsync(url);
+            const akar = gltf.scene;
+            const kotak = new THREE.Box3().setFromObject(akar);
+            const ukuran = kotak.getSize(new THREE.Vector3());
+            const skala = 3.7 / Math.max(0.001, ukuran.y);
+            akar.scale.setScalar(skala);
+            akar.position.set(-((kotak.min.x + kotak.max.x) / 2) * skala, -kotak.min.y * skala, -((kotak.min.z + kotak.max.z) / 2) * skala);
+
+            const pemegang = new THREE.Group();
+            pemegang.position.y = -1.55;
+            pemegang.rotation.y = 0.55;
+            pemegang.add(akar);
+
+            let kepalaNode = null;
+            akar.traverse((o) => {
+                if (o.isMesh && o.material) {
+                    o.material.envMapIntensity = 0.9;
+                    if (o.material.map) o.material.map.anisotropy = 4;
+                }
+                if (!kepalaNode && /^(head|kepala)/i.test(o.name || '')) kepalaNode = o;
+            });
+
+            let mixer = null;
+            if (gltf.animations && gltf.animations.length) {
+                mixer = new THREE.AnimationMixer(akar);
+                mixer.clipAction(gltf.animations[0]).play();
+            }
+
+            adegan.add(pemegang);
+            ayam.visible = false;
+            model = {
+                grup: pemegang, y0: -1.55, yaw0: 0.55, mixer, kepala: kepalaNode,
+                kepalaAwal: kepalaNode ? kepalaNode.rotation.clone() : null,
+            };
+            if (gerakMinimal) gambar();
+        } catch (e) {
+            // gagal memuat: ayam buatan kode tetap tampil
+        }
+    })();
+
     // ---------- ukuran ----------
     let lebar = 1;
     let tinggi = 1;
@@ -497,6 +550,21 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
             s.pangkal.rotation.x = -Math.abs(kepak) * 0.12;
         }
         ekor.rotation.x = 0.7 + Math.sin(t * 1.3) * 0.02 + (aksi.kepak >= 0 ? 0.1 : 0);
+
+        // model GLB: menoleh mengikuti kursor, bernapas, melompat
+        if (model) {
+            const cepatM = gerakMinimal ? 1 : 0.12;
+            model.grup.rotation.y = lerp(model.grup.rotation.y, model.yaw0 + pandang.yaw * 0.55, cepatM);
+            model.grup.rotation.x = lerp(model.grup.rotation.x, -pandang.pitch * 0.12, cepatM);
+            const nap = gerakMinimal ? 0 : Math.sin(t * 2.1);
+            model.grup.scale.set(1 - nap * 0.008, 1 + nap * 0.016, 1 - nap * 0.008);
+            model.grup.position.y = model.y0 + lompat;
+            if (model.kepala && model.kepalaAwal) {
+                model.kepala.rotation.y = model.kepalaAwal.y + pandang.yaw * 0.35;
+                model.kepala.rotation.x = model.kepalaAwal.x - pandang.pitch * 0.3;
+            }
+            if (model.mixer) model.mixer.update(1 / 60);
+        }
 
         // area klik mengikuti posisi ayam di layar
         const pusat = new THREE.Vector3(0, 0.4, 0).project(kamera);
