@@ -66,13 +66,7 @@
                     <aside class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
                         <x-shell-menu :grup="$grup" />
-                        <div class="space-y-1">
-                            <div class="hidden items-center justify-between gap-2 border-t border-line-subtle px-3 pt-3 xl:flex" :class="collapsed ? '!hidden' : ''">
-                                <div class="min-w-0">
-                                    <p class="truncate text-[13px] font-semibold text-ink">{{ $user->name }}</p>
-                                    <p class="text-xs text-ink-secondary">{{ $user->labelPeran() }}</p>
-                                </div>
-                            </div>
+                        <div class="space-y-1 border-t border-line-subtle pt-2">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" aria-label="Keluar" class="flex h-11 w-full items-center justify-center gap-2.5 rounded-md px-3 text-[13px] font-medium text-danger-text hover:bg-state-hover xl:justify-start" :class="collapsed ? 'xl:!justify-center' : ''">

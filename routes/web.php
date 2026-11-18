@@ -72,6 +72,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::put('sampling/{sampling}', [SamplingController::class, 'update'])->name('sampling.update');
     Route::delete('sampling/{sampling}', [SamplingController::class, 'destroy'])->name('sampling.destroy');
 
+    Route::get('siklus/{siklus}/panen/unduh', [PanenController::class, 'csv'])->name('panen.csv');
     Route::get('siklus/{siklus}/panen/baru', [PanenController::class, 'create'])->name('panen.create');
     Route::get('siklus/{siklus}/panen/ringkasan', [PanenController::class, 'ringkasan'])->name('panen.ringkasan');
     Route::get('siklus/{siklus}/panen/selisih', [PanenController::class, 'selisih'])->name('panen.selisih');
@@ -93,6 +94,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('siklus/{siklus}/rhpp/input', [RhppController::class, 'form'])->name('rhpp.form');
     Route::patch('siklus/{siklus}/rhpp/catatan', [RhppController::class, 'catatan'])->name('rhpp.catatan');
     Route::get('siklus/{siklus}/rhpp/lampiran', [RhppController::class, 'lampiran'])->name('rhpp.lampiran');
+    Route::get('siklus/{siklus}/rhpp/rekap', [RhppController::class, 'rekap'])->name('rhpp.rekap');
     Route::get('siklus/{siklus}/rhpp/cetak', [RhppController::class, 'cetak'])->name('rhpp.cetak');
 
     Route::get('aktivitas', AktivitasController::class)->name('aktivitas.index');

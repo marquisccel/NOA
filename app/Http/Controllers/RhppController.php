@@ -34,6 +34,23 @@ class RhppController extends Controller
         return view('rhpp.show', $this->data($siklus));
     }
 
+    /**
+     * Unduh rekap angka catatan peternak (CSV) untuk disandingkan dengan RHPP inti.
+     * Tersedia kapan saja; bila RHPP sudah diinput, kolom RHPP dan selisih ikut terisi.
+     */
+    public function rekap(Siklus $siklus): StreamedResponse
+    {
+        Gate::authorize('view', $siklus);
+
+        $data = $this->data($siklus);
+        $baris = [['Baris', 'Catatan peternak (NOA)', 'RHPP inti', 'Selisih (RHPP - peternak)', 'Penanda', 'Keterangan']];
+        foreach ($data['r']['baris'] as $b) {
+            $baris[] = [$b['label'], $b['peternak'] ?? '', $b['rhpp'] ?? '', $b['selisih'] ?? '', match ($b['status']) { 'sama' => 'Sama', 'berbeda' => 'Berbeda', 'tidak' => 'Tidak dibandingkan', default => '' }, $b['catatan'] ?? ''];
+        }
+
+        return LaporanController::unduhCsv($baris, 'rekap-pembanding-rhpp-'.str($siklus->kandang->nama_farm)->slug().'.csv');
+    }
+
     /** Lembar perbandingan untuk dibawa musyawarah dengan inti. */
     public function cetak(Siklus $siklus): View
     {

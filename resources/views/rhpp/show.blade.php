@@ -18,6 +18,9 @@
         <x-page-header :title="$rhpp ? 'Rekonsiliasi RHPP' : 'RHPP & Rekonsiliasi'"
             :subtitle="$rhpp ? $rhpp->nomor_rhpp.' · terbit '.$rhpp->tanggal_terbit->translatedFormat('j M Y').' · '.$r['jumlah_berbeda'].' dari '.$r['jumlah_dibandingkan'].' baris berbeda' : 'Hanya terlihat oleh peternak'">
             <x-slot name="actions">
+                @unless ($berjalan)
+                    <x-button variant="secondary" :href="route('rhpp.rekap', $siklus)"><x-icon name="download" class="size-4" /> Unduh rekap pembanding</x-button>
+                @endunless
                 @if ($rhpp)
                     @if ($bisaInput)<x-button variant="secondary" :href="route('rhpp.form', $siklus)">Ubah RHPP</x-button>@endif
                     <x-button variant="secondary" :href="route('rhpp.cetak', $siklus)" target="_blank" rel="noopener"><x-icon name="printer" class="size-4" /> Cetak lembar</x-button>

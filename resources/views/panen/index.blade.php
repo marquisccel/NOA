@@ -13,7 +13,10 @@
     <x-page>
         <x-page-header title="Panen & BTPA" subtitle="Setiap tahap dicatat dengan nomor BTPA. * umur panen rata-rata berbobot jumlah ekor.">
             <x-slot name="actions">
-                @if ($adaTahap)<x-button variant="secondary" :href="route('panen.ringkasan', $siklus)">Ringkasan panen</x-button>@endif
+                @if ($adaTahap)
+                    <x-button variant="secondary" :href="route('panen.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh daftar BTPA</x-button>
+                    <x-button variant="secondary" :href="route('panen.ringkasan', $siklus)">Ringkasan panen</x-button>
+                @endif
                 @if ($bisaCatat)<x-button variant="secondary" :href="route('panen.create', $siklus)"><x-icon name="plus" class="size-4" /> Tambah tahap panen</x-button>@endif
                 @if ($bisaSelesai)<x-button type="button" x-data @click="$dispatch('open-modal', 'panen-selesai')">Tandai panen selesai</x-button>@endif
             </x-slot>

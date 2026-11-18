@@ -40,6 +40,19 @@ class PanenController extends Controller
         ]);
     }
 
+    /** Unduh daftar tahap panen beserta nomor BTPA (CSV) untuk disandingkan dengan RHPP atau nota inti. */
+    public function csv(Siklus $siklus): StreamedResponse
+    {
+        Gate::authorize('view', $siklus);
+
+        $baris = [['Tahap', 'Tanggal', 'Umur (hari)', 'Jumlah ekor', 'Tonase (kg)', 'ABW (kg)', 'Nomor BTPA']];
+        foreach ($siklus->panen()->orderBy('tanggal')->orderBy('id')->get() as $i => $t) {
+            $baris[] = [$i + 1, $t->tanggal->toDateString(), $t->umur_hari, $t->jumlah_ekor, $t->tonase_kg, round((float) $t->tonase_kg / $t->jumlah_ekor, 3), $t->nomor_btpa];
+        }
+
+        return LaporanController::unduhCsv($baris, 'daftar-btpa-'.str($siklus->load('kandang')->kandang->nama_farm)->slug().'.csv');
+    }
+
     /** Ringkasan panen (R10): FCR dan IP baru ada setelah ada catatan panen, beserta cara hitungnya. */
     public function ringkasan(Siklus $siklus): View
     {

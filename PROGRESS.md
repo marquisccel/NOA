@@ -289,3 +289,10 @@ Masukan dari uji coba: istilah sulit dipahami orang awam, beberapa alur membingu
 
 - [x] Topbar kanan: jam (tebal, mengikuti zona waktu aplikasi, berjalan tiap detik) dengan hari dan tanggal di bawahnya, tanpa kartu; kotak nama dan peran dihapus. Nama, peran, dan tombol **Keluar** pindah ke dasar sidebar (di tablet tinggal ikon Keluar); jam juga tampil di topbar ponsel
 - [x] Perbaikan tampilan: panah dropdown menabrak teks di semua `select` (padding kanan 2,5 rem untuk semua pilihan)
+
+### Fitur tambahan setelah uji coba (18 Nov 2026)
+
+- [x] Sidebar: nama dan peran dihapus, tinggal tombol Keluar
+- [x] Dashboard bagian **Performa** dengan pilihan periode (12 bulan terakhir dan per tahun; bawaan tahun ini): siklus dipanen, total panen, FCR gabungan (total pakan ÷ total tonase), IP rata-rata, deplesi, biaya per kg, masing-masing dibandingkan periode sebelumnya. Siklus dihitung menurut tanggal panen terakhir. Layanan: `PerformaPeriode`
+- [x] **Unduh daftar BTPA** (CSV) di halaman Panen dan **Unduh rekap pembanding** (CSV) di halaman RHPP: angka catatan peternak berdampingan dengan kolom RHPP dan selisih, tersedia kapan saja (sebelum RHPP terbit kolom RHPP kosong)
+- [x] Uji: 12 baru, total 401 lulus
