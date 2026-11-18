@@ -312,3 +312,16 @@ Kesiapan uji coba lapangan (urut prioritas):
 4. **Dashboard**: kartu "Perlu perhatian" gabungan semua siklus (hari terlewat, stok tipis, deplesi di atas target) karena ringkasan sekarang hanya ada per siklus.
 5. **Operasional**: akun admin NOA untuk bantuan (atur ulang sandi, lihat penggunaan), pencatatan galat (misalnya Sentry), pemantauan backup, ekspor semua data peternak (CSV/Excel).
 6. **Belum ditentukan**: estimasi pendapatan atau bonus (rumus bonus tiap inti berbeda), cara membuat akun inti jika kelak dibutuhkan, dashboard inti (ditunda).
+
+### Penyempurnaan akhir untuk tugas kuliah (18 Nov 2026)
+
+Konteks: proyek mata kuliah Pengembangan Aplikasi Web Lanjut, dinilai lewat demo dan presentasi (tenggat Senin 23 Nov 2026 23:59), penayangan memakai Vercel tanpa peternak sungguhan. Produk-produk "siap produksi" diturunkan prioritasnya; fokus pada demo, UI/UX, logika yang mudah dipahami, dan dokumentasi.
+
+- [x] **Fase 0 (penayangan):** `vercel.json` + `api/index.php` (runtime komunitas `vercel-php`, belum diuji di Vercel), cadangan Docker + `render.yaml`, `noa:siapkan-demo`, bendera `NOA_DEMO` dan `NOA_UNGGAH`, proksi tepercaya dan HTTPS paksa di produksi
+- [x] **Fase A (siap didemokan):** tombol "Coba demo" di login (Plasma/ABK satu klik), banner mode demo + tombol kembalikan data, tur panduan, "Mulai di sini", "Perlu perhatian", toast, bilah kemajuan, tombol sibuk
+- [x] **Fase B (visual):** kurva harian (bobot vs target, deplesi), tren IP/FCR, sparkline di kartu, bandingkan dua siklus, mode gelap lengkap dengan toggle
+- [x] **Fase C (logika mudah dipahami):** panel "Kenapa angkanya begini?", kalkulator "Bagaimana kalau?", Samakan dengan kemarin, tombol +/−, isi banyak hari sekaligus
+- [x] **Fase D (dokumentasi):** README baru dengan tangkapan layar, `docs/` (ERD, alur siklus, aturan bisnis, pengujian, keputusan desain, deploy, naskah demo, kerangka presentasi), CI GitHub Actions
+- [x] Uji: total 442 lulus (kenaikan 35 sejak Performa)
+
+Catatan: penayangan di Vercel belum diuji (butuh akun Vercel dan Neon); langkah ada di `docs/DEPLOY.md`, dengan Render sebagai cadangan.
