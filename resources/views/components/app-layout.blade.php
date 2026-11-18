@@ -26,8 +26,43 @@
         <link rel="icon" href="{{ asset('images/noa-mark.webp') }}" type="image/webp">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-page font-sans text-ink antialiased print:bg-white" x-data="shell()" @keydown.escape.window="drawer = false">
+    <body class="min-h-screen bg-page font-sans text-ink antialiased print:bg-white" x-data="shell()" @keydown.escape.window="drawer = false"
+          @if (request()->routeIs('dashboard') && $user->isPeternak()) data-tur="otomatis" @endif>
+        <div id="bilah-kemajuan" class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-brand opacity-0 transition-opacity print:hidden" aria-hidden="true"></div>
+
+        {{-- Tur panduan (disorot per langkah) --}}
+        <div x-data="tur()" @mulai-tur.window="mulai()" @keydown.escape.window="aktif && selesai()" class="print:hidden">
+            <div x-cloak x-show="aktif" class="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Tur panduan">
+                <div class="pointer-events-none absolute rounded-lg ring-2 ring-brand transition-all duration-200"
+                     :style="`top:${kotak.top}px;left:${kotak.left}px;width:${kotak.width}px;height:${kotak.height}px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)`"></div>
+                <div class="absolute w-[min(320px,calc(100vw-24px))] space-y-2.5 rounded-lg border border-line bg-surface p-4 shadow-xl"
+                     :style="`top:${popover.top}px;left:${popover.left}px`">
+                    <p class="text-[11px] font-bold uppercase tracking-wide text-ink-brand">Tur panduan · <span x-text="(i + 1) + ' dari ' + langkah.length"></span></p>
+                    <p class="font-heading text-base font-semibold" x-text="teks.judul"></p>
+                    <p class="text-[13px] leading-[19px] text-ink-secondary" x-text="teks.isi"></p>
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <button type="button" @click="selesai()" class="min-h-11 text-[13px] font-semibold text-ink-muted hover:underline">Lewati</button>
+                        <div class="flex gap-2">
+                            <button type="button" @click="kembali()" x-show="i > 0" class="min-h-11 rounded-md border border-line-control px-3 text-[13px] font-semibold hover:bg-state-hover">Kembali</button>
+                            <button type="button" @click="berikut()" class="min-h-11 rounded-md bg-brand px-4 text-[13px] font-semibold text-white hover:bg-brand-hover" x-text="i >= langkah.length - 1 ? 'Selesai' : 'Berikut'"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="flex min-h-screen flex-col">
+            @if (config('noa.demo') && in_array($user->email, config('noa.akun_demo'), true))
+                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-brand px-4 py-2 text-center text-xs font-medium text-white print:hidden" role="note" data-demo-banner>
+                    <span><strong>Mode demo</strong> — data contoh untuk dicoba. Silakan tambah, ubah, atau hapus.</span>
+                    <span class="flex items-center gap-3">
+                        <button type="button" class="font-bold underline" @click="$dispatch('mulai-tur')">Tur panduan</button>
+                        <form method="POST" action="{{ route('demo.reset') }}" onsubmit="return confirm('Kembalikan data demo ke keadaan awal? Perubahan Anda akan hilang.')">
+                            @csrf
+                            <button class="font-bold underline">Kembalikan data demo</button>
+                        </form>
+                    </span>
+                </div>
+            @endif
             {{-- Topbar desktop dan tablet --}}
             <header class="hidden h-[68px] shrink-0 items-center justify-between border-b border-line bg-surface pl-[26px] pr-6 md:flex print:hidden">
                 <div class="flex min-w-0 items-center gap-6">
@@ -63,7 +98,7 @@
             <div class="flex min-h-0 flex-1 gap-5 md:p-5 lg:gap-6 lg:p-6 print:p-0">
                 {{-- Sidebar: penuh di desktop, ikon saja di tablet atau bila diciutkan --}}
                 @if ($grup)
-                    <aside class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
+                    <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang & Siklus, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
                         <x-shell-menu :grup="$grup" />
                         <div class="space-y-1 border-t border-line-subtle pt-2">

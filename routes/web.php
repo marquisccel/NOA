@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbkController;
 use App\Http\Controllers\AktivitasController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OvkController;
@@ -20,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 
 // Satu pintu masuk: tamu ke halaman masuk, pengguna yang sudah masuk ke dashboard.
 Route::get('/', fn () => redirect()->route(auth()->check() ? 'dashboard' : 'login'));
+
+Route::post('demo/masuk/{peran}', [DemoController::class, 'masuk'])->middleware('guest')->name('demo.masuk');
+Route::post('demo/reset', [DemoController::class, 'reset'])->middleware('auth')->name('demo.reset');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 

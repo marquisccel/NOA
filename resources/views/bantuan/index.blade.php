@@ -12,7 +12,11 @@
 
 <x-app-layout title="Bantuan">
     <x-page lebar="max-w-3xl">
-        <x-page-header title="Bantuan" subtitle="Alur satu siklus dan arti istilah yang dipakai di NOA." />
+        <x-page-header title="Bantuan" subtitle="Alur satu siklus dan arti istilah yang dipakai di NOA.">
+            <x-slot name="actions">
+                <x-button variant="secondary" href="{{ route('dashboard') }}" x-data @click.prevent="try { localStorage.removeItem('noa.tur.selesai') } catch (e) {} ; window.location = '{{ route('dashboard') }}'"><x-icon name="play" class="size-4" /> Ulangi tur panduan</x-button>
+            </x-slot>
+        </x-page-header>
 
         <section aria-labelledby="alur" class="space-y-3">
             <h2 id="alur" class="text-base font-bold">Alur satu siklus, langkah demi langkah</h2>

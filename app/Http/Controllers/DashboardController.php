@@ -17,6 +17,8 @@ class DashboardController extends Controller
             return view('dashboard.peternak', [
                 'ringkasan' => $ringkasan->peternak($user),
                 'sapaan' => $this->sapaan(),
+                'perhatian' => $ringkasan->perhatian($user),
+                'langkahAwal' => $ringkasan->langkahAwal($user),
             ]);
         }
 

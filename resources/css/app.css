@@ -158,6 +158,20 @@ select:not([multiple]) {
     padding-right: 2.5rem !important;
 }
 
+@keyframes bilah-jalan {
+    from { transform: scaleX(0.05); }
+    to { transform: scaleX(0.9); }
+}
+
+.bilah-jalan {
+    transform-origin: left;
+    animation: bilah-jalan 8s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bilah-jalan { animation: none; transform: scaleX(0.6); }
+}
+
 [x-cloak] {
     display: none !important;
 }

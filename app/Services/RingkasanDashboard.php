@@ -103,4 +103,49 @@ class RingkasanDashboard
 
         return $semua->sortByDesc(fn ($a) => [$a['tanggal']->timestamp, $a['urut']])->take($batas)->values();
     }
+
+    /**
+     * Hal yang perlu ditindaklanjuti di semua siklus yang masih terbuka (recording terlewat, stok tipis, paraf, ...),
+     * diambil dari ringkasan tiap siklus dan diurutkan: yang paling mendesak dulu.
+     *
+     * @return Collection<int, array{siklus: string, judul: string, teks: string, tautan: string, label: string, tingkat: string}>
+     */
+    public function perhatian(User $user, int $batas = 6): Collection
+    {
+        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
+        $nomor = Siklus::nomorMap($kandangIds);
+        $ringkasan = app(RingkasanSiklus::class);
+
+        $semua = collect();
+        Siklus::whereIn('kandang_id', $kandangIds)->where('status', Siklus::STATUS_BERJALAN)->with('kandang')->orderBy('tanggal_masuk')->get()
+            ->each(function (Siklus $s) use ($ringkasan, $nomor, $semua) {
+                foreach ($ringkasan->hitung($s)['perhatian'] as $h) {
+                    $mendesak = str_contains($h['judul'], 'belum diisi') || str_starts_with($h['judul'], 'Stok pakan');
+                    $semua->push($h + ['siklus' => $s->kandang->nama_farm.' · Siklus '.($nomor[$s->id] ?? 1), 'tingkat' => $mendesak ? 'penting' : 'info']);
+                }
+            });
+
+        return $semua->sortBy(fn ($h) => $h['tingkat'] === 'penting' ? 0 : 1)->values()->take($batas);
+    }
+
+    /**
+     * Daftar langkah awal dengan tanda selesai, untuk pengguna baru: dari mendaftarkan kandang sampai mencocokkan RHPP.
+     *
+     * @return list<array{judul: string, teks: string, selesai: bool, tautan: string, label: string}>
+     */
+    public function langkahAwal(User $user): array
+    {
+        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
+        $siklusIds = Siklus::whereIn('kandang_id', $kandangIds)->pluck('id');
+        $pertama = Siklus::whereIn('id', $siklusIds)->orderBy('id')->first();
+
+        return [
+            ['judul' => 'Daftarkan kandang', 'teks' => 'Nama, alamat, dan kapasitas kandang.', 'selesai' => $kandangIds->isNotEmpty(), 'tautan' => route('kandang.create'), 'label' => 'Tambah kandang'],
+            ['judul' => 'Buka siklus pertama', 'teks' => 'Tanggal DOC masuk, jumlah ayam, dan harga kontrak.', 'selesai' => $siklusIds->isNotEmpty(), 'tautan' => route('kandang.index'), 'label' => 'Buka siklus'],
+            ['judul' => 'Isi catatan harian', 'teks' => 'Pakan, ayam mati, dan ayam afkir. Kurang dari satu menit.', 'selesai' => RecordingHarian::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('recording.create', $pertama) : route('kandang.index'), 'label' => 'Isi catatan'],
+            ['judul' => 'Timbang sampel atau catat obat', 'teks' => 'Sekitar seminggu sekali; obat dan vaksin tiap diberikan.', 'selesai' => SamplingBobot::whereIn('siklus_id', $siklusIds)->exists() || PemberianOvk::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('sampling.create', $pertama) : route('kandang.index'), 'label' => 'Timbang sampel'],
+            ['judul' => 'Catat panen', 'teks' => 'Tiap tahap panen dengan nomor BTPA.', 'selesai' => Panen::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('panen.create', $pertama) : route('kandang.index'), 'label' => 'Catat panen'],
+            ['judul' => 'Cocokkan dengan RHPP', 'teks' => 'Masukkan RHPP dari inti dan lihat selisihnya.', 'selesai' => \App\Models\Rhpp::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('rhpp.show', $pertama) : route('kandang.index'), 'label' => 'Ke RHPP'],
+        ];
+    }
 }
