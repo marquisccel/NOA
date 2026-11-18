@@ -116,10 +116,19 @@ Alpine.data('tur', () => ({
 
             const lebar = Math.min(320, window.innerWidth - 24);
             const bawah = r.bottom + 14 + 170 < window.innerHeight;
-            this.popover = {
-                top: bawah ? r.bottom + 14 : Math.max(12, r.top - 14 - 170),
-                left: Math.min(Math.max(12, r.left), window.innerWidth - lebar - 12),
-            };
+            const atas = r.top - 14 - 170 >= 12;
+            const kanan = r.right + 14 + lebar < window.innerWidth - 12;
+
+            if (bawah) {
+                this.popover = { top: r.bottom + 14, left: Math.min(Math.max(12, r.left), window.innerWidth - lebar - 12) };
+            } else if (atas) {
+                this.popover = { top: r.top - 14 - 170, left: Math.min(Math.max(12, r.left), window.innerWidth - lebar - 12) };
+            } else if (kanan) {
+                // Elemen tinggi (misalnya sidebar): taruh penjelasan di sampingnya, bukan menimpanya.
+                this.popover = { top: Math.min(Math.max(12, r.top + 12), window.innerHeight - 190), left: r.right + 14 };
+            } else {
+                this.popover = { top: window.innerHeight - 190, left: 12 };
+            }
         }, 60);
     },
 
