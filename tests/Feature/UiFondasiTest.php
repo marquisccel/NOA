@@ -219,7 +219,7 @@ class UiFondasiTest extends TestCase
             ->assertSee('Ingat saya di perangkat ini')
             ->assertSee('Peternak baru?')
             ->assertSee('Daftar akun')
-            ->assertSee('Catat tiap hari')
+            ->assertSee('Recording harian')
             ->assertSee('Nitip, Openi, Adil');
     }
 
