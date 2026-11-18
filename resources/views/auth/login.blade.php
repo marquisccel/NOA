@@ -37,7 +37,7 @@
             </label>
         </div>
 
-        <x-button class="w-full !min-h-[52px] !rounded-[14px] text-[15px] shadow-[0_10px_24px_-10px_var(--brand-primary)]" x-bind:disabled="memproses">
+        <x-button class="w-full !min-h-[52px] !rounded-[14px] text-[15px]" x-bind:disabled="memproses">
             <span :class="memproses ? 'hidden' : ''" class="inline-flex items-center gap-2"><x-icon name="arrow-right" class="size-4" /> Masuk</span>
             <span x-cloak :class="memproses ? 'inline-flex' : 'hidden'" class="items-center gap-2"><x-icon name="loader-circle" class="size-4 animate-spin" /> Memproses…</span>
         </x-button>
@@ -46,7 +46,7 @@
     @if (config('noa.demo'))
         <div class="flex items-center gap-3 text-xs font-medium text-ink-muted [@media(max-height:780px)]:hidden" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>atau<span class="h-px flex-1 bg-line"></span></div>
 
-        <div class="space-y-3 rounded-[20px] border border-brand-border bg-tint/70 p-4 backdrop-blur" data-demo>
+        <div class="space-y-3 rounded-[20px] border border-brand-border bg-tint/70 p-4" data-demo>
             <p class="text-sm font-bold text-ink-brand">Coba demo tanpa daftar</p>
             <div class="grid gap-2">
                 <form method="POST" action="{{ route('demo.masuk', 'plasma') }}">@csrf<x-button variant="secondary" class="w-full !min-h-[50px] !rounded-[14px] !border-brand !text-ink-brand"><x-icon name="warehouse" class="size-4" /> Masuk sebagai peternak</x-button></form>

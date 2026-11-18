@@ -7,76 +7,109 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ $title }} · NOA</title>
-        <link rel="icon" href="{{ asset('images/noa-mark.svg') }}" type="image/svg+xml">
+        <link rel="icon" href="{{ asset('images/noa-mark.webp') }}" type="image/webp">
         <script>(function(){try{var t=localStorage.getItem('noa.tema');if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}if(t){document.documentElement.dataset.theme=t}}catch(e){}})()</script>
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/masuk.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-page font-sans text-ink antialiased">
         <div class="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(460px,540px)]">
-            {{-- Hero interaktif (kanvas): hanya di layar lebar. Selalu gelap agar kontras tetap baik di kedua tema. --}}
-            <aside data-hero class="relative hidden h-screen flex-col justify-between gap-4 overflow-hidden bg-[#05120d] p-10 text-white lg:sticky lg:top-0 lg:flex xl:px-14 xl:py-10">
-                <canvas data-medan class="absolute inset-0 size-full" aria-hidden="true"></canvas>
-                <div class="hero-cahaya pointer-events-none absolute inset-0" aria-hidden="true"></div>
+            {{-- Sisi kiri (layar lebar): ilustrasi kandang ayam, matahari, dan ayam yang mematuk. Warna mengikuti tema. --}}
+            <aside data-hero class="hero-kandang relative hidden h-screen flex-col overflow-hidden p-10 text-ink lg:sticky lg:top-0 lg:flex xl:px-14 xl:py-10">
+                <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="relative z-10 inline-flex self-start"><x-logo /></a>
 
-                <div class="relative z-10 flex items-center justify-between">
-                    <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="masuk-naik" style="--d:.05s"><x-logo :animasi="true" :ukuran="40" /></a>
-                    <span class="masuk-naik inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-md" style="--d:.15s">
-                        <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-[#7ed6b0] opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-[#7ed6b0]"></span></span>
-                        Pantau setiap periode pemeliharaan
-                    </span>
-                </div>
-
-                <div class="relative z-10 max-w-[640px] space-y-4">
-                    <p class="font-heading text-[clamp(2rem,min(4.2vw,7.2vh),3.9rem)] font-semibold leading-[1.04] tracking-[-0.035em]">
-                        @foreach (explode(' ', 'Catatan kandang yang jujur. Panen yang adil.') as $i => $kata)
-                            <span class="kata {{ in_array($kata, ['jujur.', 'adil.'], true) ? 'kata-emas' : '' }}" style="--i:{{ $i }}">{{ $kata }}</span>
-                        @endforeach
+                <div class="relative z-10 mt-[clamp(1.5rem,6vh,4rem)] max-w-[680px] space-y-4">
+                    <p class="masuk-naik font-heading text-[clamp(2rem,min(3.4vw,6.4vh),3.3rem)] font-semibold leading-[1.08] tracking-[-0.03em]">
+                        Catatan kandang yang <span class="text-ink-brand">jujur</span>.<br>Panen yang <span class="text-ink-brand">adil</span>.
                     </p>
-                    <p class="masuk-naik max-w-[520px] text-[15px] leading-[24px] text-white/70" style="--d:.9s">
-                        NOA membantu peternak plasma mencatat harian, menghitung performa, dan mencocokkannya dengan RHPP dari inti. Semuanya dengan rumus yang bisa dilihat.
+                    <p class="masuk-naik max-w-[500px] text-base leading-[26px] text-ink-secondary" style="--d:.1s">
+                        Catat kandang tiap hari, lihat hasilnya, lalu cocokkan dengan RHPP dari inti. Semua angka bisa Anda periksa sendiri.
                     </p>
                 </div>
 
-                {{-- Kartu produk melayang (contoh data) --}}
-                <div class="relative z-10 masuk-naik [@media(max-height:600px)]:hidden" style="--d:1.1s">
-                    <div data-miring="1" class="kaca ayun max-w-[560px] rounded-[22px] p-5 will-change-transform" data-sorot>
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-white/50">Contoh tampilan · Periode berjalan</p>
-                                <p class="mt-0.5 text-sm font-semibold">Kandang A · Hari ke-23</p>
-                            </div>
-                            <span class="rounded-full bg-[#7ed6b0]/15 px-2.5 py-1 text-[11px] font-bold text-[#7ed6b0]">Berjalan</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-3 gap-4">
-                            <div><p class="text-[11px] text-white/50">Bobot rata-rata</p><p class="font-heading text-2xl font-semibold tabular-nums"><span data-hitung="1.42" data-desimal="2">1,42</span><span class="ml-1 text-xs font-medium text-white/50">kg</span></p></div>
-                            <div><p class="text-[11px] text-white/50">FCR sementara</p><p class="font-heading text-2xl font-semibold tabular-nums" data-hitung="1.63" data-desimal="2">1,63</p></div>
-                            <div><p class="text-[11px] text-white/50">Deplesi</p><p class="font-heading text-2xl font-semibold tabular-nums"><span data-hitung="2.1" data-desimal="1">2,1</span><span class="ml-0.5 text-xs font-medium text-white/50">%</span></p></div>
-                        </div>
-                        <canvas data-grafik class="mt-3 h-[96px] w-full" aria-hidden="true"></canvas>
-                        <div class="mt-1 flex items-center gap-4 text-[11px] text-white/50">
-                            <span class="inline-flex items-center gap-1.5"><span class="h-0.5 w-4 rounded bg-[#7ed6b0]"></span> Catatan Anda</span>
-                            <span class="inline-flex items-center gap-1.5"><span class="h-0 w-4 border-t-2 border-dashed border-[#e7c16b]"></span> Standar inti</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative z-10 grid max-w-[640px] grid-cols-3 gap-3 [@media(max-height:780px)]:hidden">
-                    @foreach ([['clipboard-list', 'Catat', 'Kurang dari satu menit per hari'], ['calculator', 'Hitung', 'FCR dan IP otomatis, rumus terlihat'], ['columns-2', 'Cocokkan', 'Banding dengan RHPP baris demi baris']] as $n => [$ikon, $judul, $teks])
-                        <div data-sorot class="kaca kartu-sorot masuk-naik rounded-[18px] p-4" style="--d:{{ 1.3 + $n * 0.1 }}s">
-                            <x-icon :name="$ikon" class="size-[18px] text-[#7ed6b0]" />
-                            <p class="mt-2.5 text-sm font-semibold">{{ $judul }}</p>
-                            <p class="mt-0.5 text-xs leading-[17px] text-white/55">{{ $teks }}</p>
-                        </div>
+                <ol class="relative z-10 mt-6 grid max-w-[600px] grid-cols-3 gap-3 [@media(max-height:790px)]:hidden">
+                    @foreach ([['Catat tiap hari', 'Pakan, ayam mati, ayam afkir. Kurang dari satu menit.'], ['Lihat hasilnya', 'FCR dan IP dihitung otomatis, rumusnya terlihat.'], ['Cocokkan RHPP', 'Bandingkan dengan laporan inti, baris demi baris.']] as $n => [$judul, $teks])
+                        <li class="masuk-naik rounded-[18px] border border-line bg-surface/80 p-4 backdrop-blur-sm" style="--d:{{ 0.2 + $n * 0.08 }}s">
+                            <span class="grid size-7 place-items-center rounded-full bg-brand text-[13px] font-bold text-ink-on-primary">{{ $n + 1 }}</span>
+                            <p class="mt-2.5 text-[15px] font-bold">{{ $judul }}</p>
+                            <p class="mt-0.5 text-[13px] leading-[19px] text-ink-secondary">{{ $teks }}</p>
+                        </li>
                     @endforeach
-                </div>
+                </ol>
+
+                {{-- Ilustrasi: kandang panjang beratap, silo pakan, bukit, pagar, dan ayam. Dekoratif (aria-hidden). --}}
+                <svg data-kandang class="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[46%] w-full" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+                    <defs>
+                        <symbol id="ayam" viewBox="0 0 48 48">
+                            <path d="M9 24Q1 14 8 9Q9 18 15 22Z" fill="#fff" stroke="#00000022" stroke-width=".8" />
+                            <ellipse cx="22" cy="28" rx="15" ry="11" fill="#fff" stroke="#00000022" stroke-width=".8" />
+                            <ellipse cx="21" cy="29" rx="8" ry="5" fill="#efe6d2" />
+                            <circle cx="36" cy="17" r="7" fill="#fff" stroke="#00000022" stroke-width=".8" />
+                            <path d="M32.5 11.5Q33.5 6 36 10Q38.5 6 40 11.5Z" fill="#d9392b" />
+                            <ellipse cx="40" cy="23" rx="2.2" ry="3" fill="#d9392b" />
+                            <path d="M42 16.2 48 18.2 42 20.2Z" fill="#f0a31a" />
+                            <circle cx="38.2" cy="15.6" r="1.1" fill="#222" />
+                            <path d="M19 38V46M26 38V46M16.5 46H21.5M23.5 46H28.5" stroke="#e09b2a" stroke-width="2" stroke-linecap="round" fill="none" />
+                        </symbol>
+                    </defs>
+
+                    <circle cx="640" cy="120" r="64" fill="var(--matahari)" opacity=".22" />
+                    <circle cx="640" cy="120" r="34" fill="var(--matahari)" />
+
+                    <g class="awan-geser" fill="var(--awan)" opacity=".9">
+                        <path d="M90 78a20 20 0 0 1 38-6 16 16 0 0 1 24 8 14 14 0 0 1-4 28H100a15 15 0 0 1-10-30Z" />
+                        <path d="M380 46a16 16 0 0 1 30-5 12 12 0 0 1 19 6 11 11 0 0 1-3 22H388a12 12 0 0 1-8-23Z" opacity=".8" />
+                    </g>
+
+                    <path d="M0 250C120 205 240 215 360 245S600 215 800 240V400H0Z" fill="var(--bukit-1)" />
+                    <path d="M0 300C150 265 300 285 430 300S680 270 800 295V400H0Z" fill="var(--bukit-2)" />
+                    <path d="M0 338C200 326 600 326 800 338V400H0Z" fill="var(--tanah)" />
+
+                    {{-- silo pakan --}}
+                    <g>
+                        <path d="M520 296H564" stroke="var(--silo)" stroke-width="5" />
+                        <rect x="564" y="236" width="38" height="104" fill="var(--silo)" />
+                        <path d="M559 236 583 204 607 236Z" fill="var(--silo)" />
+                        <path d="M564 236V340M573 236V340" stroke="#0000001a" stroke-width="1.5" />
+                        <path d="M568 340 564 352M598 340 602 352" stroke="var(--pagar)" stroke-width="3" />
+                    </g>
+
+                    {{-- kandang --}}
+                    <g>
+                        <rect x="190" y="268" width="330" height="72" fill="var(--dinding)" />
+                        <path d="M172 270 216 232H494L538 270Z" fill="var(--atap)" />
+                        <path d="M172 270H538" stroke="var(--atap-gelap)" stroke-width="5" />
+                        <rect x="318" y="222" width="74" height="11" rx="3" fill="var(--atap-gelap)" />
+                        <g fill="var(--tirai)">
+                            <rect x="204" y="284" width="46" height="40" rx="3" />
+                            <rect x="256" y="284" width="46" height="40" rx="3" />
+                            <rect x="308" y="284" width="46" height="40" rx="3" />
+                            <rect x="422" y="284" width="46" height="40" rx="3" />
+                            <rect x="474" y="284" width="34" height="40" rx="3" />
+                        </g>
+                        <rect x="364" y="280" width="46" height="60" rx="3" fill="var(--pintu)" />
+                        <circle cx="402" cy="312" r="2" fill="var(--dinding)" />
+                    </g>
+
+                    {{-- pagar --}}
+                    <g stroke="var(--pagar)" stroke-width="3" stroke-linecap="round">
+                        <path d="M20 334H170M20 346H170M628 334H780M628 346H780" />
+                        <path d="M30 326V356M66 326V356M102 326V356M138 326V356M166 326V356M640 326V356M676 326V356M712 326V356M748 326V356M776 326V356" />
+                    </g>
+
+                    {{-- ayam --}}
+                    <use href="#ayam" x="92" y="334" width="46" height="46" class="ayam-patuk" />
+                    <use href="#ayam" x="300" y="348" width="54" height="54" class="ayam-patuk" style="animation-delay:-2s" />
+                    <use href="#ayam" x="470" y="344" width="48" height="48" class="ayam-patuk" style="animation-delay:-3.3s" />
+                    <use href="#ayam" x="676" y="340" width="44" height="44" class="ayam-patuk" style="animation-delay:-1s" />
+                </svg>
             </aside>
 
             {{-- Panel formulir --}}
             <div class="auth panel-form relative flex min-h-screen flex-col px-5 py-5 sm:px-10">
                 <div class="flex items-center justify-between">
-                    <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="lg:hidden"><x-logo :ukuran="34" /></a>
+                    <a href="{{ route('login') }}" aria-label="NOA, ke halaman masuk" class="lg:hidden"><x-logo /></a>
                     <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
-                        class="ml-auto grid size-11 place-items-center rounded-full border border-line bg-surface/70 text-ink-secondary backdrop-blur transition hover:bg-state-hover active:scale-95">
+                        class="ml-auto grid size-11 place-items-center rounded-full border border-line bg-surface text-ink-secondary transition hover:bg-state-hover active:scale-95">
                         <x-icon name="moon" class="size-[18px]" x-show="! gelap" />
                         <x-icon name="sun" class="size-[18px]" x-show="gelap" x-cloak />
                     </button>

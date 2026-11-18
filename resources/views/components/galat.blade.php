@@ -14,7 +14,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ $judul }} · NOA</title>
-        <link rel="icon" href="{{ asset('images/noa-mark.svg') }}" type="image/svg+xml">
+        <link rel="icon" href="{{ asset('images/noa-mark.webp') }}" type="image/webp">
         <script>(function(){try{var t=localStorage.getItem('noa.tema');if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}if(t){document.documentElement.dataset.theme=t}}catch(e){}})()</script>
         @vite(['resources/css/app.css'])
     </head>

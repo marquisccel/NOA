@@ -337,3 +337,5 @@ Catatan: penayangan di Vercel belum diuji (butuh akun Vercel dan Neon); langkah 
 
 - [x] Logo baru berbentuk SVG (tanda N dari garis naik + titik emas, wordmark berupa teks yang mengikuti warna konteks), favicon SVG
 - [x] Hero kanvas `resources/js/masuk.js` (medan aliran, percikan saat klik, kartu kaca miring 3D, grafik contoh, angka menghitung naik), panel formulir bergaya Apple, tombol dengan efek tekan; tampilan terang/gelap dan ponsel diuji
+
+- [x] Koreksi: halaman masuk disederhanakan untuk peternak (ilustrasi kandang ayam SVG, tanpa kanvas/efek berat), logo kembali ke gambar ayam + wordmark hijau; `masuk.js` dan logo SVG dibuang

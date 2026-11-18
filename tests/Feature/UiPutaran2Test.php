@@ -37,9 +37,8 @@ class UiPutaran2Test extends TestCase
     {
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('aria-label="Logo NOA"', $html);
-        $this->assertStringContainsString('>NOA</span>', $html);
-        $this->assertStringNotContainsString('noa-wordmark.webp', $html);
+        $this->assertStringContainsString('noa-mark.webp', $html);
+        $this->assertStringContainsString('bg-brand" style="-webkit-mask', $html);
         $this->assertStringNotContainsString('bg-[#FAF8F0] ring-1', $html);
     }
 
@@ -112,15 +111,16 @@ class UiPutaran2Test extends TestCase
         $this->actingAs($this->peternak)->get(route('kandang.show', $kandang))->assertOk()->assertDontSee('Buka di Google Maps');
     }
 
-    public function test_halaman_masuk_memuat_hero_kanvas_interaktif_dan_logo_svg(): void
+    public function test_halaman_masuk_memuat_ilustrasi_kandang_tanpa_kanvas_dan_logo_lama(): void
     {
         $html = $this->get(route('login'))->assertOk()->getContent();
 
-        foreach (['data-hero', 'data-medan', 'data-grafik', 'data-miring', 'data-logo-animasi', 'jujur.', 'adil.', 'masuk-'] as $penanda) {
+        foreach (['data-hero', 'data-kandang', 'Catat tiap hari', 'Lihat hasilnya', 'Cocokkan RHPP', 'jujur', 'adil'] as $penanda) {
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
-        $this->assertStringContainsString('noa-mark.svg', $html);
-        $this->assertFileExists(public_path('images/noa-mark.svg'));
-        $this->assertFileExists(resource_path('js/masuk.js'));
+        $this->assertStringNotContainsString('<canvas', $html);
+        $this->assertStringContainsString('noa-mark.webp', $html);
+        $this->assertStringContainsString('noa-wordmark.webp', $html);
+        $this->assertFileDoesNotExist(resource_path('js/masuk.js'));
     }
 }
