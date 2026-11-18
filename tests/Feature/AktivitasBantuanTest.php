@@ -185,4 +185,25 @@ class AktivitasBantuanTest extends TestCase
         $this->actingAs($this->peternak)->get(route('siklus.baru.langkah', [$this->siklus->kandang, 4]))->assertOk()
             ->assertSee('Target harian dari inti')->assertSee('boleh dilewati')->assertSee('Belum punya? Pilih')->assertSee('Lewati, isi nanti');
     }
+
+    // ---- Topbar: jam dan tanggal ----
+
+    public function test_topbar_memuat_jam_dan_tanggal_tanpa_kartu_pengguna_dan_keluar_ada_di_sidebar(): void
+    {
+        $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()
+            ->assertSee('role="timer"', false)->assertSee('08.00.00')->assertSee('Sel, 10 Nov')->assertSee('jam(', false)->getContent();
+
+        // Nama dan peran tidak lagi di topbar (tanpa tombol menu pengguna); Keluar ada di sidebar dan drawer ponsel.
+        $this->assertStringNotContainsString('aria-haspopup="menu"', $html);
+        $this->assertStringNotContainsString('Pengaturan akun', $html);
+        $this->assertSame(2, substr_count($html, 'action="'.route('logout').'"'));
+        $this->assertStringContainsString('Pak Budi Santoso', $html);
+    }
+
+    public function test_semua_dropdown_menyisakan_ruang_untuk_panah(): void
+    {
+        $css = file_get_contents(resource_path('css/app.css'));
+
+        $this->assertMatchesRegularExpression('/select:not\(\[multiple\]\)\s*\{\s*padding-right:\s*2\.5rem\s*!important/', $css);
+    }
 }

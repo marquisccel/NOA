@@ -38,26 +38,10 @@
                     </div>
                 </div>
 
-                <div class="relative" x-data="{ buka: false }" @click.outside="buka = false" @keydown.escape="buka = false">
-                    <button type="button" @click="buka = ! buka" :aria-expanded="buka.toString()" aria-haspopup="menu"
-                        class="flex h-11 items-center gap-2.5 rounded-md px-2.5 hover:bg-state-hover">
-                        <span class="flex flex-col items-start gap-0.5 text-left">
-                            <span class="text-[13px] font-semibold leading-none text-ink">{{ $user->name }}</span>
-                            <x-badge variant="brand">{{ $user->labelPeran() }}</x-badge>
-                        </span>
-                        <x-icon name="chevron-down" class="size-4 text-ink-muted" />
-                    </button>
-                    <div x-cloak :class="buka ? 'block' : 'hidden'" class="absolute right-0 z-40 mt-2 w-56 rounded-md border border-line bg-surface p-1.5 shadow-lg" role="menu">
-                        <a href="{{ route('profile.edit') }}" role="menuitem" class="flex h-11 items-center gap-2.5 rounded-sm px-2.5 text-sm font-medium text-ink hover:bg-state-hover">
-                            <x-icon name="settings" class="size-[18px] text-ink-secondary" /> Pengaturan akun
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" role="menuitem" class="flex h-11 w-full items-center gap-2.5 rounded-sm px-2.5 text-left text-sm font-medium text-danger-text hover:bg-state-hover">
-                                <x-icon name="log-out" class="size-[18px]" /> Keluar
-                            </button>
-                        </form>
-                    </div>
+                {{-- Jam dan tanggal (langsung menempel di topbar, tanpa kartu) --}}
+                <div x-data="jam(@js(config('app.timezone')))" class="shrink-0 text-center leading-tight" role="timer" aria-label="Waktu sekarang">
+                    <p class="font-heading text-lg font-bold tabular-nums text-ink" x-text="waktu">{{ now()->format('H.i.s') }}</p>
+                    <p class="text-xs text-ink-secondary" x-text="tanggal">{{ now()->translatedFormat('D, j M') }}</p>
                 </div>
             </header>
 
@@ -70,6 +54,10 @@
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-heading text-lg font-semibold leading-snug">{{ $judul ?? 'NOA' }}</p>
                 </div>
+                <div x-data="jam(@js(config('app.timezone')))" class="shrink-0 pr-1 text-center leading-tight" role="timer" aria-label="Waktu sekarang">
+                    <p class="font-heading text-sm font-bold tabular-nums" x-text="waktu">{{ now()->format('H.i.s') }}</p>
+                    <p class="text-[11px] text-ink-secondary" x-text="tanggal">{{ now()->translatedFormat('D, j M') }}</p>
+                </div>
             </header>
 
             <div class="flex min-h-0 flex-1 gap-5 md:p-5 lg:gap-6 lg:p-6 print:p-0">
@@ -78,6 +66,20 @@
                     <aside class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
                         <x-shell-menu :grup="$grup" />
+                        <div class="space-y-1">
+                            <div class="hidden items-center justify-between gap-2 border-t border-line-subtle px-3 pt-3 xl:flex" :class="collapsed ? '!hidden' : ''">
+                                <div class="min-w-0">
+                                    <p class="truncate text-[13px] font-semibold text-ink">{{ $user->name }}</p>
+                                    <p class="text-xs text-ink-secondary">{{ $user->labelPeran() }}</p>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" aria-label="Keluar" class="flex h-11 w-full items-center justify-center gap-2.5 rounded-md px-3 text-[13px] font-medium text-danger-text hover:bg-state-hover xl:justify-start" :class="collapsed ? 'xl:!justify-center' : ''">
+                                    <x-icon name="log-out" class="size-[18px]" />
+                                    <span class="hidden xl:inline" :class="collapsed ? '!hidden' : ''">Keluar</span>
+                                </button>
+                            </form>
                         <button type="button" @click="alternatif()" :aria-label="collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'"
                             class="hidden h-11 items-center gap-2.5 rounded-md border-t border-line-subtle px-3 text-[13px] font-medium text-ink-muted hover:bg-state-hover xl:flex"
                             :class="collapsed ? 'justify-center' : ''">
@@ -85,6 +87,7 @@
                             <x-icon name="panel-left-open" class="size-[18px]" x-show="collapsed" x-cloak />
                             <span :class="collapsed ? 'xl:hidden' : ''">Ciutkan sidebar</span>
                         </button>
+                        </div>
                     </aside>
                 @endif
 

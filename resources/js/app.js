@@ -28,4 +28,28 @@ Alpine.data('shell', () => ({
     },
 }));
 
+// Jam dan tanggal di topbar, mengikuti zona waktu aplikasi (bukan jam perangkat yang bisa keliru).
+Alpine.data('jam', (zona = 'Asia/Jakarta') => ({
+    waktu: '',
+    tanggal: '',
+    penghitung: null,
+
+    init() {
+        this.perbarui();
+        this.penghitung = setInterval(() => this.perbarui(), 1000);
+    },
+
+    perbarui() {
+        const sekarang = new Date();
+
+        try {
+            this.waktu = sekarang.toLocaleTimeString('id-ID', { timeZone: zona, hour12: false });
+            this.tanggal = sekarang.toLocaleDateString('id-ID', { timeZone: zona, weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, '');
+        } catch (e) {
+            this.waktu = sekarang.toLocaleTimeString('id-ID', { hour12: false });
+            this.tanggal = sekarang.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+    },
+}));
+
 Alpine.start();

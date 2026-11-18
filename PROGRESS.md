@@ -286,3 +286,6 @@ Masukan dari uji coba: istilah sulit dipahami orang awam, beberapa alur membingu
 - [x] Penggantian kata: "Populasi kini" → "Ayam hidup kini", "Populasi awal" → "Jumlah ayam awal", "Selisih populasi" → "Selisih jumlah ayam", "Feed intake" → "Pakan per ekor", "re-chick-in" → "ayam masuk berikutnya"; kode aturan internal (R10, R11) dibuang dari teks
 - [x] Alur: kartu **"Langkah berikutnya"** di Ringkasan Siklus menunjuk satu tindakan sesuai status dan data (isi catatan hari ini, timbang sampel/catat obat, panen, input RHPP, cocokkan, tutup, laporan/siklus baru); langkah target harian di wizard ditulis ulang dan "Lewati" menjadi tombol utama bila belum ada berkas
 - [x] Uji: 12 baru, total 387 lulus
+
+- [x] Topbar kanan: jam (tebal, mengikuti zona waktu aplikasi, berjalan tiap detik) dengan hari dan tanggal di bawahnya, tanpa kartu; kotak nama dan peran dihapus. Nama, peran, dan tombol **Keluar** pindah ke dasar sidebar (di tablet tinggal ikon Keluar); jam juga tampil di topbar ponsel
+- [x] Perbaikan tampilan: panah dropdown menabrak teks di semua `select` (padding kanan 2,5 rem untuk semua pilihan)

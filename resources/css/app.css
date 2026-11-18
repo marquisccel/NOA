@@ -153,6 +153,11 @@
     }
 }
 
+/* Panah dropdown tidak boleh menabrak teks: padding kanan select selalu menyisakan ruang untuk panah. */
+select:not([multiple]) {
+    padding-right: 2.5rem !important;
+}
+
 [x-cloak] {
     display: none !important;
 }
