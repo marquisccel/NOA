@@ -27,7 +27,7 @@ Pengguna utama: **peternak plasma** (sering di ponsel, sinyal 3G, tangan kotor, 
 | Grafik hanya dimuat di halaman yang butuh (Chart.js ±160 KB) | Halaman entri harian tetap ringan untuk 3G (target < 500 KB). |
 | Topbar hanya judul + jam; menu di sidebar | Mengurangi kebisingan; nama menu aktif cukup sebagai petunjuk lokasi. |
 | Kalkulator **Bagaimana kalau?** | Mengubah angka abstrak (FCR 1,60 → 1,55) menjadi rupiah yang bisa dibayangkan. |
-| Halaman masuk dengan **ilustrasi kandang ayam** (kandang, silo pakan, ayam mematuk) dan tiga langkah sederhana | Peternak merasa "ini untuk saya"; efek berat (kanvas, kaca 3D) sengaja dibuang karena berlebihan untuk pengguna lapangan. |
+| Halaman masuk berupa **adegan peternakan sinematik** (pagi keemasan / malam dengan jendela kandang menyala), lima lapisan paralaks, gandum bergoyang, serbuk cahaya, dan **kartu kaca** (blur + saturasi) berisi formulir | Kesan profesional ala Apple, tetapi isinya khas peternakan; gerak halus dan ringan (CSS + 30 baris JS, tanpa kanvas), mati bila pengguna memilih gerak minimal. |
 | Istilah awam: **Periode** (bukan siklus), **Kandang terbuka/tertutup** (bukan open/closed house) | Pengguna uji tidak paham istilah teknis. Nama di kode tetap `siklus`; hanya tampilan yang diganti. |
 | Menu: Dashboard → Kandang → Aktivitas; tanpa foto/inisial profil di daftar | Urutan mengikuti seberapa sering dipakai; avatar tidak memberi informasi. |
 | Tabel dan formulir memakai token warna (tidak ada warna terang tertanam) | Mode gelap konsisten di semua halaman, termasuk isian otomatis peramban. |
