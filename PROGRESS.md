@@ -341,3 +341,4 @@ Catatan: penayangan di Vercel belum diuji (butuh akun Vercel dan Neon); langkah 
 - [x] Koreksi: halaman masuk disederhanakan untuk peternak (ilustrasi kandang ayam SVG, tanpa kanvas/efek berat), logo kembali ke gambar ayam + wordmark hijau; `masuk.js` dan logo SVG dibuang
 - [x] Koreksi 2: halaman masuk dirombak jadi adegan peternakan sinematik berlapis + kaca ala Apple; logo lama (ayam + wordmark hijau) dikembalikan, perubahan logo ditunda
 - [x] Maskot ayam 3D (three.js, `resources/js/ayam3d.js`) di halaman masuk, logo baru dari gambar ayam hijau (WebP transparan, ikut tema), tombol tema sejajar tepi kanan kartu
+- [x] Halaman masuk versi 3: panel gambar kiri (ayam 3D berbulu, mata mengikuti kursor, kartu statistik) + kartu kaca kanan + latar aurora; aset adegan SVG, gandum, dan ayam bulat dibuang

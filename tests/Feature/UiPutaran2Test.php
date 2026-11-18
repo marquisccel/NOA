@@ -112,11 +112,11 @@ class UiPutaran2Test extends TestCase
         $this->actingAs($this->peternak)->get(route('kandang.show', $kandang))->assertOk()->assertDontSee('Buka di Google Maps');
     }
 
-    public function test_halaman_masuk_memuat_adegan_peternakan_berlapis_dan_kaca(): void
+    public function test_halaman_masuk_memuat_panel_gambar_ayam_3d_latar_aurora_dan_kartu_kaca(): void
     {
         $html = $this->get(route('login'))->assertOk()->getContent();
 
-        foreach (['data-adegan', 'data-kandang', 'class="lapisan"', 'kaca-form', 'Untuk peternak plasma', 'Catat tiap hari', 'Lihat hasilnya', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam3d', 'data-colek'] as $penanda) {
+        foreach (['class="latar"', 'data-hero', 'panel-gambar', 'statistik', 'kaca-form', 'Untuk peternak plasma', 'Catat tiap hari', 'Lihat hasilnya', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam3d', 'data-colek'] as $penanda) {
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
         $this->assertStringContainsString('noa-mark.webp', $html);
