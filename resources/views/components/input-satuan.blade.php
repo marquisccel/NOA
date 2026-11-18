@@ -1,4 +1,4 @@
-@props(['name', 'label', 'satuan' => null, 'awalan' => null, 'value' => null, 'hint' => null, 'catatan' => null])
+@props(['name', 'label', 'satuan' => null, 'awalan' => null, 'value' => null, 'hint' => null, 'catatan' => null, 'langkah' => null, 'desimal' => 0])
 
 @php
     $kunci = str_replace(['[', ']'], ['.', ''], $name);
@@ -11,6 +11,16 @@
     <div class="flex items-baseline justify-between gap-3">
         <x-input-label :for="$name" :value="$label" />
         @if ($catatan)<span class="text-xs text-ink-muted">{{ $catatan }}</span>@endif
+        @if ($langkah)
+            {{-- Tombol tambah/kurang agar tidak perlu mengetik di ponsel --}}
+            <span class="inline-flex shrink-0 gap-1.5" role="group" aria-label="Ubah {{ $label }}">
+                @foreach ([['−', -1, 'Kurangi'], ['+', 1, 'Tambah']] as [$simbol, $arah, $aksi])
+                    <button type="button" aria-label="{{ $aksi }} {{ $langkah }} pada {{ $label }}"
+                        @click="const e = document.getElementById('{{ $name }}'); e.value = Math.max(0, (parseFloat(e.value) || 0) + ({{ $arah * $langkah }})).toFixed({{ $desimal }}); e.dispatchEvent(new Event('input'))"
+                        class="grid size-9 place-items-center rounded-md border border-line-control text-lg font-bold leading-none text-ink hover:bg-state-hover">{{ $simbol }}</button>
+                @endforeach
+            </span>
+        @endif
     </div>
     <div class="relative mt-2 flex items-stretch">
         @if ($awalan)

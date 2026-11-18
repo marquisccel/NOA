@@ -46,6 +46,7 @@
                 <x-kpi label="Umur panen" :value="$f['umur_panen'] !== null ? F::angka($f['umur_panen'], 1).' hari' : '–'" :caption="$f['jumlah_tahap'] ? 'Rata-rata berbobot '.$f['jumlah_tahap'].' tahap' : null" />
                 <x-kpi label="IP" istilah="ip" :value="F::angka($f['ip'], 0)" caption="Dihitung dari data final" />
             </div>
+            <x-penjelasan-rumus :siklus="$siklus" />
         @else
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
                 <x-kpi label="Ayam hidup kini" istilah="populasi" :value="F::angka($r['populasi_kini'], 0).' ekor'" :caption="$r['ada_recording'] ? 'Dari '.F::angka($siklus->populasi, 0).' ekor DOC' : 'Jumlah ayam awal (DOC)'" />

@@ -59,6 +59,7 @@
                   x-data="{
                       masuk: @js($nilai('pakan_masuk_sak', 0)),
                       pakai: @js($nilai('pakan_pakai_sak')),
+                      kemarin: @js($kemarin ?? null),
                       mati: @js($nilai('mati', 0)),
                       afkir: @js($nilai('afkir', 0)),
                       populasi: @js($siklus->populasi),
@@ -71,6 +72,13 @@
                 @csrf
                 @if ($edit) @method('PUT') @endif
                 @if (! $edit)<input type="hidden" name="tanggal" value="{{ $tanggal->toDateString() }}">@endif
+                @if (! $edit && ($kemarin ?? null))
+                    <button type="button" @click="pakai = kemarin.pakai; mati = kemarin.mati; afkir = kemarin.afkir; $nextTick(() => document.getElementById('pakan_pakai_sak').dispatchEvent(new Event('input')))"
+                        class="flex min-h-12 w-full items-center justify-between gap-3 rounded-md border border-dashed border-brand-border bg-tint px-4 text-left hover:bg-state-selected" data-tur="Samakan dengan kemarin|Angka hari ini mirip kemarin? Satu ketukan mengisi pakan, ayam mati, dan afkir dari hari sebelumnya." data-tur-urut="5">
+                        <span class="flex items-center gap-2.5 text-sm font-semibold text-ink-brand"><x-icon name="copy" class="size-5" /> Samakan dengan kemarin</span>
+                        <span class="text-xs text-ink-secondary">{{ F::angka($kemarin['pakai']) }} sak · mati {{ $kemarin['mati'] }} · afkir {{ $kemarin['afkir'] }}</span>
+                    </button>
+                @endif
                 @if ($errors->has('tanggal'))
                     <x-alert variant="error">
                         <p class="font-semibold">Hari ke-{{ $hariKe }} sudah punya recording</p>
@@ -83,11 +91,11 @@
                     </x-alert>
                 @endif
 
-                <x-input-satuan name="pakan_pakai_sak" label="Pakan terpakai *" satuan="sak" step="0.01" min="0" inputmode="decimal"
+                <x-input-satuan name="pakan_pakai_sak" label="Pakan terpakai *" satuan="sak" :langkah="0.5" :desimal="2" step="0.01" min="0" inputmode="decimal"
                     :value="$recording->pakan_pakai_sak" x-model="pakai" required autofocus
                     :catatan="$stdHariSak !== null ? 'Standar '.F::angka($stdHariSak, 1).' sak' : null" />
-                <x-input-satuan name="mati" label="Ayam mati *" satuan="ekor" step="1" min="0" inputmode="numeric" :value="$recording->mati ?? 0" x-model="mati" required />
-                <x-input-satuan name="afkir" label="Ayam afkir *" satuan="ekor" step="1" min="0" inputmode="numeric" :value="$recording->afkir ?? 0" x-model="afkir" required />
+                <x-input-satuan name="mati" label="Ayam mati *" satuan="ekor" :langkah="1" step="1" min="0" inputmode="numeric" :value="$recording->mati ?? 0" x-model="mati" required />
+                <x-input-satuan name="afkir" label="Ayam afkir *" satuan="ekor" :langkah="1" step="1" min="0" inputmode="numeric" :value="$recording->afkir ?? 0" x-model="afkir" required />
 
                 <div x-cloak :class="num(afkir) > 0 ? '' : 'hidden'">
                     <x-input-label for="sebab_afkir" value="Sebab afkir *" />

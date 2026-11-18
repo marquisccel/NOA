@@ -30,6 +30,8 @@ Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verif
 // Recording harian: peternak dan ABK miliknya (F8.2). Hak akses dijaga kebijakan, bukan middleware peran.
 Route::middleware('auth')->group(function () {
     Route::get('siklus/{siklus}/recording', [RecordingController::class, 'index'])->name('recording.index');
+    Route::get('siklus/{siklus}/recording/massal', [RecordingController::class, 'massal'])->name('recording.massal');
+    Route::post('siklus/{siklus}/recording/massal', [RecordingController::class, 'simpanMassal'])->name('recording.massal.simpan');
     Route::get('siklus/{siklus}/recording/create', [RecordingController::class, 'create'])->name('recording.create');
     Route::post('siklus/{siklus}/recording', [RecordingController::class, 'store'])->name('recording.store');
     Route::get('siklus/{siklus}/recording/{hari}/tersimpan', [RecordingController::class, 'tersimpan'])->whereNumber('hari')->name('recording.tersimpan');

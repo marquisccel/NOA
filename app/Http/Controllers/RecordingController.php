@@ -221,6 +221,102 @@ class RecordingController extends Controller
         return $redirect;
     }
 
+    /** Angka hari sebelumnya untuk tombol "Samakan dengan kemarin"; null bila tidak ada. */
+    private function dataKemarin(Siklus $siklus, int $hariKe): ?array
+    {
+        $r = $siklus->recordings()->where('hari_ke', $hariKe - 1)->first();
+
+        return $r ? ['pakai' => (float) $r->pakan_pakai_sak, 'mati' => (int) $r->mati, 'afkir' => (int) $r->afkir] : null;
+    }
+
+    /** @return list<int> hari yang sudah lewat (sampai hari ini) tetapi belum punya recording, paling lama dulu. */
+    private function hariKosong(Siklus $siklus): array
+    {
+        $ada = $siklus->recordings()->pluck('hari_ke')->all();
+        $kosong = [];
+        // Siklus yang sudah tidak berjalan hanya perlu dilengkapi sampai catatan terakhir; setelah panen terakhir tidak ada lagi yang dicatat.
+        $batas = $siklus->status === Siklus::STATUS_BERJALAN ? $this->umurHariIni($siklus) : (int) $siklus->recordings()->max('hari_ke');
+        $panenAkhir = (int) $siklus->panen()->max('umur_hari');
+        if ($panenAkhir > 0) {
+            $batas = min($batas, $panenAkhir);
+        }
+        for ($hari = 1; $hari <= $batas; $hari++) {
+            if (! in_array($hari, $ada, true)) {
+                $kosong[] = $hari;
+            }
+        }
+
+        return $kosong;
+    }
+
+    /** Isi banyak hari sekaligus: tabel hari terlewat, cocok untuk mengejar catatan di buku. */
+    public function massal(Siklus $siklus): View|RedirectResponse
+    {
+        Gate::authorize('create', [RecordingHarian::class, $siklus]);
+
+        $kosong = array_slice($this->hariKosong($siklus), 0, 14);
+        if (! $kosong) {
+            return redirect()->route('recording.index', $siklus)->with('status', 'Tidak ada hari yang terlewat. Semua catatan sudah terisi.');
+        }
+
+        return view('recording.massal', [
+            'siklus' => $siklus->load('kandang'),
+            'hari' => $kosong,
+            'sisa' => max(0, count($this->hariKosong($siklus)) - count($kosong)),
+            'stdHari' => $this->ringkasan->pakanStdHarian($siklus->standarHarian()->get()),
+        ]);
+    }
+
+    public function simpanMassal(Request $request, Siklus $siklus): RedirectResponse
+    {
+        Gate::authorize('create', [RecordingHarian::class, $siklus]);
+
+        $kosong = $this->hariKosong($siklus);
+        $baris = collect($request->input('baris', []))
+            ->filter(fn ($b, $hari) => in_array((int) $hari, $kosong, true) && (filled($b['pakan_pakai_sak'] ?? null) || filled($b['mati'] ?? null) || filled($b['afkir'] ?? null)));
+
+        if ($baris->isEmpty()) {
+            return back()->withErrors(['baris' => 'Isi minimal satu hari sebelum menyimpan.']);
+        }
+
+        $aturan = [];
+        foreach ($baris->keys() as $hari) {
+            $aturan["baris.{$hari}.pakan_pakai_sak"] = ['required', 'numeric', 'min:0', 'max:99999'];
+            $aturan["baris.{$hari}.pakan_masuk_sak"] = ['nullable', 'numeric', 'min:0', 'max:99999'];
+            $aturan["baris.{$hari}.mati"] = ['nullable', 'integer', 'min:0', 'max:1000000'];
+            $aturan["baris.{$hari}.afkir"] = ['nullable', 'integer', 'min:0', 'max:1000000'];
+            $aturan["baris.{$hari}.sebab_afkir"] = [\Illuminate\Validation\Rule::requiredIf(fn () => (int) ($baris[$hari]['afkir'] ?? 0) > 0), 'nullable', \Illuminate\Validation\Rule::in(RecordingHarian::SEBAB_AFKIR)];
+        }
+
+        $data = \Illuminate\Support\Facades\Validator::make(['baris' => $baris->all()], $aturan, [
+            'required' => 'Wajib diisi.', 'numeric' => 'Harus berupa angka.', 'integer' => 'Harus bilangan bulat.', 'min' => 'Tidak boleh negatif.',
+            'sebab_afkir.required' => 'Pilih sebab afkir.',
+        ])->validate();
+
+        $total = (int) $siklus->recordings()->sum('deplesi_harian');
+        foreach ($data['baris'] as $b) {
+            $total += (int) ($b['mati'] ?? 0) + (int) ($b['afkir'] ?? 0);
+        }
+        if ($total > $siklus->populasi) {
+            return back()->withInput()->withErrors(['baris' => 'Jumlah ayam mati dan afkir melebihi populasi awal ('.Format::angka($siklus->populasi, 0).' ekor). Periksa angkanya.']);
+        }
+
+        foreach ($data['baris'] as $hari => $b) {
+            $afkir = (int) ($b['afkir'] ?? 0);
+            $siklus->recordings()->create([
+                'tanggal' => $siklus->tanggal_masuk->copy()->addDays((int) $hari - 1)->toDateString(),
+                'hari_ke' => (int) $hari,
+                'pakan_masuk_sak' => $b['pakan_masuk_sak'] ?? 0,
+                'pakan_pakai_sak' => $b['pakan_pakai_sak'],
+                'mati' => (int) ($b['mati'] ?? 0),
+                'afkir' => $afkir,
+                'sebab_afkir' => $afkir > 0 ? $b['sebab_afkir'] : null,
+            ]);
+        }
+
+        return redirect()->route('recording.index', $siklus)->with('status', count($data['baris']).' hari tersimpan sekaligus.');
+    }
+
     /** Hari terkecil yang sudah lewat (sampai hari ini) tetapi belum punya recording; null bila tidak ada. */
     private function hariBelumDiisi(Siklus $siklus, array $baris): ?int
     {
@@ -288,6 +384,7 @@ class RecordingController extends Controller
             'standar' => $siklus->standarHarian()->where('hari_ke', $hariKe)->first(),
             'target' => $siklus->parameterUmur()->where('umur_awal', '<=', $hariKe)->where('umur_akhir', '>=', $hariKe)->first(),
             'sebelum' => $sebelum,
+            'kemarin' => $this->dataKemarin($siklus, $hariKe),
             'stdHariSak' => $this->ringkasan->pakanStdHarian($siklus->standarHarian()->get())[$hariKe] ?? null,
             'hariIni' => $this->umurHariIni($siklus),
             'belumDiisi' => $this->hariBelumDiisi($siklus, $this->hitung($siklus)),

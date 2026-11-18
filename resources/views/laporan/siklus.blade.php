@@ -35,6 +35,9 @@
             <x-kpi label="Biaya produksi" :value="$biaya['per_kg'] === null ? '–' : 'Rp '.F::angka($biaya['per_kg'], 0)" :caption="'per kg · total '.($biaya['lengkap'] ? $rp($biaya['total']) : $rp($biaya['total']).' (belum lengkap)')" />
         </div>
 
+        <x-penjelasan-rumus :siklus="$siklus" />
+        <x-simulasi :siklus="$siklus" />
+
         @if ($p['selisih_populasi'] !== 0 && $sudahPanen)
             <x-alert variant="warning"><p class="font-semibold">Selisih jumlah ayam {{ F::angka(abs($p['selisih_populasi']), 0) }} ekor</p><p>Panen + deplesi ≠ populasi awal. <a href="{{ route('panen.selisih', $siklus) }}" class="font-semibold underline">Lihat rincian</a></p></x-alert>
         @endif

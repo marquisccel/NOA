@@ -3,6 +3,7 @@
 
     $peternak = auth()->user()->isPeternak();
     $ppl = $siklus->nama_ppl ?: 'PPL';
+    $jumlahKosong = collect($daftar)->where('jenis', 'kosong')->where('hari_ke', '<', $hariIni)->count() + (collect($daftar)->contains(fn ($d) => $d['jenis'] === 'kosong' && $d['hari_ke'] === $hariIni) ? 1 : 0);
     $angka = fn ($n, $d = 1) => $n === null ? '–' : F::angka($n, $d);
     $persen = fn ($n) => $n === null ? '–' : F::angka($n, 2).'%';
     $terparaf = collect($daftar)->where('jenis', 'hari')->filter(fn ($d) => $d['baris']['recording']->diparaf_ppl);
@@ -35,7 +36,10 @@
                             <p class="font-semibold">Hari ke-{{ $belumDiisi }} ({{ $tglBelum->translatedFormat('j M Y') }}) belum diisi</p>
                             <p>Entri mundur diizinkan. Angka berjalan dihitung ulang setelah disimpan.</p>
                         </div>
-                        <a href="{{ route('recording.create', [$siklus, 'tanggal' => $tglBelum->toDateString()]) }}" class="inline-flex min-h-11 items-center font-semibold underline">Isi hari ke-{{ $belumDiisi }}</a>
+                        <span class="flex flex-wrap gap-x-4">
+                            <a href="{{ route('recording.create', [$siklus, 'tanggal' => $tglBelum->toDateString()]) }}" class="inline-flex min-h-11 items-center font-semibold underline">Isi hari ke-{{ $belumDiisi }}</a>
+                            @if ($jumlahKosong >= 2)<a href="{{ route('recording.massal', $siklus) }}" class="inline-flex min-h-11 items-center font-semibold underline">Isi {{ $jumlahKosong }} hari sekaligus</a>@endif
+                        </span>
                     </div>
                 </x-alert>
             @endif
