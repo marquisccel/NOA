@@ -89,7 +89,7 @@ class PanenController extends Controller
         $data = Arr::except($request->validated(), ['foto_btpa', 'hapus_foto']);
         $data['umur_hari'] = $request->umurHari($siklus);
 
-        if ($request->hasFile('foto_btpa')) {
+        if (config('noa.unggah') && $request->hasFile('foto_btpa')) {
             $data['foto_btpa'] = $request->file('foto_btpa')->store(self::FOLDER, self::DISK);
         }
 
@@ -140,7 +140,7 @@ class PanenController extends Controller
         $data['umur_hari'] = $request->umurHari($siklus);
 
         $fotoLama = $panen->foto_btpa;
-        if ($request->hasFile('foto_btpa')) {
+        if (config('noa.unggah') && $request->hasFile('foto_btpa')) {
             $data['foto_btpa'] = $request->file('foto_btpa')->store(self::FOLDER, self::DISK);
         } elseif ($request->boolean('hapus_foto')) {
             $data['foto_btpa'] = null;

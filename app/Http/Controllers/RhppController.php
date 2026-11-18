@@ -86,7 +86,7 @@ class RhppController extends Controller
         $ada?->restore();
         $lama = $ada?->lampiran;
 
-        if ($request->hasFile('lampiran')) {
+        if (config('noa.unggah') && $request->hasFile('lampiran')) {
             $data['lampiran'] = $request->file('lampiran')->store(self::FOLDER, self::DISK);
         }
 

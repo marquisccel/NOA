@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Di belakang proxy (Vercel, Render) alamat dan skema asli datang lewat header X-Forwarded-*.
+        $middleware->trustProxies(at: '*');
         $middleware->alias(['peternak' => \App\Http\Middleware\EnsurePeternak::class]);
         $middleware->web(append: [\App\Http\Middleware\EnsureAkunAktif::class]);
     })

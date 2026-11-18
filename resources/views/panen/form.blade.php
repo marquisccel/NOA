@@ -62,6 +62,7 @@
                     <x-input-error class="mt-1.5" :messages="$errors->get('nomor_btpa')" />
                 </div>
 
+                @if (config('noa.unggah'))
                 <div>
                     <x-input-label for="foto_btpa" value="Foto BTPA (opsional)" />
                     <input id="foto_btpa" name="foto_btpa" type="file" accept="image/jpeg,image/png,image/webp" class="mt-2 block w-full rounded-md border border-dashed border-line-control bg-page p-3 text-base">
@@ -74,6 +75,7 @@
                         </label>
                     @endif
                 </div>
+                @endif
 
                 @if ($errors->has('tonase_kg') || $errors->has('jumlah_ekor'))<x-alert variant="error">Periksa jumlah ekor dan tonase.</x-alert>@endif
 

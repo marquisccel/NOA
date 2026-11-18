@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -22,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Syarat kata sandi: minimal 8 karakter, memuat huruf dan angka. Berlaku di pendaftaran,
         // atur ulang, ganti kata sandi, dan pembuatan akun ABK; daftar syarat di layar mengikuti ini.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Password::defaults(fn () => Password::min(8)->letters()->numbers());
     }
 }

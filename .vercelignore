@@ -1,0 +1,14 @@
+node_modules
+tests
+design
+docs
+.git
+.github
+storage/logs
+storage/framework/views
+storage/framework/cache
+storage/framework/sessions
+docker-compose.yml
+Dockerfile
+render.yaml
+PROGRESS.md

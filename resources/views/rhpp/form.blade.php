@@ -33,6 +33,7 @@
                         <x-input-error class="mt-1.5" :messages="$errors->get('tanggal_terbit')" />
                     </div>
                 </div>
+                @if (config('noa.unggah'))
                 <div>
                     <x-input-label for="lampiran" value="Lampiran (foto/PDF)" />
                     <input id="lampiran" name="lampiran" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" class="mt-2 block w-full rounded-md border border-dashed border-line-control bg-page p-3 text-base">
@@ -40,6 +41,7 @@
                     <x-input-error class="mt-1.5" :messages="$errors->get('lampiran')" />
                     @if ($rhpp?->lampiran)<p class="mt-2 text-sm"><a href="{{ route('rhpp.lampiran', $siklus) }}" target="_blank" rel="noopener" class="font-semibold text-ink-brand underline">Lihat lampiran saat ini</a></p>@endif
                 </div>
+                @endif
             </section>
 
             <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
