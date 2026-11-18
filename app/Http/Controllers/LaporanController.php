@@ -22,55 +22,12 @@ class LaporanController extends Controller
         private LaporanSiklus $laporan,
     ) {}
 
-    /** Perbandingan antar-siklus lintas kandang; siklus yang belum panen tampil "–". */
-    public function index(Request $request): View
-    {
-        abort_unless($request->user()->isPeternak(), 403);
-
-        $kandang = Kandang::where('user_id', $request->user()->id)->orderBy('nama_farm')->get();
-        $siklus = Siklus::whereIn('kandang_id', $kandang->modelKeys())->with('kandang')->orderByDesc('tanggal_masuk')->get();
-        $nomor = Siklus::nomorMap($kandang->modelKeys());
-
-        $tahun = $siklus->map(fn (Siklus $s) => $s->tanggal_masuk->year)->unique()->sortDesc()->values();
-        $filter = [
-            'kandang' => $request->integer('kandang') ?: null,
-            'status' => in_array($request->query('status'), Siklus::STATUSES, true) ? $request->query('status') : null,
-            'tahun' => $request->integer('tahun') ?: null,
-        ];
-
-        $baris = $siklus
-            ->when($filter['kandang'], fn ($c) => $c->where('kandang_id', $filter['kandang']))
-            ->when($filter['status'], fn ($c) => $c->where('status', $filter['status']))
-            ->when($filter['tahun'], fn ($c) => $c->filter(fn (Siklus $s) => $s->tanggal_masuk->year === $filter['tahun']))
-            ->map(function (Siklus $s) use ($nomor) {
-                $p = $this->performa->hitung($s);
-
-                return ['siklus' => $s, 'nomor' => $nomor[$s->id] ?? 1, 'p' => $p, 'sudahPanen' => $p['jumlah_tahap'] > 0];
-            })->values();
-
-        // Grafik per kandang: kandang terpilih, atau kandang dengan siklus berpanen terbanyak.
-        $grafikKandang = $filter['kandang']
-            ? $kandang->firstWhere('id', $filter['kandang'])
-            : $kandang->sortByDesc(fn ($k) => $baris->filter(fn ($b) => $b['siklus']->kandang_id === $k->id && $b['sudahPanen'])->count())->first();
-        $untukGrafik = $baris->filter(fn ($b) => $grafikKandang && $b['siklus']->kandang_id === $grafikKandang->id && $b['sudahPanen'])->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->values();
-
-        return view('laporan.index', [
-            'kandang' => $kandang,
-            'baris' => $baris,
-            'tahun' => $tahun,
-            'filter' => $filter,
-            'grafikKandang' => $grafikKandang,
-            'grafikIp' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['ip'], 'std' => null])->all(),
-            'grafikFcr' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['fcr'], 'std' => null])->all(),
-        ]);
-    }
-
     /** Tautan lama "Bandingkan siklus" per kandang kini memakai halaman perbandingan global dengan filter kandang. */
     public function perbandingan(Kandang $kandang)
     {
         Gate::authorize('view', $kandang);
 
-        return redirect()->route('laporan.index', ['kandang' => $kandang->id]);
+        return redirect()->route('performa.index', ['periode' => 'semua', 'kandang' => $kandang->id]);
     }
 
     /** Laporan satu siklus: performa, biaya produksi, produksi, dan grafik. */

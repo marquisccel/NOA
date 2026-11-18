@@ -67,49 +67,6 @@
                         </div>
                     @endif
                 </section>
-
-                @php
-                    $sb = $performaSebelumnya;
-                    $banding = fn ($sekarang, $lalu, $d = 3) => $lalu === null ? 'Periode lalu: –' : 'Periode lalu: '.F::angka($lalu, $d);
-                    $tahunLaporan = strlen($performa['periode']) === 4 ? $performa['periode'] : substr($performa['periode'], 0, 4);
-                @endphp
-                <section id="performa" aria-labelledby="judul-performa" class="space-y-3.5">
-                    <div class="flex flex-wrap items-end justify-between gap-3">
-                        <div>
-                            <h2 id="judul-performa" class="text-base font-bold text-ink">Performa</h2>
-                            <p class="text-[13px] text-ink-secondary">Hasil siklus yang selesai dipanen pada <strong>{{ $performa['label'] }}</strong>.</p>
-                        </div>
-                        <form method="GET" action="{{ route('dashboard') }}#performa" x-data>
-                            <label for="periode" class="sr-only">Pilih periode</label>
-                            <select id="periode" name="periode" class="min-h-11 rounded-md border-line-control bg-surface px-3 text-sm font-medium focus:border-brand focus:ring-1 focus:ring-brand" @change="$el.form.submit()">
-                                <optgroup label="Per bulan">
-                                    @foreach ($pilihanPeriode['bulan'] as $nilai => $label)<option value="{{ $nilai }}" @selected($performa['periode'] === (string) $nilai)>{{ $label }}</option>@endforeach
-                                </optgroup>
-                                <optgroup label="Per tahun">
-                                    @foreach ($pilihanPeriode['tahun'] as $nilai => $label)<option value="{{ $nilai }}" @selected($performa['periode'] === (string) $nilai)>{{ $label }}</option>@endforeach
-                                </optgroup>
-                            </select>
-                            <noscript><x-button variant="secondary">Tampilkan</x-button></noscript>
-                        </form>
-                    </div>
-
-                    @if ($performa['jumlah_siklus'] === 0)
-                        <div class="rounded-[16px] border border-line bg-surface px-5 py-8 text-center">
-                            <p class="text-sm font-semibold">Belum ada siklus yang dipanen pada {{ $performa['label'] }}</p>
-                            <p class="mx-auto mt-1 max-w-md text-[13px] leading-[19px] text-ink-secondary">FCR, IP, deplesi, dan biaya per kg muncul setelah ada siklus yang sudah ada catatan panennya pada periode ini. Coba pilih periode lain.</p>
-                        </div>
-                    @else
-                        <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6 lg:gap-4">
-                            <x-kpi label="Siklus dipanen" :value="F::angka($performa['jumlah_siklus'], 0)" caption="Dengan catatan panen" />
-                            <x-kpi label="Total panen" :value="F::angka($performa['total_ekor'], 0).' ekor'" :caption="F::angka($performa['total_tonase'], 0).' kg'" />
-                            <x-kpi label="FCR" istilah="fcr" :value="F::angka($performa['fcr'], 3)" :caption="$banding($performa['fcr'], $sb['fcr']).' · makin kecil makin baik'" />
-                            <x-kpi label="IP rata-rata" istilah="ip" :value="F::angka($performa['ip'], 0)" :caption="$banding($performa['ip'], $sb['ip'], 0).' · makin besar makin baik'" />
-                            <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($performa['deplesi_persen']).'%'" :caption="$banding($performa['deplesi_persen'], $sb['deplesi_persen'], 2).($sb['deplesi_persen'] === null ? '' : '%')" />
-                            <x-kpi label="Biaya per kg" :value="$performa['biaya_per_kg'] === null ? '–' : 'Rp '.F::angka($performa['biaya_per_kg'], 0)" :caption="$performa['biaya_per_kg'] === null ? 'Harga kontrak belum lengkap' : $banding(null, $sb['biaya_per_kg'], 0)" />
-                        </div>
-                        <a href="{{ route('laporan.index', ['tahun' => $tahunLaporan]) }}" class="inline-flex min-h-11 items-center text-[13px] font-semibold text-ink-brand hover:underline">Lihat perbandingan lengkap per siklus →</a>
-                    @endif
-                </section>
             </div>
         @endif
     </x-page>

@@ -292,7 +292,23 @@ Masukan dari uji coba: istilah sulit dipahami orang awam, beberapa alur membingu
 
 ### Fitur tambahan setelah uji coba (18 Nov 2026)
 
+> Catatan: bagian Performa di Dashboard kemudian dipindah menjadi menu **Performa** (menggantikan menu Laporan global); lihat butir di bawah.
+
 - [x] Sidebar: nama dan peran dihapus, tinggal tombol Keluar
 - [x] Dashboard bagian **Performa** dengan pilihan periode (12 bulan terakhir dan per tahun; bawaan tahun ini): siklus dipanen, total panen, FCR gabungan (total pakan ÷ total tonase), IP rata-rata, deplesi, biaya per kg, masing-masing dibandingkan periode sebelumnya. Siklus dihitung menurut tanggal panen terakhir. Layanan: `PerformaPeriode`
 - [x] **Unduh daftar BTPA** (CSV) di halaman Panen dan **Unduh rekap pembanding** (CSV) di halaman RHPP: angka catatan peternak berdampingan dengan kolom RHPP dan selisih, tersedia kapan saja (sebelum RHPP terbit kolom RHPP kosong)
 - [x] Uji: 12 baru, total 401 lulus
+- [x] Menu **Performa** (menggantikan "Laporan" di sidebar): satu halaman berisi ringkasan, tabel siklus dipanen, dan grafik IP/FCR, dengan pilihan periode (semua, 12 bulan terakhir, per tahun), kandang, dan status. Bagian Performa di Dashboard dihapus. Laporan per siklus (cetak, CSV) tetap di tab Laporan tiap siklus
+- [x] **Data simulasi**: `php artisan db:seed --class=SimulasiSeeder` membuat akun `simulasi@noa.test` (dan ABK `abk.simulasi@noa.test`, kata sandi `password`) dengan 4 kandang dan 14 siklus (±14 bulan, 546 recording, 42 tahap panen) yang mencakup semua status, performa naik-turun, RHPP sama dan banyak selisih, siklus berjalan dengan hari terlewat, dan siklus dihentikan karena wabah. Aman dijalankan ulang; akun lain tidak disentuh
+- [x] Uji: 6 baru untuk simulasi dan Performa, total 407 lulus
+
+### Audit kekurangan sistem (18 Nov 2026)
+
+Kesiapan uji coba lapangan (urut prioritas):
+
+1. **Wajib sebelum peternak sungguhan memakai**: hosting HTTPS; backup harian ke luar server dan uji pemulihannya; kunci pendaftaran publik (`/register` masih terbuka); ganti `APP_ENV=production`, `APP_DEBUG=false`; surel sungguhan (sekarang `MAIL_MAILER=log`, jadi lupa kata sandi plasma tidak bisa berjalan); kebijakan privasi dan persetujuan (UU PDP) serta cara menghapus akun dan data (fitur hapus akun dibuang di UI Fase 2).
+2. **Paling memudahkan peternak**: pengingat harian (catatan belum diisi), mode offline atau antrean catat-nanti untuk sinyal 3G, tombol "samakan dengan kemarin" dan isian cepat, tabel isi-banyak-hari untuk mengejar catatan yang tertinggal, pasang ke layar utama ponsel (PWA).
+3. **Memperkuat nilai bukti**: riwayat perubahan baris recording (siapa mengubah apa dan kapan), foto nota untuk pakan masuk, DOC, dan OVK (selain BTPA dan RHPP), peringatan angka janggal (misalnya ayam mati hari ini jauh di atas biasanya).
+4. **Dashboard**: kartu "Perlu perhatian" gabungan semua siklus (hari terlewat, stok tipis, deplesi di atas target) karena ringkasan sekarang hanya ada per siklus.
+5. **Operasional**: akun admin NOA untuk bantuan (atur ulang sandi, lihat penggunaan), pencatatan galat (misalnya Sentry), pemantauan backup, ekspor semua data peternak (CSV/Excel).
+6. **Belum ditentukan**: estimasi pendapatan atau bonus (rumus bonus tiap inti berbeda), cara membuat akun inti jika kelak dibutuhkan, dashboard inti (ditunda).

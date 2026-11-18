@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siklus;
-use App\Services\PerformaPeriode;
 use App\Services\RingkasanDashboard;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, RingkasanDashboard $ringkasan, PerformaPeriode $performa): View
+    public function __invoke(Request $request, RingkasanDashboard $ringkasan): View
     {
         $user = $request->user();
 
@@ -18,9 +17,6 @@ class DashboardController extends Controller
             return view('dashboard.peternak', [
                 'ringkasan' => $ringkasan->peternak($user),
                 'sapaan' => $this->sapaan(),
-                'performa' => $performa->hitung($user, $periode = $performa->normalisasi($request->query('periode'))),
-                'performaSebelumnya' => $performa->hitung($user, $performa->sebelumnya($periode)),
-                'pilihanPeriode' => $performa->pilihan($user),
             ]);
         }
 

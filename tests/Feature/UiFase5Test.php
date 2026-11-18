@@ -338,10 +338,10 @@ class UiFase5Test extends TestCase
 
     public function test_sidebar_peternak_punya_item_laporan_tetapi_abk_tidak(): void
     {
-        $this->actingAs($this->peternak)->get(route('dashboard'))->assertSee(route('laporan.index'), false);
+        $this->actingAs($this->peternak)->get(route('dashboard'))->assertSee(route('performa.index'), false);
 
         $abk = User::factory()->abk($this->peternak)->create();
-        $this->actingAs($abk)->get(route('dashboard'))->assertDontSee(route('laporan.index'), false);
+        $this->actingAs($abk)->get(route('dashboard'))->assertDontSee(route('performa.index'), false);
     }
 
     public function test_laporan_siklus_berjalan_tanpa_panen_menampilkan_strip(): void

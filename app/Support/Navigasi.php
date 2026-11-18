@@ -44,7 +44,7 @@ class Navigasi
             [
                 'label' => 'Manajemen',
                 'items' => [
-                    self::item('Laporan', 'chart-column', 'laporan.index', ['laporan.index']),
+                    self::item('Performa', 'chart-column', 'performa.index', ['performa.*']),
                     self::item('Pengguna & Akses', 'users', 'abk.index', ['abk.*']),
                     self::item('Bantuan', 'info', 'bantuan', ['bantuan']),
                     self::item('Pengaturan', 'settings', 'profile.edit', ['profile.*']),

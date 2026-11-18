@@ -160,43 +160,9 @@ class LaporanSiklusTest extends TestCase
         $this->actingAs($this->peternak)->get(route('laporan.siklus', $this->siklus))->assertSee('Tidak sebanding');
     }
 
-    public function test_perbandingan_global_lintas_kandang_dengan_siklus_berjalan_tampil_strip(): void
-    {
-        $kandang = $this->siklus->kandang;
-        $baru = Siklus::create(['kandang_id' => $kandang->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 3000, 'status' => 'berjalan']);
-        $lain = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Lain', 'kapasitas' => 5000]);
-        Siklus::create(['kandang_id' => $lain->id, 'tanggal_masuk' => '2026-10-01', 'populasi' => 777, 'status' => 'dihentikan']);
-
-        $response = $this->actingAs($this->peternak)->get(route('laporan.index'));
-
-        $response->assertOk()->assertSee('Perbandingan antar-siklus')->assertSee('Kandang Lain')->assertSee('Siklus 2')->assertSee('1,652')->assertSee('Dihentikan')->assertSee('Berjalan')
-            ->assertSee('IP per siklus')->assertSee('FCR per siklus');
-        $response->assertSeeInOrder(['1 Nov 2026', '20 Sep 2026']);
-        $response->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->first() === $baru->id);
-    }
-
-    public function test_perbandingan_filter_kandang_status_dan_tahun(): void
-    {
-        $lain = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Lain', 'kapasitas' => 5000]);
-        $s = Siklus::create(['kandang_id' => $lain->id, 'tanggal_masuk' => '2025-03-01', 'populasi' => 777, 'status' => 'dihentikan']);
-
-        $this->actingAs($this->peternak)->get(route('laporan.index', ['kandang' => $lain->id]))->assertViewHas('baris', fn ($b) => $b->count() === 1);
-        $this->actingAs($this->peternak)->get(route('laporan.index', ['status' => 'selesai']))->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->all() === [$this->siklus->id]);
-        $this->actingAs($this->peternak)->get(route('laporan.index', ['tahun' => 2025]))->assertViewHas('baris', fn ($b) => $b->pluck('siklus.id')->all() === [$s->id]);
-    }
-
-    public function test_perbandingan_tidak_mencampur_siklus_peternak_lain(): void
-    {
-        $lain = User::factory()->create();
-        $k = Kandang::create(['user_id' => $lain->id, 'nama_farm' => 'Milik Orang', 'kapasitas' => 100]);
-        Siklus::create(['kandang_id' => $k->id, 'tanggal_masuk' => '2026-11-01', 'populasi' => 777, 'status' => 'berjalan']);
-
-        $this->actingAs($this->peternak)->get(route('laporan.index'))->assertDontSee('Milik Orang')->assertDontSee('777 ekor');
-    }
-
     public function test_tautan_lama_perbandingan_kandang_mengarah_ke_halaman_global(): void
     {
-        $this->actingAs($this->peternak)->get(route('laporan.perbandingan', $this->siklus->kandang))->assertRedirect(route('laporan.index', ['kandang' => $this->siklus->kandang->id]));
+        $this->actingAs($this->peternak)->get(route('laporan.perbandingan', $this->siklus->kandang))->assertRedirect(route('performa.index', ['periode' => 'semua', 'kandang' => $this->siklus->kandang->id]));
     }
 
     public function test_laporan_dan_perbandingan_hanya_untuk_peternak_pemilik(): void
@@ -212,10 +178,4 @@ class LaporanSiklusTest extends TestCase
         }
     }
 
-    public function test_abk_ditolak_di_laporan_global(): void
-    {
-        $abk = User::factory()->abk($this->peternak)->create();
-
-        $this->actingAs($abk)->get(route('laporan.index'))->assertForbidden();
-    }
 }

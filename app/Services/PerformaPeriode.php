@@ -15,9 +15,13 @@ class PerformaPeriode
 {
     public function __construct(private RingkasanPerforma $performa, private LaporanSiklus $laporan) {}
 
-    /** Periode valid berbentuk "2026" atau "2026-11"; selain itu tahun berjalan. */
+    /** Periode valid: "semua", "2026", atau "2026-11"; selain itu tahun berjalan. */
     public function normalisasi(?string $periode): string
     {
+        if ($periode === 'semua') {
+            return 'semua';
+        }
+
         if ($periode && preg_match('/^(20\d{2})(-(0[1-9]|1[0-2]))?$/', $periode)) {
             return $periode;
         }
@@ -28,6 +32,10 @@ class PerformaPeriode
     /** @return array{0: Carbon, 1: Carbon} awal dan akhir periode */
     public function rentang(string $periode): array
     {
+        if ($periode === 'semua') {
+            return [Carbon::create(2000, 1, 1)->startOfDay(), Carbon::create(2100, 12, 31)->endOfDay()];
+        }
+
         $bulanan = strlen($periode) === 7;
         $awal = $bulanan ? Carbon::createFromFormat('Y-m-d', $periode.'-01')->startOfDay() : Carbon::create((int) $periode, 1, 1)->startOfDay();
 
@@ -36,11 +44,20 @@ class PerformaPeriode
 
     public function label(string $periode): string
     {
+        if ($periode === 'semua') {
+            return 'Semua periode';
+        }
+
         return strlen($periode) === 7 ? $this->rentang($periode)[0]->translatedFormat('F Y') : 'Tahun '.$periode;
     }
 
-    public function sebelumnya(string $periode): string
+    /** Periode pembanding; "semua" tidak punya pembanding. */
+    public function sebelumnya(string $periode): ?string
     {
+        if ($periode === 'semua') {
+            return null;
+        }
+
         return strlen($periode) === 7
             ? $this->rentang($periode)[0]->subMonth()->format('Y-m')
             : (string) ((int) $periode - 1);
@@ -65,25 +82,34 @@ class PerformaPeriode
             $tahun[(string) $t] = 'Tahun '.$t.($t === (int) now()->format('Y') ? ' (tahun ini)' : '');
         }
 
-        return ['bulan' => $bulan, 'tahun' => $tahun];
+        return ['bulan' => $bulan, 'tahun' => $tahun, 'semua' => ['semua' => 'Semua periode']];
+    }
+
+    /**
+     * Siklus yang sudah punya catatan panen dan panen terakhirnya jatuh pada periode.
+     *
+     * @return \Illuminate\Support\Collection<int, Siklus>
+     */
+    public function siklusDipanen(User $user, string $periode, ?int $kandangId = null, ?string $status = null)
+    {
+        [$awal, $akhir] = $this->rentang($periode);
+
+        return Siklus::whereIn('kandang_id', Kandang::where('user_id', $user->id)->when($kandangId, fn ($q) => $q->whereKey($kandangId))->pluck('id'))
+            ->when($status, fn ($q) => $q->where('status', $status))
+            ->whereHas('panen')
+            ->with(['kontrak', 'panen', 'kandang'])
+            ->get()
+            ->filter(fn (Siklus $s) => Carbon::parse($s->panen->max('tanggal'))->startOfDay()->betweenIncluded($awal, $akhir))
+            ->sortByDesc('tanggal_masuk')
+            ->values();
     }
 
     /**
      * @return array{periode: string, label: string, jumlah_siklus: int, total_ekor: int, total_tonase: float, deplesi_persen: float|null, fcr: float|null, ip: float|null, biaya_per_kg: float|null}
      */
-    public function hitung(User $user, string $periode): array
+    public function hitung(User $user, string $periode, ?int $kandangId = null, ?string $status = null): array
     {
-        [$awal, $akhir] = $this->rentang($periode);
-
-        $siklus = Siklus::whereIn('kandang_id', Kandang::where('user_id', $user->id)->pluck('id'))
-            ->whereHas('panen')
-            ->with(['kontrak', 'panen'])
-            ->get()
-            ->filter(function (Siklus $s) use ($awal, $akhir) {
-                $terakhir = Carbon::parse($s->panen->max('tanggal'))->startOfDay();
-
-                return $terakhir->betweenIncluded($awal, $akhir);
-            });
+        $siklus = $this->siklusDipanen($user, $periode, $kandangId, $status);
 
         $ekor = 0;
         $tonase = 0.0;

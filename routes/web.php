@@ -7,6 +7,7 @@ use App\Http\Controllers\KandangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OvkController;
 use App\Http\Controllers\PanenController;
+use App\Http\Controllers\PerformaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecordingController;
 use App\Http\Controllers\RhppController;
@@ -98,7 +99,7 @@ Route::middleware(['auth', 'peternak'])->group(function () {
     Route::get('siklus/{siklus}/rhpp/cetak', [RhppController::class, 'cetak'])->name('rhpp.cetak');
 
     Route::get('aktivitas', AktivitasController::class)->name('aktivitas.index');
-    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('performa', PerformaController::class)->name('performa.index');
     Route::get('siklus/{siklus}/laporan', [LaporanController::class, 'siklus'])->name('laporan.siklus');
     Route::get('siklus/{siklus}/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     Route::get('siklus/{siklus}/laporan/csv', [LaporanController::class, 'csv'])->name('laporan.csv');
