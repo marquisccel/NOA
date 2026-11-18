@@ -1,7 +1,7 @@
 /*
  * Maskot ayam 3D untuk halaman masuk (three.js): ayam betina berbulu, dibangun seluruhnya lewat kode
- * (tanpa berkas model, tanpa unduhan tambahan). Ribuan helai bulu kecil berlapis (InstancedMesh) menutupi
- * badan, leher, dan paha supaya tampak berbulu, bukan mainan plastik.
+ * (tanpa berkas model, tanpa unduhan tambahan). Kelopak bulu besar berlapis (InstancedMesh) menutupi
+ * badan dan leher dengan gaya mainan tanah liat yang lembut dan cerah.
  *
  * Perilaku:
  *  - Kepala menoleh dan kedua bola mata mengikuti kursor.
@@ -89,117 +89,116 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
 
     const renderer = new THREE.WebGLRenderer({ canvas: kanvas, antialias: true, alpha: true, powerPreference: 'default' });
     renderer.setClearColor(0x000000, 0);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.82;
+    // Penyaji warna netral menjaga warna tetap cerah dan jenuh seperti gambar mainan tanah liat.
+    renderer.toneMapping = THREE.NeutralToneMapping;
+    renderer.toneMappingExposure = 1.0;
 
     const adegan = new THREE.Scene();
     const pmrem = new THREE.PMREMGenerator(renderer);
     adegan.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    adegan.environmentIntensity = 0.6;
+    adegan.environmentIntensity = 0.85;
 
     const kamera = new THREE.PerspectiveCamera(26, 1, 0.1, 80);
 
-    const kunci = new THREE.DirectionalLight(0xfff1dc, 1.7);
+    const kunci = new THREE.DirectionalLight(0xfff3e2, 1.6);
     kunci.position.set(-3.5, 6, 6);
-    const tepi = new THREE.DirectionalLight(0xcfe8ff, 1.5);
+    const tepi = new THREE.DirectionalLight(0xffe2c4, 0.9);
     tepi.position.set(5, 3.5, -5);
-    adegan.add(kunci, tepi, new THREE.HemisphereLight(0xe8f4ff, 0xffd9a8, 0.45));
+    adegan.add(kunci, tepi, new THREE.HemisphereLight(0xfff6ea, 0xffcfa0, 0.55));
 
     const rnd = pengacak(20261119);
-    const cA = new THREE.Color();
     const cB = new THREE.Color();
 
-    // ---------- bahan ----------
-    const bahanBulu = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.62, metalness: 0, sheen: 0.5, sheenRoughness: 0.4, sheenColor: new THREE.Color(0xb4621f), clearcoat: 0.08, clearcoatRoughness: 0.6 });
-    const bahanInti = new THREE.MeshStandardMaterial({ color: 0x6a2610, roughness: 0.85 });
-    const bahanKulit = new THREE.MeshPhysicalMaterial({ color: 0xd24a3b, roughness: 0.5, clearcoat: 0.5, clearcoatRoughness: 0.3 });
-    const bahanJengger = new THREE.MeshPhysicalMaterial({ color: 0xd1202c, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.15 });
-    const bahanParuh = new THREE.MeshPhysicalMaterial({ color: 0xe9b94c, roughness: 0.4, clearcoat: 0.6 });
-    const bahanParuhBawah = new THREE.MeshPhysicalMaterial({ color: 0xd7a23a, roughness: 0.45, clearcoat: 0.5 });
-    const bahanKaki = new THREE.MeshPhysicalMaterial({ color: 0xe3b53c, roughness: 0.5, clearcoat: 0.35 });
-    const bahanCakar = new THREE.MeshStandardMaterial({ color: 0xd8c8a6, roughness: 0.5 });
-    const bahanIris = new THREE.MeshPhysicalMaterial({ color: 0xe3871c, roughness: 0.15, clearcoat: 1, clearcoatRoughness: 0.03 });
-    const bahanPupil = new THREE.MeshPhysicalMaterial({ color: 0x050403, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02 });
-    const bahanKelopak = new THREE.MeshStandardMaterial({ color: 0x3b1a12, roughness: 0.7 });
+    // ---------- bahan: lembut dan matte seperti tanah liat ----------
+    const mat = (warna, o = {}) => new THREE.MeshPhysicalMaterial({ color: warna, roughness: 0.58, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.5, ...o });
+    const bahanBulu = mat(0xffffff, { roughness: 0.5, clearcoat: 0.18, clearcoatRoughness: 0.4 });
+    const bahanInti = mat(0xc6432a);
+    const bahanKulit = mat(0xf2582b, { roughness: 0.55, clearcoat: 0.2 });
+    const bahanJengger = mat(0xe5252b, { roughness: 0.3, clearcoat: 0.9, clearcoatRoughness: 0.15 });
+    const bahanParuh = mat(0xf8b93a, { roughness: 0.42, clearcoat: 0.3 });
+    const bahanKaki = mat(0xf6a623, { roughness: 0.5, clearcoat: 0.2 });
+    const bahanMata = mat(0x050403, { roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02 });
     const kilau = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const bahanSayap = [0x7d2e13, 0x652410, 0x4c1a0b].map((c) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.55, sheen: 1, sheenRoughness: 0.4, sheenColor: new THREE.Color(0xff9a58), clearcoat: 0.2 }));
-    const bahanEkor = new THREE.MeshPhysicalMaterial({ color: 0x142019, roughness: 0.32, metalness: 0.1, iridescence: 1, iridescenceIOR: 1.7, iridescenceThicknessRange: [150, 420], clearcoat: 0.6 });
+    const bahanSayap = [0xe9622a, 0xdd5426, 0xc9441f].map((c) => mat(c, { roughness: 0.52 }));
+    const bahanEkor = [0x1f6f52, 0x185a43, 0x2a8260].map((c) => mat(c, { roughness: 0.5, clearcoat: 0.2 }));
 
     const geoBola = new THREE.SphereGeometry(1, 40, 28);
-    const bola = (r, mat, sx = 1, sy = 1, sz = 1) => {
-        const m = new THREE.Mesh(geoBola, mat);
-        m.scale.set(r * sx, r * sy, r * sz);
+    const bola = (r, m, sx = 1, sy = 1, sz = 1) => {
+        const x = new THREE.Mesh(geoBola, m);
+        x.scale.set(r * sx, r * sy, r * sz);
 
-        return m;
+        return x;
+    };
+    const halus = (t, a, b) => {
+        const k = klem((t - a) / (b - a), 0, 1);
+
+        return k * k * (3 - 2 * k);
     };
 
-    // ---------- warna bulu ----------
+    // ---------- warna kelopak bulu: leher dan dada kuning emas, sisi jingga, perut merah ----------
     const warnaBadan = (u, r, c) => {
-        const dorsal = klem(u.y * 1.3, 0, 1);
-        const dada = klem(u.z * 0.9 - u.y * 0.35, 0, 1);
-        c.set(0x65200d).lerp(cB.set(0x9c4519), 0.25 + r() * 0.6);
-        c.lerp(cB.set(0xbf7430), dada * 0.55 * (0.4 + r() * 0.6));
-        c.lerp(cB.set(0x3a1509), dorsal * 0.5);
+        const emas = halus(u.z * 1.0 + u.y * 0.6, 0.62, 1.05);
+        const bawah = halus(-u.y, 0.0, 0.8);
+        c.set(0xea5a2b).lerp(cB.set(0xcc3b22), bawah * 0.75 + r() * 0.2);
+        c.lerp(cB.set(0xf58a30), (1 - emas) * 0.3 * r());
+        c.lerp(cB.set(0xf8b83c), emas * (0.75 + r() * 0.25));
     };
     const warnaLeher = (u, r, c) => {
-        c.set(0x93480f).lerp(cB.set(0xcf9138), 0.2 + r() * 0.7);
-        c.lerp(cB.set(0x6a2c0f), klem(-u.y, 0, 1) * 0.25);
-    };
-    const warnaPaha = (u, r, c) => {
-        c.set(0x70270e).lerp(cB.set(0x9c4519), r() * 0.7);
+        c.set(0xf7b535).lerp(cB.set(0xfbd05c), r() * 0.8);
+        c.lerp(cB.set(0xf19a2c), halus(-u.y, 0.2, 1) * 0.5);
     };
 
     // ---------- ayam ----------
     const ayam = new THREE.Group();
-    ayam.rotation.y = 0.42;
+    ayam.rotation.y = 1.0;
     adegan.add(ayam);
 
     const badan = new THREE.Group();
     ayam.add(badan);
 
     const pusatBadan = new THREE.Vector3(0, 0, -0.05);
-    const radiiBadan = new THREE.Vector3(0.7, 0.72, 1.0);
+    const radiiBadan = new THREE.Vector3(0.76, 0.8, 1.0);
     const inti = bola(1, bahanInti);
     inti.position.copy(pusatBadan);
-    inti.scale.copy(radiiBadan).multiplyScalar(0.97);
+    inti.scale.copy(radiiBadan).multiplyScalar(0.96);
     badan.add(inti);
     badan.add(selimut({
-        pusat: pusatBadan, radii: radiiBadan, jumlah: 1500, rnd, bahan: bahanBulu,
-        saring: (u) => !(u.z > 0.72 && u.y > 0.35) && !(u.y < -0.72),
-        arah: (u, d) => d.set(0, -0.5, -0.9),
-        warna: warnaBadan, l: 0.34, w: 0.13, t: 0.035,
+        pusat: pusatBadan, radii: radiiBadan, jumlah: 620, rnd, bahan: bahanBulu,
+        saring: (u) => !(u.z > 0.7 && u.y > 0.4) && !(u.y < -0.78),
+        arah: (u, d) => d.set(0, -1, -0.35),
+        warna: warnaBadan, l: 0.44, w: 0.21, t: 0.07,
     }));
 
-    // ekor: kipas bulu panjang berkilau
+    // ekor: kipas daun hijau tebal
     const ekor = new THREE.Group();
-    ekor.position.set(0, 0.28, -0.98);
-    ekor.rotation.x = 0.78;
-    for (let i = -4; i <= 4; i++) {
+    ekor.position.set(0, 0.3, -0.85);
+    ekor.rotation.x = 0.62;
+    for (let i = -3; i <= 3; i++) {
         const sudut = new THREE.Group();
-        sudut.rotation.y = i * 0.17;
-        sudut.rotation.z = i * 0.045;
-        const helai = new THREE.Mesh(geoBola, bahanEkor);
-        const panjang = 0.98 - Math.abs(i) * 0.075;
-        helai.scale.set(0.15, 0.022, panjang);
-        helai.position.set(0, i % 2 ? 0.008 : 0, -panjang * 0.9);
+        sudut.rotation.y = i * 0.27;
+        sudut.rotation.z = i * 0.06;
+        const helai = new THREE.Mesh(geoBola, bahanEkor[Math.abs(i) % 3]);
+        const panjang = 0.98 - Math.abs(i) * 0.11;
+        helai.scale.set(0.3, 0.06, panjang * 1.15);
+        helai.position.set(0, i % 2 ? 0.02 : 0, -panjang * 0.85);
         sudut.add(helai);
         ekor.add(sudut);
     }
     badan.add(ekor);
 
-    // sayap terlipat dengan tiga lapis bulu
+    // sayap: tiga lapis kelopak jingga yang tebal
     const sayap = [];
     for (const sisi of [-1, 1]) {
         const pangkal = new THREE.Group();
-        pangkal.position.set(sisi * 0.78, 0.3, 0.12);
+        pangkal.position.set(sisi * 0.86, 0.34, 0.12);
         for (let baris = 0; baris < 3; baris++) {
-            const jumlah = [7, 6, 5][baris];
+            const jumlah = [5, 5, 4][baris];
             for (let i = 0; i < jumlah; i++) {
                 const helai = new THREE.Mesh(geoBola, bahanSayap[baris]);
-                const panjang = [0.7, 0.88, 1.0][baris] - i * 0.012;
-                helai.scale.set(0.15, 0.03, panjang * 0.5);
-                helai.position.set(sisi * (0.04 + baris * 0.022), -0.04 - baris * 0.2 - i * 0.012, -0.05 - i * 0.14 - baris * 0.1);
-                helai.rotation.set(-0.2 + baris * 0.04, sisi * 0.06, sisi * (0.1 + baris * 0.04));
+                const panjang = [0.5, 0.62, 0.72][baris];
+                helai.scale.set(0.23, 0.07, panjang * 0.6);
+                helai.position.set(sisi * (0.03 + baris * 0.03), -0.06 - baris * 0.2 - i * 0.014, -0.02 - i * 0.2 - baris * 0.08);
+                helai.rotation.set(-0.16 + baris * 0.04, sisi * 0.07, sisi * (0.12 + baris * 0.05));
                 pangkal.add(helai);
             }
         }
@@ -207,117 +206,91 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
         sayap.push({ pangkal, sisi });
     }
 
-    // kaki: paha berbulu, betis bersisik kuning, jari dan cakar
-    for (const x of [-0.38, 0.38]) {
-        const pusatPaha = new THREE.Vector3(x, -0.58, 0.1);
-        const radiiPaha = new THREE.Vector3(0.28, 0.36, 0.34);
-        const paha = bola(1, bahanInti);
-        paha.position.copy(pusatPaha);
-        paha.scale.copy(radiiPaha).multiplyScalar(0.96);
-        ayam.add(paha);
-        ayam.add(selimut({ pusat: pusatPaha, radii: radiiPaha, jumlah: 220, rnd, bahan: bahanBulu, saring: (u) => u.y < 0.5, arah: (u, d) => d.set(0, -1, -0.15), warna: warnaPaha, l: 0.26, w: 0.11, t: 0.03 }));
-
-        const betis = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.04, 0.8, 18), bahanKaki);
-        betis.position.set(x, -1.16, 0.12);
+    // kaki kuning sederhana dengan tiga jari
+    for (const x of [-0.34, 0.34]) {
+        const betis = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.62, 18), bahanKaki);
+        betis.position.set(x, -1.2, 0.12);
         ayam.add(betis);
-        for (let r = 0; r < 6; r++) {
-            const cincin = new THREE.Mesh(new THREE.TorusGeometry(0.044 - r * 0.0006, 0.007, 8, 18), bahanKaki);
-            cincin.rotation.x = Math.PI / 2;
-            cincin.position.set(x, -0.9 - r * 0.115, 0.12);
-            ayam.add(cincin);
-        }
-        for (const sudut of [-0.55, 0, 0.55]) {
+        for (const sudut of [-0.6, 0, 0.6]) {
             const jari = new THREE.Group();
-            jari.position.set(x, -1.52, 0.12);
+            jari.position.set(x, -1.5, 0.12);
             jari.rotation.y = sudut;
-            const ruas = new THREE.Mesh(new THREE.CapsuleGeometry(0.034, 0.3, 6, 12), bahanKaki);
+            const ruas = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, 0.3, 6, 12), bahanKaki);
             ruas.rotation.x = Math.PI / 2;
-            ruas.position.set(0, 0, 0.17);
-            const cakar = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.1, 10), bahanCakar);
-            cakar.rotation.x = Math.PI / 2;
-            cakar.position.set(0, -0.005, 0.38);
-            jari.add(ruas, cakar);
+            ruas.position.set(0, 0, 0.16);
+            jari.add(ruas);
             ayam.add(jari);
         }
-        const belakang = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 0.12, 6, 12), bahanKaki);
-        belakang.rotation.x = Math.PI / 2;
-        belakang.position.set(x, -1.52, -0.08);
-        ayam.add(belakang);
     }
 
-    // leher dan kepala (satu rantai agar menoleh serempak, tetapi kepala lebih lincah)
+    // leher dan kepala
     const engselLeher = new THREE.Vector3(0, 0.6, 0.8);
     const leher = new THREE.Group();
     leher.position.copy(engselLeher);
     ayam.add(leher);
 
-    const leherBawah = { pusat: new THREE.Vector3(0, 0.82, 0.86), radii: new THREE.Vector3(0.34, 0.4, 0.36) };
+    const leherBawah = { pusat: new THREE.Vector3(0, 0.82, 0.84), radii: new THREE.Vector3(0.46, 0.46, 0.42) };
     const lb = bola(1, bahanInti);
     lb.position.copy(leherBawah.pusat);
-    lb.scale.copy(leherBawah.radii).multiplyScalar(0.96);
+    lb.scale.copy(leherBawah.radii).multiplyScalar(0.95);
     ayam.add(lb);
-    ayam.add(selimut({ pusat: leherBawah.pusat, radii: leherBawah.radii, jumlah: 380, rnd, bahan: bahanBulu, arah: (u, d) => d.set(0, -1, -0.3), warna: warnaLeher, l: 0.3, w: 0.11, t: 0.03 }));
+    ayam.add(selimut({ pusat: leherBawah.pusat, radii: leherBawah.radii, jumlah: 260, rnd, bahan: bahanBulu, arah: (u, d) => d.set(0, -1, -0.2), warna: warnaLeher, l: 0.44, w: 0.2, t: 0.065 }));
 
     const bagianLeher = [
-        { p: new THREE.Vector3(0, 1.18, 1.0), r: new THREE.Vector3(0.26, 0.38, 0.28), n: 300 },
-        { p: new THREE.Vector3(0, 1.5, 1.1), r: new THREE.Vector3(0.2, 0.32, 0.22), n: 240 },
+        { p: new THREE.Vector3(0, 1.22, 0.98), r: new THREE.Vector3(0.36, 0.38, 0.34), n: 200 },
     ];
     for (const b of bagianLeher) {
         const rel = b.p.clone().sub(engselLeher);
         const ci = bola(1, bahanInti);
         ci.position.copy(rel);
-        ci.scale.copy(b.r).multiplyScalar(0.95);
+        ci.scale.copy(b.r).multiplyScalar(0.94);
         leher.add(ci);
-        leher.add(selimut({ pusat: rel, radii: b.r, jumlah: b.n, rnd, bahan: bahanBulu, arah: (u, d) => d.set(0, -1, -0.25), warna: warnaLeher, l: 0.26, w: 0.1, t: 0.028 }));
+        leher.add(selimut({ pusat: rel, radii: b.r, jumlah: b.n, rnd, bahan: bahanBulu, arah: (u, d) => d.set(0, -1, -0.15), warna: warnaLeher, l: 0.38, w: 0.18, t: 0.06 }));
     }
 
     const kepala = new THREE.Group();
-    const pusatKepala = new THREE.Vector3(0, 1.9, 1.2);
+    const pusatKepala = new THREE.Vector3(0, 1.88, 1.12);
     kepala.position.copy(pusatKepala).sub(engselLeher);
     leher.add(kepala);
 
-    kepala.scale.setScalar(1.45);
-    kepala.add(bola(1, bahanKulit, 0.22, 0.25, 0.29));
+    kepala.scale.setScalar(1.7);
+    kepala.add(bola(1, bahanKulit, 0.24, 0.25, 0.27));
 
-    // jengger bergerigi
-    [[-0.16, 0.2, 0.06], [-0.08, 0.27, 0.085], [0, 0.31, 0.1], [0.08, 0.28, 0.09], [0.15, 0.22, 0.07]].forEach(([z, y, r]) => {
-        const j = bola(r, bahanJengger, 0.34, 1.25, 0.85);
+    // jengger: gumpalan merah mengilap seperti balon
+    [[-0.12, 0.24, 0.08, 0.9], [-0.04, 0.3, 0.11, 1.1], [0.05, 0.31, 0.12, 1.2], [0.13, 0.27, 0.1, 1.05], [0.19, 0.2, 0.075, 0.9]].forEach(([z, y, r, k]) => {
+        const j = bola(r, bahanJengger, 0.62, k, 0.9);
         j.position.set(0, y, z);
         kepala.add(j);
     });
 
-    const paruhAtas = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.3, 18), bahanParuh);
-    paruhAtas.rotation.x = Math.PI / 2 + 0.08;
-    paruhAtas.scale.x = 0.9;
-    paruhAtas.position.set(0, -0.04, 0.45);
-    const paruhBawah = new THREE.Mesh(new THREE.ConeGeometry(0.052, 0.22, 16), bahanParuhBawah);
-    paruhBawah.rotation.x = Math.PI / 2 - 0.1;
-    paruhBawah.position.set(0, -0.1, 0.4);
-    kepala.add(paruhAtas, paruhBawah);
+    const paruh = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.27, 20), bahanParuh);
+    paruh.rotation.x = Math.PI / 2 + 0.05;
+    paruh.scale.set(1.0, 1, 0.65);
+    paruh.position.set(0, -0.045, 0.37);
+    kepala.add(paruh);
 
     for (const sisi of [-1, 1]) {
-        const g = bola(1, bahanJengger, 0.032, 0.09, 0.04);
-        g.position.set(sisi * 0.04, -0.27, 0.3);
-        const telinga = bola(1, new THREE.MeshStandardMaterial({ color: 0xeedbc7, roughness: 0.5 }), 0.02, 0.06, 0.05);
-        telinga.position.set(sisi * 0.205, -0.03, -0.03);
-        kepala.add(g, telinga);
+        const g = bola(1, bahanJengger, 0.045, 0.1, 0.05);
+        g.position.set(sisi * 0.05, -0.27, 0.22);
+        kepala.add(g);
     }
 
-    // mata: iris jingga, pupil hitam yang bergeser mengikuti kursor, kilau cahaya, dan kelopak
+    // mata: bulat hitam besar dengan kilau; bergeser di permukaan kepala mengikuti kursor
     const mata = [];
     for (const sisi of [-1, 1]) {
         const grup = new THREE.Group();
-        grup.position.set(sisi * 0.185, 0.07, 0.12);
-        grup.rotation.y = sisi * 1.0;
-        grup.add(bola(0.062, bahanKelopak, 1, 1, 0.7));
+        grup.position.set(0, 0.04, 0.02);
+        grup.rotation.y = sisi * 0.72;
         const pivot = new THREE.Group();
-        const iris = bola(0.05, bahanIris, 1, 1, 0.75);
-        iris.position.z = 0.012;
-        const pupil = bola(0.026, bahanPupil, 1, 1, 0.5);
-        pupil.position.z = 0.04;
-        const k1 = bola(0.011, kilau);
-        k1.position.set(0.016, 0.018, 0.052);
-        pivot.add(iris, pupil, k1);
+        const m = new THREE.Group();
+        m.position.set(0, 0.02, 0.24);
+        const bola1 = bola(0.07, bahanMata, 0.85, 1.2, 0.5);
+        const k1 = bola(0.021, kilau);
+        k1.position.set(0.018, 0.04, 0.03);
+        const k2 = bola(0.009, kilau);
+        k2.position.set(-0.02, -0.025, 0.032);
+        m.add(bola1, k1, k2);
+        pivot.add(m);
         grup.add(pivot);
         kepala.add(grup);
         mata.push({ grup, pivot });
@@ -328,8 +301,8 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
     cb.width = cb.height = 128;
     const cx = cb.getContext('2d');
     const gr = cx.createRadialGradient(64, 64, 4, 64, 64, 62);
-    gr.addColorStop(0, 'rgba(20,40,30,0.55)');
-    gr.addColorStop(1, 'rgba(20,40,30,0)');
+    gr.addColorStop(0, 'rgba(60,30,10,0.45)');
+    gr.addColorStop(1, 'rgba(60,30,10,0)');
     cx.fillStyle = gr;
     cx.fillRect(0, 0, 128, 128);
     const bayangan = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cb), transparent: true, depthWrite: false }));
@@ -482,8 +455,8 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
         for (const m of mata) {
             kopi.copy(sasaran);
             m.grup.worldToLocal(kopi);
-            const yawM = klem(Math.atan2(kopi.x, kopi.z), -0.62, 0.62);
-            const pitchM = klem(Math.atan2(kopi.y, Math.hypot(kopi.x, kopi.z)), -0.5, 0.5);
+            const yawM = klem(Math.atan2(kopi.x, kopi.z) * 0.5, -0.4, 0.4);
+            const pitchM = klem(Math.atan2(kopi.y, Math.hypot(kopi.x, kopi.z)) * 0.5, -0.3, 0.3);
             m.pivot.rotation.y = lerp(m.pivot.rotation.y, yawM, gerakMinimal ? 1 : 0.3);
             m.pivot.rotation.x = lerp(m.pivot.rotation.x, -pitchM, gerakMinimal ? 1 : 0.3);
             m.grup.scale.y = Math.max(0.07, Math.min(kedip, 1 - kini.mataTutup * 0.93));
@@ -523,7 +496,7 @@ export function mulaiAyam(wadah, { gerakMinimal = false } = {}) {
             s.pangkal.rotation.z = s.sisi * (kepak * 0.9);
             s.pangkal.rotation.x = -Math.abs(kepak) * 0.12;
         }
-        ekor.rotation.x = 0.78 + Math.sin(t * 1.3) * 0.02 + (aksi.kepak >= 0 ? 0.1 : 0);
+        ekor.rotation.x = 0.7 + Math.sin(t * 1.3) * 0.02 + (aksi.kepak >= 0 ? 0.1 : 0);
 
         // area klik mengikuti posisi ayam di layar
         const pusat = new THREE.Vector3(0, 0.4, 0).project(kamera);

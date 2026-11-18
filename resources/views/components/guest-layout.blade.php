@@ -36,21 +36,21 @@
                     </div>
 
                     {{-- Tiga kartu keunggulan sistem: sedikit membesar dan naik saat disorot --}}
-                    <div class="statistik z-10" style="left:5%;top:39%;--k:10">
+                    <div class="statistik z-10" style="left:5%;top:36%;--k:10">
                         <div class="melayang kaca-chip flex items-center gap-3 rounded-2xl py-2.5 pl-3 pr-5" style="animation-delay:-1s">
                             <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-ink-brand"><x-icon name="clipboard-list" class="size-5" /></span>
                             <span><span class="block text-sm font-bold">Recording harian</span><span class="block text-[11px] leading-4 text-ink-muted">Pakan, ayam mati, afkir.<br>Kurang dari satu menit.</span></span>
                         </div>
                     </div>
 
-                    <div class="statistik z-10" style="right:4%;top:50%;--k:8">
+                    <div class="statistik z-10" style="right:4%;top:57%;--k:8">
                         <div class="melayang kaca-chip flex items-center gap-3 rounded-2xl py-2.5 pl-3 pr-5" style="animation-delay:-5s">
                             <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-gold-soft text-ink-gold"><x-icon name="bell" class="size-5" /></span>
                             <span><span class="block text-sm font-bold">Pantau kandang</span><span class="block text-[11px] leading-4 text-ink-muted">Stok pakan, hari terlewat,<br>dan paraf PPL.</span></span>
                         </div>
                     </div>
 
-                    <div class="statistik z-10" style="left:5%;bottom:9%;--k:9">
+                    <div class="statistik z-10" style="left:5%;bottom:15%;--k:9">
                         <div class="melayang kaca-chip flex items-center gap-3 rounded-2xl py-2.5 pl-3 pr-5" style="animation-delay:-2.2s">
                             <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-info-soft text-info-text"><x-icon name="columns-2" class="size-5" /></span>
                             <span><span class="block text-sm font-bold">Cocokkan RHPP</span><span class="block text-[11px] leading-4 text-ink-muted">Banding dengan laporan inti,<br>baris demi baris.</span></span>
