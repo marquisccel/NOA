@@ -11,7 +11,7 @@
                 <x-icon name="arrow-left" class="size-4" /> Kembali ke daftar ABK
             </a>
             <x-page-header :title="$ada ? 'Ubah akun · '.$abk->name : 'Tambah akun ABK'"
-                :subtitle="$ada ? 'Perbarui data, penugasan siklus, atau status akun.' : 'Buat akun dan tentukan siklus yang boleh diakses.'" />
+                :subtitle="$ada ? 'Perbarui data, penugasan periode, atau status akun.' : 'Buat akun dan tentukan periode yang boleh diakses.'" />
         </div>
 
         @if (session('sandi_baru'))
@@ -47,9 +47,9 @@
                     </fieldset>
 
                     <fieldset class="space-y-4">
-                        <legend class="mb-1 text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Penugasan siklus</legend>
+                        <legend class="mb-1 text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Penugasan periode</legend>
                         @if (empty($pilihan))
-                            <x-alert variant="info">Belum ada siklus berjalan untuk ditugaskan. Akun tetap bisa dibuat dan ditugaskan nanti, setelah Anda membuka siklus.</x-alert>
+                            <x-alert variant="info">Belum ada periode berjalan untuk ditugaskan. Akun tetap bisa dibuat dan ditugaskan nanti, setelah Anda membuka periode.</x-alert>
                         @else
                             <div>
                                 <x-input-label for="kandang_id" value="Kandang" />
@@ -59,13 +59,13 @@
                                 </select>
                             </div>
                             <div>
-                                <x-input-label for="siklus_id" value="Siklus" />
+                                <x-input-label for="siklus_id" value="Periode" />
                                 <select id="siklus_id" name="siklus_id" x-model="siklus" :disabled="! opsi.length" class="{{ $selectKelas }} disabled:bg-state-hover">
                                     <option value="">Pilih kandang dulu</option>
-                                    <template x-for="o in opsi" :key="o.siklus_id"><option :value="o.siklus_id" x-text="o.siklus" :selected="String(o.siklus_id) === String(siklus)"></option></template>
+                                    <template x-for="o in opsi" :key="o.siklus_id"><option :value="o.siklus_id" x-text="o.siklus" :selected="String(o.siklus_id) === String(periode)"></option></template>
                                 </select>
                                 <x-input-error class="mt-1.5" :messages="$errors->get('siklus_id')" />
-                                <p class="mt-1.5 text-xs text-ink-muted">ABK hanya dapat membuka siklus ini. Penugasan dapat diubah kapan saja.</p>
+                                <p class="mt-1.5 text-xs text-ink-muted">ABK hanya dapat membuka periode ini. Penugasan dapat diubah kapan saja.</p>
                             </div>
                         @endif
                     </fieldset>
@@ -96,7 +96,7 @@
                             </x-button>
                         @else
                             <p class="text-sm font-semibold">Akun nonaktif</p>
-                            <p class="text-[13px] leading-[19px] text-ink-secondary">ABK tidak bisa masuk. Aktifkan kembali lalu tugaskan ke siklus.</p>
+                            <p class="text-[13px] leading-[19px] text-ink-secondary">ABK tidak bisa masuk. Aktifkan kembali lalu tugaskan ke periode.</p>
                             <form method="POST" action="{{ route('abk.status', $abk) }}">
                                 @csrf @method('PATCH')
                                 <input type="hidden" name="aktif" value="1">
@@ -116,7 +116,7 @@
 
                 <p class="mt-4 text-[11px] font-bold uppercase tracking-[1.2px] text-success-text">Dapat</p>
                 <ul class="mt-2 space-y-2 text-[13px]">
-                    @foreach (['Melihat konteks siklus yang ditugaskan', 'Membuka Recording Harian', 'Mencatat konsumsi pakan', 'Mencatat ayam mati', 'Mencatat ayam afkir'] as $h)
+                    @foreach (['Melihat konteks periode yang ditugaskan', 'Membuka Recording Harian', 'Mencatat konsumsi pakan', 'Mencatat ayam mati', 'Mencatat ayam afkir'] as $h)
                         <li class="flex gap-2"><x-icon name="circle-check" class="mt-0.5 size-4 text-success" /> {{ $h }}</li>
                     @endforeach
                 </ul>

@@ -122,7 +122,7 @@ class AbkController extends Controller
         $abk->forceFill($aktifkan ? ['aktif' => true] : ['aktif' => false, 'siklus_id' => null, 'remember_token' => Str::random(60)])->save();
 
         return redirect()->route('abk.index')->with('status', $aktifkan
-            ? "Akun ABK “{$abk->name}” diaktifkan. Tugaskan ke siklus agar bisa mencatat."
+            ? "Akun ABK “{$abk->name}” diaktifkan. Tugaskan ke periode agar bisa mencatat."
             : "Akun ABK “{$abk->name}” dinonaktifkan. Riwayat recording yang sudah dicatat tetap tersimpan.");
     }
 
@@ -148,7 +148,7 @@ class AbkController extends Controller
                 'id' => $k->id,
                 'nama' => $k->nama_farm,
                 'siklus_id' => $k->siklusBerjalan->id,
-                'siklus' => 'Siklus '.($nomor[$k->siklusBerjalan->id] ?? 1).' · '.$k->siklusBerjalan->labelStatus(),
+                'siklus' => 'Periode '.($nomor[$k->siklusBerjalan->id] ?? 1).' · '.$k->siklusBerjalan->labelStatus(),
             ])->all(),
         ];
     }
@@ -157,7 +157,7 @@ class AbkController extends Controller
     {
         $s = $abk->siklusDitugaskan;
 
-        return $s ? ' dan ditugaskan ke '.$s->kandang->nama_farm.' · Siklus '.(Siklus::nomorMap([$s->kandang_id])[$s->id] ?? 1) : '';
+        return $s ? ' dan ditugaskan ke '.$s->kandang->nama_farm.' · Periode '.(Siklus::nomorMap([$s->kandang_id])[$s->id] ?? 1) : '';
     }
 
     /** @return array<string, string> */
@@ -169,7 +169,7 @@ class AbkController extends Controller
             'email.email' => 'Masukkan email yang valid.',
             'email.unique' => 'Email ini sudah dipakai akun lain.',
             'password.required' => 'Kata sandi awal wajib diisi.',
-            'siklus_id.exists' => 'Pilih siklus berjalan milik kandang Anda.',
+            'siklus_id.exists' => 'Pilih periode berjalan milik kandang Anda.',
         ];
     }
 

@@ -68,7 +68,7 @@ erDiagram
     RECORDING_HARIAN {
         bigint id PK
         bigint siklus_id FK
-        int hari_ke "unik per siklus (R1)"
+        int hari_ke "unik per periode (R1)"
         date tanggal
         decimal pakan_masuk_sak
         decimal pakan_pakai_sak
@@ -99,7 +99,7 @@ erDiagram
         string nomor_btpa
     }
     RHPP {
-        bigint siklus_id FK "satu per siklus"
+        bigint siklus_id FK "satu per periode"
         string nomor_rhpp
         date tanggal_terbit
         int total_ekor
@@ -117,7 +117,7 @@ erDiagram
 | Keputusan | Alasan |
 |---|---|
 | `CHECK` alih-alih `enum` | Mudah diubah lewat migrasi tanpa menyentuh tipe; nilai tetap dikunci basis data. |
-| Indeks unik parsial `siklus_satu_terbuka_per_kandang` (`WHERE status IN (4 status terbuka) AND deleted_at IS NULL`) | Menjaga aturan **satu siklus terbuka per kandang** walau ada dua permintaan bersamaan. |
+| Indeks unik parsial `siklus_satu_terbuka_per_kandang` (`WHERE status IN (4 status terbuka) AND deleted_at IS NULL`) | Menjaga aturan **satu periode terbuka per kandang** walau ada dua permintaan bersamaan. |
 | Indeks unik parsial recording `(siklus_id, hari_ke)` | Menjaga **satu catatan per hari** (R1); data terhapus lunak tidak ikut memblokir. |
 | `deplesi_harian` kolom turunan (generated) | Tidak mungkin tidak sinkron dengan `mati + afkir`. |
 | Nilai turunan **tidak disimpan** (stok pakan, FCR, IP, deplesi %, selisih RHPP) | Selalu dihitung ulang dari catatan dasar sehingga tidak bisa basi. Lihat [ATURAN-BISNIS.md](ATURAN-BISNIS.md). |

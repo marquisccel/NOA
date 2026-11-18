@@ -6,7 +6,7 @@
     $tanggalAwal = old('tanggal', $sampling->tanggal?->toDateString() ?? now()->toDateString());
     $judul = $ada ? 'Ubah sampling' : 'Sampling baru';
     $peta = [
-        ['Kandang & Siklus', route('kandang.index')],
+        ['Kandang', route('kandang.index')],
         [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)],
         ['Sampling', route('sampling.index', $siklus)],
         [$judul],

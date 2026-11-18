@@ -76,7 +76,7 @@ class UiFase5Test extends TestCase
     public function test_panen_kosong_menjelaskan_fcr_final_muncul_setelah_panen_pertama(): void
     {
         $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))->assertOk()
-            ->assertSee('Panen &amp; BTPA', false)->assertSee('Belum ada panen')->assertSee('Siklus masih berjalan (hari ke-46)')
+            ->assertSee('Panen &amp; BTPA', false)->assertSee('Belum ada panen')->assertSee('Periode masih berjalan (hari ke-46)')
             ->assertSee('FCR final &amp; IP muncul setelah panen pertama', false)->assertSee('Tambah tahap panen')->assertDontSee('Tandai panen selesai');
     }
 
@@ -191,7 +191,7 @@ class UiFase5Test extends TestCase
         $this->panenTiga();
 
         $this->actingAs($this->peternak)->get(route('panen.index', $this->siklus))
-            ->assertSee('Tandai panen Siklus 1 selesai?')->assertSee('Menunggu RHPP')->assertSee('16 ekor belum tercatat')->assertSee('Tanggal panen terakhir *')->assertSee('Tandai selesai');
+            ->assertSee('Tandai panen Periode 1 selesai?')->assertSee('Menunggu RHPP')->assertSee('16 ekor belum tercatat')->assertSee('Tanggal panen terakhir *')->assertSee('Tandai selesai');
     }
 
     // ---- RHPP ke penutupan ----
@@ -208,8 +208,8 @@ class UiFase5Test extends TestCase
         $this->assertSame('rekonsiliasi', $this->siklus->fresh()->status);
 
         $this->actingAs($this->peternak)->get(route('siklus.tutup', $this->siklus))->assertOk()
-            ->assertSee('Tutup siklus')->assertSee('Langkah terakhir setelah rekonsiliasi')->assertSee('Tanggal panen terakhir *')->assertSee('Rencana ayam masuk berikutnya')
-            ->assertSee('Ringkasan akhir')->assertSee('Diterima 8 Nov 2026')->assertSee('Ya, tutup &amp; kunci', false)->assertSee('Tutup Siklus 1?')
+            ->assertSee('Tutup periode')->assertSee('Langkah terakhir setelah rekonsiliasi')->assertSee('Tanggal panen terakhir *')->assertSee('Rencana ayam masuk berikutnya')
+            ->assertSee('Ringkasan akhir')->assertSee('Diterima 8 Nov 2026')->assertSee('Ya, tutup &amp; kunci', false)->assertSee('Tutup Periode 1?')
             ->assertSee('Selisih jumlah ayam 16 ekor tetap tercatat');
 
         $this->actingAs($this->peternak)->post(route('siklus.tutup.simpan', $this->siklus), ['tanggal_panen' => '2026-10-30', 'tanggal_rechick' => '2026-11-20'])->assertRedirect(route('siklus.show', $this->siklus));
@@ -219,7 +219,7 @@ class UiFase5Test extends TestCase
         $this->assertSame('2026-11-10', $s->ditutup_pada->toDateString());
         $this->assertSame('2026-11-20', $s->tanggal_rechick->toDateString());
         $this->assertTrue($s->isTerkunci());
-        $this->actingAs($this->peternak)->get(route('siklus.show', $this->siklus))->assertSee('Siklus 1 sudah ditutup. Semua data hanya dapat dilihat.');
+        $this->actingAs($this->peternak)->get(route('siklus.show', $this->siklus))->assertSee('Periode 1 sudah ditutup. Semua data hanya dapat dilihat.');
     }
 
     public function test_tutup_butuh_rhpp_dan_rechick_tidak_boleh_sebelum_panen(): void
@@ -249,7 +249,7 @@ class UiFase5Test extends TestCase
         $this->siklus->update(['status' => 'menunggu_rhpp', 'tanggal_panen' => '2026-10-30']);
 
         $this->actingAs($this->peternak)->get(route('siklus.tutup-tanpa-rhpp', $this->siklus))->assertOk()
-            ->assertSee('Tutup tanpa RHPP')->assertSee('RHPP tidak diterbitkan inti')->assertSee('Rekonsiliasi tercatat kosong')->assertSee('Tutup Siklus 1 tanpa RHPP?');
+            ->assertSee('Tutup tanpa RHPP')->assertSee('RHPP tidak diterbitkan inti')->assertSee('Rekonsiliasi tercatat kosong')->assertSee('Tutup Periode 1 tanpa RHPP?');
 
         $this->actingAs($this->peternak)->post(route('siklus.tutup-tanpa-rhpp.simpan', $this->siklus), ['tanggal_panen' => '2026-10-30', 'alasan_penutupan' => 'Karena iseng'])->assertSessionHasErrors('alasan_penutupan');
         $this->actingAs($this->peternak)->post(route('siklus.tutup-tanpa-rhpp.simpan', $this->siklus), [
@@ -261,7 +261,7 @@ class UiFase5Test extends TestCase
         $this->assertSame('RHPP tidak diterbitkan inti', $s->alasan_penutupan);
         $this->assertSame('Sudah ditanyakan ke PPL Rina.', $s->keterangan_penutupan);
         $this->assertTrue($s->isTerkunci());
-        $this->actingAs($this->peternak)->get(route('rhpp.show', $this->siklus))->assertSee('Siklus ditutup tanpa RHPP');
+        $this->actingAs($this->peternak)->get(route('rhpp.show', $this->siklus))->assertSee('Periode ditutup tanpa RHPP');
     }
 
     public function test_tutup_tanpa_rhpp_tidak_untuk_siklus_berjalan(): void
@@ -285,7 +285,7 @@ class UiFase5Test extends TestCase
         $this->rekam(32);
 
         $this->actingAs($this->peternak)->get(route('siklus.hentikan', $this->siklus))->assertOk()
-            ->assertSee('Hentikan siklus dini')->assertSee('Wabah penyakit')->assertSee('Keterangan *')->assertSee('Tanggal dihentikan *')->assertSee('4.968')->assertSee('tidak sebanding')
+            ->assertSee('Hentikan periode dini')->assertSee('Wabah penyakit')->assertSee('Keterangan *')->assertSee('Tanggal dihentikan *')->assertSee('4.968')->assertSee('tidak sebanding')
             ->assertSee('Data saat ini')->assertSee('Dihentikan · terkunci');
 
         $this->actingAs($this->peternak)->post(route('siklus.hentikan.simpan', $this->siklus), ['alasan_penutupan' => 'Wabah penyakit', 'tanggal_dihentikan' => '2026-11-08'])->assertSessionHasErrors('keterangan_penutupan');
@@ -310,7 +310,7 @@ class UiFase5Test extends TestCase
 
     public function test_pengaturan_siklus_menunjuk_ke_alur_penutupan_sesuai_status(): void
     {
-        $this->actingAs($this->peternak)->get(route('siklus.pengaturan', $this->siklus))->assertSee('Akhiri siklus')->assertSee(route('siklus.hentikan', $this->siklus), false)->assertSee(route('panen.index', $this->siklus), false);
+        $this->actingAs($this->peternak)->get(route('siklus.pengaturan', $this->siklus))->assertSee('Akhiri periode')->assertSee(route('siklus.hentikan', $this->siklus), false)->assertSee(route('panen.index', $this->siklus), false);
 
         $this->siklus->update(['status' => 'rekonsiliasi']);
         $this->actingAs($this->peternak)->get(route('siklus.pengaturan', $this->siklus))->assertSee(route('siklus.tutup', $this->siklus), false)->assertDontSee(route('siklus.hentikan', $this->siklus), false);

@@ -11,13 +11,13 @@
     // [judul, penjelasan, label tombol, tujuan, tombol kedua [label, tujuan]|null]
     $langkah = match ($siklus->status) {
         Siklus::STATUS_BERJALAN => $punyaPanen
-            ? ['Ayam sudah mulai dipanen', 'Catat setiap tahap panen dengan nomor BTPA. Bila panen terakhir sudah selesai, tandai panen selesai supaya siklus menunggu RHPP dari inti.', 'Ke halaman Panen', route('panen.index', $siklus), null]
+            ? ['Ayam sudah mulai dipanen', 'Catat setiap tahap panen dengan nomor BTPA. Bila panen terakhir sudah selesai, tandai panen selesai supaya periode menunggu RHPP dari inti.', 'Ke halaman Panen', route('panen.index', $siklus), null]
             : (! $catatHariIni
                 ? ['Catatan hari ini belum diisi', 'Isi pakan terpakai, ayam mati, dan ayam afkir hari ini. Cukup tiga isian dan kurang dari satu menit.', 'Isi catatan hari ini', route('recording.create', $siklus), ['Sudah waktunya panen?', route('panen.create', $siklus)]]
                 : ['Catatan hari ini sudah terisi', 'Besok isi lagi. Sekitar seminggu sekali, timbang sampel ayam; catat juga setiap kali memberi obat atau vaksin.', 'Timbang sampel', route('sampling.create', $siklus), ['Catat obat/vaksin', route('ovk.create', $siklus)]]),
-        Siklus::STATUS_PANEN_SELESAI, Siklus::STATUS_MENUNGGU_RHPP => ['Menunggu RHPP dari inti', 'Saat RHPP terbit, salin angkanya ke NOA. Bila inti tidak menerbitkannya, siklus tetap bisa ditutup tanpa RHPP.', 'Input RHPP', route('rhpp.form', $siklus), ['Tutup tanpa RHPP', route('siklus.tutup-tanpa-rhpp', $siklus)]],
-        Siklus::STATUS_REKONSILIASI => ['Cocokkan dengan RHPP', 'Lihat baris yang berbeda dengan catatan Anda, tambahkan keterangan bila perlu, cetak lembarnya untuk musyawarah, lalu tutup siklus.', 'Lihat perbandingan', route('rhpp.show', $siklus), ['Tutup siklus', route('siklus.tutup', $siklus)]],
-        default => ['Siklus ini sudah selesai', 'Semua data terkunci. Anda bisa mencetak laporan, atau membuka siklus baru di kandang yang sama.', 'Lihat laporan', route('laporan.siklus', $siklus), ['Buka siklus baru', route('siklus.baru', $siklus->kandang_id)]],
+        Siklus::STATUS_PANEN_SELESAI, Siklus::STATUS_MENUNGGU_RHPP => ['Menunggu RHPP dari inti', 'Saat RHPP terbit, salin angkanya ke NOA. Bila inti tidak menerbitkannya, periode tetap bisa ditutup tanpa RHPP.', 'Input RHPP', route('rhpp.form', $siklus), ['Tutup tanpa RHPP', route('siklus.tutup-tanpa-rhpp', $siklus)]],
+        Siklus::STATUS_REKONSILIASI => ['Cocokkan dengan RHPP', 'Lihat baris yang berbeda dengan catatan Anda, tambahkan keterangan bila perlu, cetak lembarnya untuk musyawarah, lalu tutup periode.', 'Lihat perbandingan', route('rhpp.show', $siklus), ['Tutup periode', route('siklus.tutup', $siklus)]],
+        default => ['Periode ini sudah selesai', 'Semua data terkunci. Anda bisa mencetak laporan, atau membuka periode baru di kandang yang sama.', 'Lihat laporan', route('laporan.siklus', $siklus), ['Buka periode baru', route('siklus.baru', $siklus->kandang_id)]],
     };
 @endphp
 

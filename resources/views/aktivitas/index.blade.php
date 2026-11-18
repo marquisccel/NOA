@@ -32,7 +32,7 @@
 
         @if ($aktivitas->total() === 0)
             <x-empty-state icon="history" title="Belum ada aktivitas"
-                text="Catatan harian, timbang bobot, obat/vaksin, dan panen akan muncul di sini setelah Anda mulai mencatat di siklus yang berjalan." />
+                text="Catatan harian, timbang bobot, obat/vaksin, dan panen akan muncul di sini setelah Anda mulai mencatat di periode yang berjalan." />
         @else
             @foreach ($kelompok as $tanggal => $daftar)
                 <section aria-labelledby="h-{{ $tanggal }}" class="space-y-2">

@@ -1,15 +1,15 @@
 <x-app-layout :siklus="$siklus">
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-ink leading-tight">
             Tabel standar harian · {{ $siklus->kandang->nama_farm }}
         </h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Unggah CSV</h3>
-                <p class="mt-2 text-base text-gray-700">
+            <div class="bg-surface shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-ink">Unggah CSV</h3>
+                <p class="mt-2 text-base text-ink-secondary">
                     Satu baris per hari umur, dari tabel standar kemitraan Anda. Kolom:
                     <code class="text-sm">hari_ke, pakan_std_sak, bobot_std_gram, fcr_std, feed_intake_std_gram</code>.
                     Pemisah koma atau titik koma. Unggahan baru menggantikan seluruh tabel lama.
@@ -23,7 +23,7 @@
                         <input id="file" name="file" type="file" accept=".csv,text/csv,text/plain" required class="mt-1 block w-full text-base">
                         @foreach ($errors->get('file') as $pesan)
                             @foreach ((array) $pesan as $baris)
-                                <p class="mt-2 text-sm text-red-600">{{ $baris }}</p>
+                                <p class="mt-2 text-sm text-danger-text">{{ $baris }}</p>
                             @endforeach
                         @endforeach
                     </div>
@@ -31,14 +31,14 @@
                 </form>
             </div>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Isi tabel ({{ $standar->count() }} baris)</h3>
+            <div class="bg-surface shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-ink">Isi tabel ({{ $standar->count() }} baris)</h3>
                 @if ($standar->isEmpty())
-                    <p class="mt-2 text-base text-gray-600">Belum ada data.</p>
+                    <p class="mt-2 text-base text-ink-secondary">Belum ada data.</p>
                 @else
                     <div class="mt-4 overflow-x-auto">
                         <table class="min-w-full text-base text-left">
-                            <thead class="text-gray-600">
+                            <thead class="text-ink-secondary">
                                 <tr>
                                     <th class="py-2 pe-4">Hari</th>
                                     <th class="py-2 pe-4">Pakan kumulatif (sak)</th>
@@ -47,7 +47,7 @@
                                     <th class="py-2">Pakan per ekor (g/ekor)</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 text-gray-900">
+                            <tbody class="divide-y divide-line-subtle text-ink">
                                 @foreach ($standar as $s)
                                     <tr>
                                         <td class="py-2 pe-4">{{ $s->hari_ke }}</td>
@@ -63,7 +63,7 @@
                 @endif
             </div>
 
-            <a href="{{ route('siklus.show', $siklus) }}" class="inline-flex items-center min-h-11 text-base text-gray-700 underline">Kembali ke siklus</a>
+            <a href="{{ route('siklus.show', $siklus) }}" class="inline-flex items-center min-h-11 text-base text-ink-secondary underline">Kembali ke periode</a>
         </div>
     </div>
 </x-app-layout>

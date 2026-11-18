@@ -71,7 +71,7 @@ class FaseAPenayanganDemoTest extends TestCase
     {
         config(['noa.demo' => true]);
 
-        $this->get(route('login'))->assertOk()->assertSee('Coba demo tanpa daftar')->assertSee('Masuk sebagai Plasma')->assertSee('Masuk sebagai ABK');
+        $this->get(route('login'))->assertOk()->assertSee('Coba demo tanpa daftar')->assertSee('Masuk sebagai peternak')->assertSee('Masuk sebagai ABK');
 
         $this->post(route('demo.masuk', 'plasma'))->assertRedirect(route('dashboard'));
         $this->assertAuthenticatedAs(User::where('email', 'simulasi@noa.test')->firstOrFail());
@@ -137,7 +137,7 @@ class FaseAPenayanganDemoTest extends TestCase
         Kandang::create(['user_id' => $p->id, 'nama_farm' => 'Kandang Baru', 'kapasitas' => 100]);
 
         $this->actingAs($p)->get(route('dashboard'))->assertOk()
-            ->assertSee('Mulai di sini')->assertSee('1 dari 6 langkah selesai')->assertSee('berikutnya:')->assertSee('Buka siklus pertama')
+            ->assertSee('Mulai di sini')->assertSee('1 dari 6 langkah selesai')->assertSee('berikutnya:')->assertSee('Buka periode pertama')
             ->assertSee('role="progressbar"', false)->assertSee('aria-valuenow="1"', false)->assertDontSee('Perlu perhatian');
     }
 
@@ -174,7 +174,7 @@ class FaseAPenayanganDemoTest extends TestCase
         $this->assertSame('penting', $h->first()['tingkat']);
         $this->assertTrue($h->contains(fn ($x) => str_contains($x['siklus'], 'Kandang Dua') && str_contains($x['judul'], 'belum diisi')));
         $this->assertTrue($h->contains(fn ($x) => str_contains($x['siklus'], 'Kandang Satu')));
-        $this->actingAs($p)->get(route('dashboard'))->assertSee('Perlu perhatian')->assertSee('Kandang Dua · Siklus 1')->assertSee('Isi recording →', false);
+        $this->actingAs($p)->get(route('dashboard'))->assertSee('Perlu perhatian')->assertSee('Kandang Dua · Periode 1')->assertSee('Isi recording');
     }
 
     public function test_perlu_perhatian_tidak_memuat_siklus_peternak_lain_dan_dibatasi_enam(): void

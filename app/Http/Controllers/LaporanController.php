@@ -58,7 +58,7 @@ class LaporanController extends Controller
         $baris = [
             ['Ukuran', 'Nilai', 'Keterangan'],
             ['Kandang', $siklus->kandang->nama_farm, ''],
-            ['Siklus', $d['nomor'], $siklus->labelStatus()],
+            ['Periode', $d['nomor'], $siklus->labelStatus()],
             ['DOC masuk', $siklus->tanggal_masuk->toDateString(), F::angka($siklus->populasi, 0).' ekor'],
             ['Deplesi (%)', round($p['deplesi_persen'], 2), $p['deplesi'].' ekor'],
             ['Daya hidup (%)', $p['liveability'] === null ? '' : round($p['liveability'], 2), ''],

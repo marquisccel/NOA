@@ -1,8 +1,8 @@
 @php use App\Support\Format as F; @endphp
 
-<x-app-layout title="Kandang" :crumbs="[['Beranda', route('dashboard')], ['Kandang & Siklus']]">
+<x-app-layout title="Kandang" :crumbs="[['Beranda', route('dashboard')], ['Kandang']]">
     <x-page>
-        <x-page-header title="Kandang" subtitle="Kelola kandang Anda. Setiap kandang hanya memiliki satu siklus terbuka pada satu waktu.">
+        <x-page-header title="Kandang" subtitle="Kelola kandang Anda. Setiap kandang hanya memiliki satu periode terbuka pada satu waktu.">
             <x-slot name="actions">
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-slot>
@@ -10,7 +10,7 @@
 
         @if ($totalKandang === 0)
             <x-empty-state icon="warehouse" title="Belum ada kandang"
-                text="Daftarkan kandang dengan nama, alamat, kapasitas, dan tipe kandang. Setelah tersimpan, siklus pemeliharaan dibuka terpisah dari halaman detail kandang.">
+                text="Daftarkan kandang dengan nama, alamat, kapasitas, dan tipe kandang. Setelah tersimpan, periode pemeliharaan dibuka terpisah dari halaman detail kandang.">
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-empty-state>
         @else
@@ -21,11 +21,11 @@
                         <input type="search" name="q" value="{{ $q }}" placeholder="Cari nama kandang" aria-label="Cari nama kandang"
                                class="block min-h-11 w-full rounded-md border-line-control bg-surface pl-9 text-base placeholder:text-ink-muted focus:border-brand focus:ring-1 focus:ring-brand">
                     </div>
-                    <select name="status" aria-label="Status siklus" onchange="this.form.requestSubmit()"
+                    <select name="status" aria-label="Status periode" onchange="this.form.requestSubmit()"
                             class="min-h-11 rounded-md border-line-control bg-surface text-sm focus:border-brand focus:ring-1 focus:ring-brand">
-                        <option value="">Status siklus: Semua</option>
-                        <option value="berjalan" @selected($status === 'berjalan')>Punya siklus terbuka</option>
-                        <option value="tanpa" @selected($status === 'tanpa')>Tanpa siklus</option>
+                        <option value="">Status periode: Semua</option>
+                        <option value="berjalan" @selected($status === 'berjalan')>Punya periode terbuka</option>
+                        <option value="tanpa" @selected($status === 'tanpa')>Tanpa periode</option>
                     </select>
                     <select name="tipe" aria-label="Tipe kandang" onchange="this.form.requestSubmit()"
                             class="min-h-11 rounded-md border-line-control bg-surface text-sm focus:border-brand focus:ring-1 focus:ring-brand">
@@ -39,7 +39,7 @@
                         @if ($adaFilter)
                             {{ F::angka($kandang->count(), 0) }} hasil
                         @else
-                            {{ F::angka($totalKandang, 0) }} kandang · {{ F::angka($aktif, 0) }} punya siklus terbuka
+                            {{ F::angka($totalKandang, 0) }} kandang · {{ F::angka($aktif, 0) }} punya periode terbuka
                         @endif
                     </p>
                 </form>
@@ -57,14 +57,14 @@
                     {{-- Tabel di layar lebar --}}
                     <div class="hidden overflow-x-auto md:block">
                         <table class="tabel">
-                            <caption class="sr-only">Daftar kandang beserta siklus yang sedang terbuka</caption>
+                            <caption class="sr-only">Daftar kandang beserta periode yang sedang terbuka</caption>
                             <thead>
                                 <tr>
                                     <th scope="col">Nama kandang · Alamat</th>
                                     <th scope="col">Kapasitas</th>
-                                    <th scope="col">Tipe</th>
-                                    <th scope="col">Siklus</th>
-                                    <th scope="col">Status siklus</th>
+                                    <th scope="col">Jenis</th>
+                                    <th scope="col">Periode</th>
+                                    <th scope="col">Status periode</th>
                                     <th scope="col">DOC masuk</th>
                                     <th scope="col">Umur</th>
                                     <th scope="col"><span class="sr-only">Aksi</span></th>
@@ -79,9 +79,9 @@
                                             <span class="mt-0.5 block text-xs text-ink-secondary">{{ $k->alamat ?: 'Alamat belum diisi' }}</span>
                                         </th>
                                         <td class="whitespace-nowrap">{{ F::angka($k->kapasitas, 0) }} ekor</td>
-                                        <td>{{ $k->labelTipe() ?? '—' }}</td>
-                                        <td>{{ $s ? 'Siklus '.($nomor[$s->id] ?? 1) : '—' }}</td>
-                                        <td>@if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada siklus</x-badge>@endif</td>
+                                        <td class="whitespace-nowrap">{{ $k->labelTipe() ?? '—' }}</td>
+                                        <td class="whitespace-nowrap">{{ $s ? 'Periode '.($nomor[$s->id] ?? 1) : '—' }}</td>
+                                        <td>@if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada periode</x-badge>@endif</td>
                                         <td class="whitespace-nowrap">{{ $s ? $s->tanggal_masuk->translatedFormat('j M Y') : '—' }}</td>
                                         <td class="whitespace-nowrap">{{ $s ? 'Hari ke-'.$s->umurHari() : '—' }}</td>
                                         <td class="text-right"><a href="{{ route('kandang.show', $k) }}" class="inline-flex min-h-11 items-center whitespace-nowrap text-[13px] font-semibold text-ink-brand hover:underline">Detail kandang</a></td>
@@ -99,12 +99,12 @@
                                 <a href="{{ route('kandang.show', $k) }}" class="flex flex-col gap-2 p-4 hover:bg-state-hover">
                                     <span class="flex items-start justify-between gap-2">
                                         <span class="font-heading text-base font-semibold">{{ $k->nama_farm }}</span>
-                                        @if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada siklus</x-badge>@endif
+                                        @if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada periode</x-badge>@endif
                                     </span>
                                     <span class="text-[13px] text-ink-secondary">{{ F::angka($k->kapasitas, 0) }} ekor · {{ $k->labelTipe() ?? 'Tipe belum diisi' }}</span>
                                     <span class="text-[13px] text-ink-secondary">
-                                        @if ($s) Siklus {{ $nomor[$s->id] ?? 1 }} · DOC {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · Hari ke-{{ $s->umurHari() }}
-                                        @else Belum ada siklus terbuka @endif
+                                        @if ($s) Periode {{ $nomor[$s->id] ?? 1 }} · DOC {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · Hari ke-{{ $s->umurHari() }}
+                                        @else Belum ada periode terbuka @endif
                                     </span>
                                 </a>
                             </li>

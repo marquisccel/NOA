@@ -11,7 +11,7 @@
 @endphp
 
 <x-app-layout title="OVK" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['OVK', route('ovk.index', $siklus)], [$judul]]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['OVK', route('ovk.index', $siklus)], [$judul]]">
     <x-page>
         <x-page-header title="Pemberian OVK" subtitle="Obat, vitamin, dan vaksin beserta biayanya">
             <x-slot name="actions"><x-button variant="secondary" :href="route('ovk.index', $siklus)">Riwayat</x-button></x-slot>
@@ -61,7 +61,7 @@
                     <p class="mt-1.5 text-xs text-ink-muted">Contoh: 1 g/L air minum, 1 dosis/ekor.</p>
                     <x-input-error class="mt-1.5" :messages="$errors->get('dosis')" />
                 </div>
-                <x-input-satuan name="biaya" label="Biaya" awalan="Rp" step="1" min="0" inputmode="numeric" :value="$ovk->biaya !== null ? (float) $ovk->biaya : null" hint="Masuk ke biaya produksi siklus" />
+                <x-input-satuan name="biaya" label="Biaya" awalan="Rp" step="1" min="0" inputmode="numeric" :value="$ovk->biaya !== null ? (float) $ovk->biaya : null" hint="Masuk ke biaya produksi periode" />
 
                 <x-alert variant="info">Centang OVK pagi/sore di Recording hanya penanda pemberian. Detail produk dan biaya dicatat di sini.</x-alert>
 
@@ -72,7 +72,7 @@
             </form>
 
             <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5">
-                <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Siklus sejauh ini</p>
+                <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Periode sejauh ini</p>
                 <dl class="space-y-3 text-sm">
                     <div class="rounded-md border border-line-subtle p-3.5">
                         <dt class="text-xs text-ink-secondary">Total biaya OVK</dt>

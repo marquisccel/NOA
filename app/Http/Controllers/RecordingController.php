@@ -103,7 +103,7 @@ class RecordingController extends Controller
 
         if ($siklus->tanggal_masuk->isFuture()) {
             return redirect()->route('recording.index', $siklus)
-                ->withErrors(['recording' => 'Tanggal masuk siklus belum tiba; belum ada hari yang bisa dicatat.']);
+                ->withErrors(['recording' => 'Tanggal masuk periode belum tiba; belum ada hari yang bisa dicatat.']);
         }
 
         $tanggal = $this->tanggalEntri($request, $siklus);
@@ -111,7 +111,7 @@ class RecordingController extends Controller
 
         if ($ada = $siklus->recordings()->where('hari_ke', $hariKe)->first()) {
             return redirect()->route('recording.edit', $ada)
-                ->with('peringatan', "Hari ke-{$hariKe} sudah punya recording. Satu siklus hanya boleh punya satu entri per hari umur; ubah entri yang ada.");
+                ->with('peringatan', "Hari ke-{$hariKe} sudah punya recording. Satu periode hanya boleh punya satu entri per hari umur; ubah entri yang ada.");
         }
 
         return view('recording.form', $this->dataForm($siklus, new RecordingHarian(['mati' => 0, 'afkir' => 0]), $hariKe, $tanggal));

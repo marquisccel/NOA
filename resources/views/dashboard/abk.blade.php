@@ -1,18 +1,18 @@
 @php use App\Support\Format as F; @endphp
 
-<x-app-layout title="Siklus Ditugaskan" :crumbs="[['Beranda', route('dashboard')], ['Siklus Ditugaskan']]">
+<x-app-layout title="Periode Ditugaskan" :crumbs="[['Beranda', route('dashboard')], ['Periode Ditugaskan']]">
     <x-page>
-        <x-page-header title="Siklus Ditugaskan" subtitle="Akses ABK: pakan, ayam mati, dan ayam afkir pada siklus yang ditugaskan." />
+        <x-page-header title="Periode Ditugaskan" subtitle="Akses ABK: pakan, ayam mati, dan ayam afkir pada periode yang ditugaskan." />
 
         @if (! $siklus)
-            <x-empty-state icon="clipboard-list" title="Belum ada siklus yang ditugaskan"
-                text="Pemilik kandang belum menugaskan siklus untuk akun Anda, atau siklusnya sudah ditutup. Hubungi pemilik untuk meminta penugasan." />
+            <x-empty-state icon="clipboard-list" title="Belum ada periode yang ditugaskan"
+                text="Pemilik kandang belum menugaskan periode untuk akun Anda, atau periodenya sudah ditutup. Hubungi pemilik untuk meminta penugasan." />
         @else
-            {{-- Hanya konteks siklus; tanpa kontrak, biaya, atau rekonsiliasi (R13). --}}
+            {{-- Hanya konteks periode; tanpa kontrak, biaya, atau rekonsiliasi (R13). --}}
             <article class="max-w-xl space-y-4 rounded-[16px] border border-line bg-surface p-5">
                 <div class="flex items-start justify-between gap-2">
                     <div>
-                        <h2 class="font-heading text-lg font-semibold">Siklus {{ $nomor }}</h2>
+                        <h2 class="font-heading text-lg font-semibold">Periode {{ $nomor }}</h2>
                         <p class="mt-1 flex items-center gap-1.5 text-[13px] text-ink-secondary"><x-icon name="warehouse" class="size-3.5" /> {{ $siklus->kandang->nama_farm }}</p>
                     </div>
                     <x-status-siklus :siklus="$siklus" />

@@ -69,7 +69,7 @@ class SiklusRequest extends FormRequest
                     ->exists();
 
                 if ($ada) {
-                    $validator->errors()->add('kandang_id', 'Kandang ini masih punya siklus berjalan. Tandai selesai dulu sebelum membuka siklus baru.');
+                    $validator->errors()->add('kandang_id', 'Kandang ini masih punya periode berjalan. Tandai selesai dulu sebelum membuka periode baru.');
                 }
             },
         ];

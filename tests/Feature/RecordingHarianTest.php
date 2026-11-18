@@ -287,7 +287,7 @@ class RecordingHarianTest extends TestCase
         $r = RecordingHarian::firstOrFail();
         $this->siklus->update(['status' => Siklus::STATUS_SELESAI, 'tanggal_panen' => '2026-11-10']);
 
-        $this->actingAs($this->peternak)->get(route('recording.edit', $r))->assertOk()->assertSee('Siklus sudah ditutup');
+        $this->actingAs($this->peternak)->get(route('recording.edit', $r))->assertOk()->assertSee('Periode sudah ditutup');
         $this->actingAs($this->peternak)->patch(route('recording.paraf', $r), ['tanggal_paraf' => '2026-11-12'])->assertSessionHasNoErrors();
 
         $this->assertTrue($r->fresh()->diparaf_ppl);

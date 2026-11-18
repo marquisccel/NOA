@@ -47,7 +47,7 @@ class PerformaController extends Controller
             'belumPanen' => Siklus::whereIn('kandang_id', $kandang->modelKeys())->whereDoesntHave('panen')->count(),
             'grafikKandang' => $grafikKandang,
             'tren' => [
-                'labels' => $untukGrafik->map(fn ($b) => 'Siklus '.$b['nomor'].' · '.$b['siklus']->tanggal_masuk->translatedFormat('M Y'))->all(),
+                'labels' => $untukGrafik->map(fn ($b) => 'Periode '.$b['nomor'].' · '.$b['siklus']->tanggal_masuk->translatedFormat('M Y'))->all(),
                 'ip' => $untukGrafik->map(fn ($b) => $b['p']['ip'] === null ? null : round($b['p']['ip'], 1))->all(),
                 'fcr' => $untukGrafik->map(fn ($b) => $b['p']['fcr'] === null ? null : round($b['p']['fcr'], 3))->all(),
             ],
@@ -56,8 +56,8 @@ class PerformaController extends Controller
                 'fcr' => $baris->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->map(fn ($b) => $b['p']['fcr'])->values()->all(),
                 'deplesi' => $baris->sortBy(fn ($b) => $b['siklus']->tanggal_masuk)->map(fn ($b) => $b['p']['deplesi_persen'])->values()->all(),
             ],
-            'grafikIp' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['ip'], 'std' => null])->all(),
-            'grafikFcr' => $untukGrafik->map(fn ($b) => ['label' => 'Siklus '.$b['nomor'], 'aktual' => $b['p']['fcr'], 'std' => null])->all(),
+            'grafikIp' => $untukGrafik->map(fn ($b) => ['label' => 'Periode '.$b['nomor'], 'aktual' => $b['p']['ip'], 'std' => null])->all(),
+            'grafikFcr' => $untukGrafik->map(fn ($b) => ['label' => 'Periode '.$b['nomor'], 'aktual' => $b['p']['fcr'], 'std' => null])->all(),
         ]);
     }
 

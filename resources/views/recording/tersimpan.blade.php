@@ -7,7 +7,7 @@
 @endphp
 
 <x-app-layout title="Recording tersimpan" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], ['Tersimpan']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], ['Tersimpan']]">
     <x-page lebar="max-w-xl">
         <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-7">
             <div class="flex items-start gap-3.5">

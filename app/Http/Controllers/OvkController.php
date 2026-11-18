@@ -92,7 +92,7 @@ class OvkController extends Controller
 
     private function pastikanTerbuka(Siklus $siklus): void
     {
-        abort_if($siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
+        abort_if($siklus->isTerkunci(), 403, 'Periode sudah ditutup; data hanya dapat dilihat.');
     }
 
     /**

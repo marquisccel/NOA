@@ -25,7 +25,7 @@
                 <span class="grid size-9 place-items-center rounded-md bg-tint text-ink-brand"><x-icon name="sparkles" class="size-5" /></span>
                 <div>
                     <h2 id="judul-simulasi" class="text-sm font-bold">Bagaimana kalau hasilnya lebih baik?</h2>
-                    <p class="text-xs text-ink-secondary">Geser untuk melihat perkiraan keuntungan bila FCR atau deplesi siklus ini berbeda.</p>
+                    <p class="text-xs text-ink-secondary">Geser untuk melihat perkiraan keuntungan bila FCR atau deplesi periode ini berbeda.</p>
                 </div>
             </div>
             <button type="button" @click="reset()" class="min-h-11 text-[13px] font-semibold text-ink-brand hover:underline">Kembalikan</button>
@@ -58,7 +58,7 @@
             <div class="rounded-md border border-brand-border bg-tint p-3.5">
                 <dt class="text-xs text-ink-secondary">Perkiraan selisih</dt>
                 <dd class="font-heading text-lg font-semibold" :class="total < 0 ? 'text-danger-text' : 'text-ink-brand'" x-text="(total >= 0 ? '+' : '−') + rp(Math.abs(total))"></dd>
-                <dd class="text-xs text-ink-muted">dari satu siklus</dd>
+                <dd class="text-xs text-ink-muted">dari satu periode</dd>
             </div>
         </dl>
         <p class="text-xs text-ink-muted">Perkiraan kasar: pakan dihitung dengan harga di kontrak (Rp {{ \App\Support\Format::angka($b['hargaPakanKg'], 0) }}/kg), ayam tambahan dengan bobot rata-rata dan harga ayam kontrak. Bonus dan potongan dari inti tidak ikut dihitung.</p>

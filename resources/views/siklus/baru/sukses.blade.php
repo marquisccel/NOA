@@ -1,11 +1,11 @@
 @php use App\Support\Format as F; @endphp
 
-<x-app-layout title="Siklus dibuka" :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor]]">
+<x-app-layout title="Periode dibuka" :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor]]">
     <x-page lebar="max-w-xl">
         <div class="space-y-5 rounded-[16px] border border-line bg-surface p-6 text-center sm:p-8">
             <span class="mx-auto grid size-14 place-items-center rounded-full bg-success-soft text-success-text"><x-icon name="circle-check" class="size-7" /></span>
             <div class="space-y-1.5">
-                <h1 class="font-heading text-xl font-semibold">Siklus {{ $nomor }} di {{ $siklus->kandang->nama_farm }} berhasil dibuka</h1>
+                <h1 class="font-heading text-xl font-semibold">Periode {{ $nomor }} di {{ $siklus->kandang->nama_farm }} berhasil dibuka</h1>
                 <p class="text-sm leading-[21px] text-ink-secondary">DOC masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }} menjadi hari ke-1. Recording harian pertama dapat diisi mulai tanggal itu.</p>
             </div>
 
@@ -18,9 +18,9 @@
 
             <div class="flex flex-col gap-2.5 sm:flex-row sm:justify-center">
                 @unless ($standar)<x-button variant="secondary" :href="route('siklus.standar', $siklus)">Unggah standar</x-button>@endunless
-                <x-button :href="route('siklus.show', $siklus)" id="ke-ringkasan">Ke Ringkasan Siklus</x-button>
+                <x-button :href="route('siklus.show', $siklus)" id="ke-ringkasan">Ke Ringkasan Periode</x-button>
             </div>
-            <p class="text-xs text-ink-muted">Anda akan diarahkan ke Ringkasan Siklus {{ $nomor }} dalam 5 detik.</p>
+            <p class="text-xs text-ink-muted">Anda akan diarahkan ke Ringkasan Periode {{ $nomor }} dalam 5 detik.</p>
         </div>
     </x-page>
     <meta http-equiv="refresh" content="5;url={{ route('siklus.show', $siklus) }}">

@@ -26,9 +26,9 @@ use Illuminate\Database\Seeder;
  * Masuk dengan simulasi@noa.test atau abk.simulasi@noa.test, kata sandi `password`. Tanggal dihitung relatif terhadap hari ini.
  *
  * Isi data (angka dibangkitkan dengan benih tetap, jadi hasilnya sama setiap kali):
- *  - Kandang A (closed house): 5 siklus selesai dengan performa naik-turun, satu RHPP banyak selisih, siklus berjalan (hari ke-23) dengan hari terlewat.
- *  - Kandang B (open house): siklus ditutup tanpa RHPP, siklus dihentikan karena wabah, siklus selesai, dan siklus menunggu RHPP.
- *  - Kandang C (closed house): dua siklus selesai dan satu siklus tahap rekonsiliasi (RHPP sudah diinput, ada catatan selisih).
+ *  - Kandang A: 5 siklus selesai dengan performa naik-turun, satu RHPP banyak selisih, siklus berjalan (hari ke-23) dengan hari terlewat.
+ *  - Kandang B: siklus ditutup tanpa RHPP, siklus dihentikan karena wabah, siklus selesai, dan siklus menunggu RHPP.
+ *  - Kandang C: dua siklus selesai dan satu siklus tahap rekonsiliasi (RHPP sudah diinput, ada catatan selisih).
  *  - Kandang D: belum pernah ada siklus.
  */
 class SimulasiSeeder extends Seeder
@@ -42,9 +42,9 @@ class SimulasiSeeder extends Seeder
 
         $peternak = $this->akun();
         $kandang = [
-            'A' => $this->kandang($peternak, 'Kandang A (Closed House)', 'Desa Sumberejo, Kec. Pujon, Kab. Malang', 8000, Kandang::TIPE_CLOSED_HOUSE),
-            'B' => $this->kandang($peternak, 'Kandang B (Open House)', 'Desa Pandesari, Kec. Pujon, Kab. Malang', 5000, Kandang::TIPE_OPEN_HOUSE),
-            'C' => $this->kandang($peternak, 'Kandang C (Closed House)', 'Desa Ngroto, Kec. Pujon, Kab. Malang', 6000, Kandang::TIPE_CLOSED_HOUSE),
+            'A' => $this->kandang($peternak, 'Kandang A', 'Desa Sumberejo, Kec. Pujon, Kab. Malang', 8000, Kandang::TIPE_CLOSED_HOUSE),
+            'B' => $this->kandang($peternak, 'Kandang B', 'Desa Pandesari, Kec. Pujon, Kab. Malang', 5000, Kandang::TIPE_OPEN_HOUSE),
+            'C' => $this->kandang($peternak, 'Kandang C', 'Desa Ngroto, Kec. Pujon, Kab. Malang', 6000, Kandang::TIPE_CLOSED_HOUSE),
             'D' => $this->kandang($peternak, 'Kandang D (Baru)', 'Desa Tawangsari, Kec. Pujon, Kab. Malang', 4000, Kandang::TIPE_OPEN_HOUSE),
         ];
 

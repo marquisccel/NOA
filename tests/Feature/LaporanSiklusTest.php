@@ -109,7 +109,7 @@ class LaporanSiklusTest extends TestCase
     {
         $this->actingAs($this->peternak)->get(route('laporan.siklus', $this->siklus))
             ->assertOk()
-            ->assertSee('Laporan siklus')
+            ->assertSee('Laporan periode')
             ->assertSee('Biaya produksi (catatan peternak)')
             ->assertSee('1,652')
             ->assertSee('3,20%')
@@ -125,7 +125,7 @@ class LaporanSiklusTest extends TestCase
     public function test_lembar_cetak_a4_memuat_performa_biaya_dan_panen(): void
     {
         $this->actingAs($this->peternak)->get(route('laporan.cetak', $this->siklus))->assertOk()
-            ->assertSee('Laporan Siklus 1')->assertSee('NOA · catatan peternak')->assertSee('Performa')->assertSee('Total biaya')->assertSee('No. BTPA')
+            ->assertSee('Laporan Periode 1')->assertSee('NOA · catatan peternak')->assertSee('Performa')->assertSee('Total biaya')->assertSee('No. BTPA')
             ->assertSee('Halaman 1 dari 1')->assertSee('size: A4', false)->assertSee('window.print()', false)->assertDontSee('Dashboard');
     }
 

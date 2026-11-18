@@ -13,7 +13,7 @@
 @endphp
 
 <x-app-layout title="RHPP & Rekonsiliasi" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['RHPP']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['RHPP']]">
     <x-page>
         <x-page-header :title="$rhpp ? 'Rekonsiliasi RHPP' : 'RHPP & Rekonsiliasi'"
             :subtitle="$rhpp ? $rhpp->nomor_rhpp.' · terbit '.$rhpp->tanggal_terbit->translatedFormat('j M Y').' · '.$r['jumlah_berbeda'].' dari '.$r['jumlah_dibandingkan'].' baris berbeda' : 'Hanya terlihat oleh peternak'">
@@ -24,7 +24,7 @@
                 @if ($rhpp)
                     @if ($bisaInput)<x-button variant="secondary" :href="route('rhpp.form', $siklus)">Ubah RHPP</x-button>@endif
                     <x-button variant="secondary" :href="route('rhpp.cetak', $siklus)" target="_blank" rel="noopener"><x-icon name="printer" class="size-4" /> Cetak lembar</x-button>
-                    @if ($rekon)<x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup siklus</x-button>@endif
+                    @if ($rekon)<x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup periode</x-button>@endif
                 @elseif ($menunggu)
                     <x-button :href="route('rhpp.form', $siklus)">Input RHPP</x-button>
                 @endif
@@ -35,7 +35,7 @@
 
         @if ($berjalan)
             <x-empty-state icon="file-text" title="RHPP belum waktunya diinput"
-                text="Siklus masih berjalan. RHPP diinput setelah panen ditandai selesai; sampai saat itu kolom RHPP kosong.">
+                text="Periode masih berjalan. RHPP diinput setelah panen ditandai selesai; sampai saat itu kolom RHPP kosong.">
                 <x-button :href="route('panen.index', $siklus)">Ke Panen</x-button>
             </x-empty-state>
         @else
@@ -46,13 +46,13 @@
                             <p class="font-semibold">Menunggu RHPP dari {{ $inti }}</p>
                             <p>RHPP biasanya terbit 3–7 hari setelah panen terakhir.
                                 @if ($siklus->tanggal_panen)Panen terakhir {{ $siklus->tanggal_panen->translatedFormat('j M Y') }} — sudah {{ $hariSejak }} hari.@endif
-                                Kolom RHPP kosong sampai Anda menginput angka dari dokumen RHPP. Bila RHPP tidak pernah terbit, siklus tetap bisa ditutup tanpa RHPP.</p>
+                                Kolom RHPP kosong sampai Anda menginput angka dari dokumen RHPP. Bila RHPP tidak pernah terbit, periode tetap bisa ditutup tanpa RHPP.</p>
                         </div>
                         <x-button variant="secondary" :href="route('siklus.tutup-tanpa-rhpp', $siklus)">Tutup tanpa RHPP</x-button>
                     </div>
                 </x-alert>
             @elseif ($tanpa)
-                <x-alert variant="info">Siklus ditutup tanpa RHPP{{ $siklus->alasan_penutupan ? ' ('.mb_strtolower($siklus->alasan_penutupan).')' : '' }}. Kolom RHPP dan selisih tetap “–”.</x-alert>
+                <x-alert variant="info">Periode ditutup tanpa RHPP{{ $siklus->alasan_penutupan ? ' ('.mb_strtolower($siklus->alasan_penutupan).')' : '' }}. Kolom RHPP dan selisih tetap “–”.</x-alert>
             @endif
 
             @if ($rhpp)
@@ -86,9 +86,9 @@
                     <ul class="mt-4 space-y-1.5 text-[13px] text-ink-secondary">
                         <li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-success-text" /> RHPP tersimpan ({{ $rhpp->tanggal_terbit->translatedFormat('j M Y') }})</li>
                         <li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-success-text" /> Lembar perbandingan dapat dicetak</li>
-                        <li class="flex items-center gap-2"><x-icon name="info" class="size-4 text-info" /> Langkah berikutnya: tutup siklus — data akan dikunci</li>
+                        <li class="flex items-center gap-2"><x-icon name="info" class="size-4 text-info" /> Langkah berikutnya: tutup periode — data akan dikunci</li>
                     </ul>
-                    <div class="mt-4 flex justify-end"><x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup siklus</x-button></div>
+                    <div class="mt-4 flex justify-end"><x-button :href="route('siklus.tutup', $siklus)">Lanjut tutup periode</x-button></div>
                 </section>
             @endif
         @endif

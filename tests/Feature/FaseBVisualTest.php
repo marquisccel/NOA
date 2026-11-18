@@ -47,8 +47,8 @@ class FaseBVisualTest extends TestCase
         $kandang = $this->siklusSelesai()->kandang_id;
 
         $r = $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => 'semua', 'kandang' => $kandang]))->assertOk()
-            ->assertSee('Tren antar-siklus')->assertSee('id="grafik-ip"', false)->assertSee('id="grafik-fcr"', false)->assertSee('id="data-tren"', false)
-            ->assertSee('Bandingkan dua siklus')->assertSee('<polyline', false)->assertSee('Tren FCR: ', false);
+            ->assertSee('Tren antar periode')->assertSee('id="grafik-ip"', false)->assertSee('id="grafik-fcr"', false)->assertSee('id="data-tren"', false)
+            ->assertSee('Bandingkan dua periode')->assertSee('<polyline', false)->assertSee('Tren FCR: ', false);
         $this->assertGreaterThanOrEqual(3, substr_count($r->getContent(), '<polyline'));
         $r->assertViewHas('tren', fn ($t) => count($t['labels']) >= 2 && count($t['ip']) === count($t['labels']));
     }
@@ -57,7 +57,7 @@ class FaseBVisualTest extends TestCase
     {
         $kosong = User::factory()->create();
 
-        $this->actingAs($kosong)->get(route('performa.index', ['periode' => 'semua']))->assertOk()->assertSee('Belum ada siklus yang dipanen')->assertDontSee('id="data-tren"', false);
+        $this->actingAs($kosong)->get(route('performa.index', ['periode' => 'semua']))->assertOk()->assertSee('Belum ada periode yang dipanen')->assertDontSee('id="data-tren"', false);
     }
 
     public function test_bandingkan_dua_siklus_menandai_yang_lebih_baik(): void
@@ -66,7 +66,7 @@ class FaseBVisualTest extends TestCase
         $b = Siklus::where('status', Siklus::STATUS_SELESAI)->where('kandang_id', $a->kandang_id)->orderBy('tanggal_masuk')->get()[2]; // siklus terbaik
 
         $r = $this->actingAs($this->peternak)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => $b->id]))->assertOk()
-            ->assertSee('Bandingkan dua siklus')->assertSee('Konversi pakan')->assertSee('Yang lebih baik')->assertSee('Siklus kedua')->assertSee('unggul di')
+            ->assertSee('Bandingkan dua periode')->assertSee('Konversi pakan')->assertSee('Yang lebih baik')->assertSee('Periode kedua')->assertSee('unggul di')
             ->assertSee('Hijau menandai nilai yang lebih baik');
         $this->assertStringContainsString('text-success-text', $r->getContent());
     }
@@ -75,9 +75,9 @@ class FaseBVisualTest extends TestCase
     {
         $a = $this->siklusSelesai(0);
 
-        $this->actingAs($this->peternak)->get(route('performa.bandingkan'))->assertOk()->assertSee('Pilih dua siklus lalu tekan');
-        $this->actingAs($this->peternak)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => $a->id]))->assertOk()->assertSee('Pilih dua siklus yang berbeda');
-        $this->actingAs($this->peternak)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => 999999]))->assertOk()->assertSee('Pilih dua siklus lalu tekan');
+        $this->actingAs($this->peternak)->get(route('performa.bandingkan'))->assertOk()->assertSee('Pilih dua periode lalu tekan');
+        $this->actingAs($this->peternak)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => $a->id]))->assertOk()->assertSee('Pilih dua periode yang berbeda');
+        $this->actingAs($this->peternak)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => 999999]))->assertOk()->assertSee('Pilih dua periode lalu tekan');
     }
 
     public function test_bandingkan_tidak_memuat_siklus_peternak_lain_dan_abk_ditolak(): void
@@ -86,7 +86,7 @@ class FaseBVisualTest extends TestCase
         $abk = User::factory()->abk($this->peternak)->create();
         $a = $this->siklusSelesai(0);
 
-        $this->actingAs($lain)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => $a->id]))->assertOk()->assertSee('Belum cukup siklus')->assertDontSee('Kandang A');
+        $this->actingAs($lain)->get(route('performa.bandingkan', ['a' => $a->id, 'b' => $a->id]))->assertOk()->assertSee('Belum cukup periode')->assertDontSee('Kandang A');
         $this->actingAs($abk)->get(route('performa.bandingkan'))->assertForbidden();
     }
 

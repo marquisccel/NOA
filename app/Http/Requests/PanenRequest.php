@@ -52,7 +52,7 @@ class PanenRequest extends FormRequest
                 }
 
                 if ($this->umurHari($this->siklus()) > 60) {
-                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk siklus.');
+                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk periode.');
 
                     return;
                 }

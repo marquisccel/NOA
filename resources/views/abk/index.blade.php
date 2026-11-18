@@ -2,7 +2,7 @@
 
 <x-app-layout title="Pengguna & Akses" :crumbs="[['Beranda', route('dashboard')], ['Pengguna & Akses']]">
     <x-page>
-        <x-page-header title="Akun ABK" subtitle="Kelola akun Anak Buah Kandang dan siklus yang boleh mereka akses.">
+        <x-page-header title="Akun ABK" subtitle="Kelola akun Anak Buah Kandang dan periode yang boleh mereka akses.">
             <x-slot name="actions">
                 <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK</x-button>
             </x-slot>
@@ -10,7 +10,7 @@
 
         @if ($total === 0)
             <x-empty-state icon="users" title="Belum ada akun ABK"
-                text="Buat akun untuk anak buah kandang agar mereka bisa mencatat pakan, ayam mati, dan ayam afkir pada siklus yang ditugaskan.">
+                text="Buat akun untuk anak buah kandang agar mereka bisa mencatat pakan, ayam mati, dan ayam afkir pada periode yang ditugaskan.">
                 <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK pertama</x-button>
             </x-empty-state>
         @else
@@ -35,7 +35,7 @@
                                 <tr>
                                     <th scope="col">Nama ABK</th>
                                     <th scope="col">Email</th>
-                                    <th scope="col">Kandang · Siklus ditugaskan</th>
+                                    <th scope="col">Kandang · Periode ditugaskan</th>
                                     <th scope="col">Status</th>
                                     <th scope="col"><span class="sr-only">Aksi</span></th>
                                 </tr>
@@ -45,13 +45,10 @@
                                     @php $s = $a->siklusDitugaskan; @endphp
                                     <tr>
                                         <th scope="row">
-                                            <span class="flex items-center gap-2.5">
-                                                <span class="grid size-8 shrink-0 place-items-center rounded-full bg-tint text-xs font-bold text-ink-brand" aria-hidden="true">{{ $a->inisial() }}</span>
-                                                <span class="font-bold">{{ $a->name }}</span>
-                                            </span>
+                                            <span class="font-bold">{{ $a->name }}</span>
                                         </th>
                                         <td class="text-ink-secondary">{{ $a->email }}</td>
-                                        <td>{{ $s ? $s->kandang->nama_farm.' · Siklus '.($nomor[$s->id] ?? 1) : '— (belum ditugaskan)' }}</td>
+                                        <td>{{ $s ? $s->kandang->nama_farm.' · Periode '.($nomor[$s->id] ?? 1) : '— (belum ditugaskan)' }}</td>
                                         <td><x-badge :variant="$a->aktif ? 'success' : 'neutral'" :dot="true">{{ $a->aktif ? 'Aktif' : 'Nonaktif' }}</x-badge></td>
                                         <td class="whitespace-nowrap text-right">
                                             <a href="{{ route('abk.edit', $a) }}" class="inline-flex min-h-11 items-center px-2 text-[13px] font-semibold text-ink-brand hover:underline">Ubah</a>
@@ -73,7 +70,7 @@
                 @endif
 
                 <p class="border-t border-line-subtle p-4 text-xs leading-[18px] text-ink-muted sm:px-5">
-                    ABK hanya dapat melihat konteks siklus yang ditugaskan dan mencatat pakan, ayam mati, dan ayam afkir. Kontrak, biaya, panen, dan rekonsiliasi tidak terlihat oleh ABK.
+                    ABK hanya dapat melihat konteks periode yang ditugaskan dan mencatat pakan, ayam mati, dan ayam afkir. Kontrak, biaya, panen, dan rekonsiliasi tidak terlihat oleh ABK.
                 </p>
             </section>
 

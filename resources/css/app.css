@@ -166,17 +166,38 @@
     }
 
     .tabel thead th {
-        @apply h-10 whitespace-nowrap border-b border-[#E1E6E2] bg-[#EDF1EE] px-4 text-[11px] font-bold uppercase tracking-[0.8px] text-ink-muted;
+        @apply h-10 whitespace-nowrap border-b border-line-subtle bg-muted px-4 text-[11px] font-bold uppercase tracking-[0.8px] text-ink-muted;
     }
 
     .tabel tbody td,
     .tabel tbody th {
-        @apply border-t border-[#E1E6E2] px-4 py-3 align-middle font-normal;
+        @apply border-t border-line-subtle px-4 py-3 align-middle font-normal;
     }
 
-    .tabel tbody tr:nth-child(even) {
-        background-color: #f9fbf9;
+    /* Tanpa baris selang-seling: lebih tenang, cukup sorot saat disentuh. */
+    .tabel tbody tr {
+        transition: background-color 120ms;
     }
+
+    .tabel tbody tr:hover {
+        background-color: var(--state-hover);
+    }
+}
+
+/* Kontrol formulir ikut tema: kotak centang tidak boleh putih di mode gelap, isian otomatis peramban tidak berwarna kuning/biru terang. */
+input[type='checkbox'],
+input[type='radio'] {
+    background-color: var(--bg-surface);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+select:-webkit-autofill {
+    -webkit-text-fill-color: var(--text-primary);
+    caret-color: var(--text-primary);
+    box-shadow: 0 0 0 1000px var(--bg-surface) inset;
+    transition: background-color 9999s ease-out 0s;
 }
 
 /* Panah dropdown tidak boleh menabrak teks: padding kanan select selalu menyisakan ruang untuk panah. */

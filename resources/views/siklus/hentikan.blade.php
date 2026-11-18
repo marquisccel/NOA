@@ -4,15 +4,15 @@
     $nomor = \App\Models\Siklus::nomorMap([$siklus->kandang_id])[$siklus->id] ?? 1;
 @endphp
 
-<x-app-layout title="Hentikan siklus dini" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor, route('siklus.show', $siklus)], ['Hentikan dini']]">
+<x-app-layout title="Hentikan periode dini" :siklus="$siklus"
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor, route('siklus.show', $siklus)], ['Hentikan dini']]">
     <x-page>
-        <x-page-header title="Hentikan siklus dini" subtitle="Untuk kejadian luar biasa seperti wabah. Data siklus akan dikunci." />
+        <x-page-header title="Hentikan periode dini" subtitle="Untuk kejadian luar biasa seperti wabah. Data periode akan dikunci." />
 
         @if ($errors->has('siklus'))<x-alert variant="error">{{ $errors->first('siklus') }}</x-alert>@endif
 
         <form method="POST" action="{{ route('siklus.hentikan.simpan', $siklus) }}" class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]"
-              onsubmit="return confirm('Hentikan siklus ini? Data akan dikunci dan angka ditandai tidak sebanding.')">
+              onsubmit="return confirm('Hentikan periode ini? Data akan dikunci dan angka ditandai tidak sebanding.')">
             @csrf
             <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
                 <h2 class="text-base font-bold">Data penghentian</h2>
@@ -34,10 +34,10 @@
                     <div class="mt-2 flex min-h-[50px] items-center rounded-md border border-line bg-page px-3.5 text-lg font-semibold">{{ F::angka($tersisa, 0) }}<span class="ml-2 text-base font-normal text-ink-secondary">ekor</span></div>
                     <p class="mt-1.5 text-xs text-ink-muted">Sesuai recording terakhir{{ $hari_terakhir ? ' (hari ke-'.$hari_terakhir.')' : '' }}</p>
                 </div>
-                <x-alert variant="warning"><p class="font-semibold">FCR dan IP ditandai “tidak sebanding”</p><p>Angka tetap dihitung dari data yang ada, tetapi tidak dibandingkan dengan siklus normal atau standar.</p></x-alert>
+                <x-alert variant="warning"><p class="font-semibold">FCR dan IP ditandai “tidak sebanding”</p><p>Angka tetap dihitung dari data yang ada, tetapi tidak dibandingkan dengan periode normal atau standar.</p></x-alert>
                 <div class="flex flex-wrap items-center justify-end gap-2.5 border-t border-line-subtle pt-4">
                     <x-button variant="secondary" :href="route('siklus.pengaturan', $siklus)">Batal</x-button>
-                    <x-button variant="danger">Hentikan siklus</x-button>
+                    <x-button variant="danger">Hentikan periode</x-button>
                 </div>
             </div>
 

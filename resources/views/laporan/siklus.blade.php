@@ -4,15 +4,15 @@
     $rp = fn ($n) => $n === null ? 'belum lengkap' : 'Rp '.F::angka($n, 0);
     $adaGrafik = collect($grafik['labels'])->isNotEmpty();
     $sudahPanen = $p['jumlah_tahap'] > 0;
-    $subtitle = 'Siklus '.$nomor.' · '.$siklus->kandang->nama_farm.($siklus->tanggal_panen ? ' · data s.d. panen terakhir '.$siklus->tanggal_panen->translatedFormat('j M Y') : '');
+    $subtitle = 'Periode '.$nomor.' · '.$siklus->kandang->nama_farm.($siklus->tanggal_panen ? ' · data s.d. panen terakhir '.$siklus->tanggal_panen->translatedFormat('j M Y') : '');
     $porsi = fn ($n) => $biaya['total'] > 0 && $n !== null ? F::angka($n / $biaya['total'] * 100, 1).'%' : '–';
     $sisaSak = $p['pakan_masuk_sak'] - $p['pakan_bersih_sak'];
 @endphp
 
-<x-app-layout title="Laporan siklus" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Laporan']]">
+<x-app-layout title="Laporan periode" :siklus="$siklus"
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Laporan']]">
     <x-page>
-        <x-page-header title="Laporan siklus" :subtitle="$subtitle">
+        <x-page-header title="Laporan periode" :subtitle="$subtitle">
             <x-slot name="actions">
                 <x-button variant="secondary" :href="route('laporan.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>
                 <x-button :href="route('laporan.cetak', $siklus)" target="_blank" rel="noopener"><x-icon name="printer" class="size-4" /> Cetak laporan</x-button>
@@ -20,7 +20,7 @@
         </x-page-header>
 
         @if ($p['tidak_sebanding'])
-            <x-alert variant="warning"><strong>Tidak sebanding:</strong> siklus dihentikan dini. Angka dihitung dari data yang ada dan tidak layak dibandingkan dengan siklus lengkap.</x-alert>
+            <x-alert variant="warning"><strong>Tidak sebanding:</strong> periode dihentikan dini. Angka dihitung dari data yang ada dan tidak layak dibandingkan dengan periode lengkap.</x-alert>
         @endif
         @if (! $sudahPanen)
             <x-alert variant="info">Belum ada catatan panen: FCR, ABW, umur panen, IP, dan margin belum bisa dihitung.</x-alert>
@@ -94,7 +94,7 @@
         </section>
 
         <section class="space-y-3" aria-labelledby="grafik-judul">
-            <h2 id="grafik-judul" class="text-base font-bold">Grafik siklus</h2>
+            <h2 id="grafik-judul" class="text-base font-bold">Grafik periode</h2>
             @if ($adaGrafik)
                 <div class="grid gap-4 lg:grid-cols-2">
                     <div class="rounded-[16px] border border-line bg-surface p-5">

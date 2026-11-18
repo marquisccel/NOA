@@ -6,10 +6,10 @@ Aturan ini diturunkan dari kebutuhan peternak plasma dan **dijaga di kode serta 
 
 | Kode | Aturan | Dijaga di |
 |---|---|---|
-| R1 | Satu catatan per hari umur per siklus. Mengisi hari yang sama mengarah ke catatan yang ada. | Indeks unik parsial `(siklus_id, hari_ke)` + `RecordingRequest` |
-| R2 | Satu kandang hanya punya **satu siklus terbuka** (Berjalan, Panen selesai, Menunggu RHPP, Rekonsiliasi). | Indeks unik parsial + `SiklusBaruController` |
+| R1 | Satu catatan per hari umur per periode. Mengisi hari yang sama mengarah ke catatan yang ada. | Indeks unik parsial `(siklus_id, hari_ke)` + `RecordingRequest` |
+| R2 | Satu kandang hanya punya **satu periode terbuka** (Berjalan, Panen selesai, Menunggu RHPP, Rekonsiliasi). | Indeks unik parsial + `SiklusBaruController` |
 | R3 | Deplesi = (ayam mati + afkir) ÷ jumlah DOC × 100. | `PerformanceCalculator::deplesiPersen` |
-| R4 | Pakan dicatat dalam **sak**, dikonversi ke kg memakai bobot per sak milik siklus. | `PerformanceCalculator::sakKeKg` |
+| R4 | Pakan dicatat dalam **sak**, dikonversi ke kg memakai bobot per sak milik periode. | `PerformanceCalculator::sakKeKg` |
 | R5 | Stok pakan = akumulasi pakan masuk − pakan terpakai, **boleh negatif** (dengan peringatan, karena biasanya ada kiriman yang belum dicatat). | Dihitung, tidak disimpan |
 | R7 | Ayam panen + deplesi harus sama dengan populasi awal. Bila tidak, selisih **ditandai dan ditampilkan**, tidak dipaksa seimbang. | `RingkasanPerforma`, halaman Selisih jumlah ayam |
 | R8 | Sampel timbang di bawah 5% populasi hidup ditandai "kurang representatif" (tetap boleh disimpan). | `PerformanceCalculator::samplingRepresentatif` |
@@ -21,8 +21,8 @@ Aturan ini diturunkan dari kebutuhan peternak plasma dan **dijaga di kode serta 
 | Kode | Aturan | Dijaga di |
 |---|---|---|
 | R11 | Baris yang sudah **diparaf PPL** terkunci dan tidak bisa diubah (bukti sah saat dicocokkan dengan RHPP). | `RecordingHarian` (model) + `RecordingHarianPolicy` |
-| R12 | Siklus yang sudah **ditutup, ditutup tanpa RHPP, atau dihentikan** terkunci: recording, sampling, OVK, panen, dan RHPP tidak bisa diubah. | Model + controller (403) |
-| R13 | **ABK tidak melihat** kontrak, biaya, laporan, rekonsiliasi, atau halaman peternak lain. ABK hanya mencatat di **satu siklus** yang ditugaskan. | `SiklusPolicy`, middleware `peternak` |
+| R12 | Periode yang sudah **ditutup, ditutup tanpa RHPP, atau dihentikan** terkunci: recording, sampling, OVK, panen, dan RHPP tidak bisa diubah. | Model + controller (403) |
+| R13 | **ABK tidak melihat** kontrak, biaya, laporan, rekonsiliasi, atau halaman peternak lain. ABK hanya mencatat di **satu periode** yang ditugaskan. | `SiklusPolicy`, middleware `peternak` |
 
 ## Rumus performa
 
@@ -33,10 +33,10 @@ Aturan ini diturunkan dari kebutuhan peternak plasma dan **dijaga di kode serta 
 | **FCR** | pakan terpakai (kg) ÷ total tonase (kg) | pakan bersih = sak × bobot sak − retur |
 | **IP** | (daya hidup % × ABW kg) ÷ (FCR × umur panen) × 100 | rumus mengikuti pengaturan kemitraan |
 | **Biaya per kg** | (biaya DOC + biaya pakan + biaya OVK) ÷ total tonase | DOC = ekor × harga; pakan = sak masuk × harga sak |
-| **FCR gabungan (Performa)** | Σ pakan ÷ Σ tonase semua siklus periode | bukan rata-rata angka FCR tiap siklus |
+| **FCR gabungan (Performa)** | Σ pakan ÷ Σ tonase semua periode periode | bukan rata-rata angka FCR tiap periode |
 | **Selisih rekonsiliasi** | angka RHPP − angka peternak | "Sama" bila sama pada ketelitian tampilan |
 
-### Contoh hitung (siklus contoh)
+### Contoh hitung (periode contoh)
 
 - 3.000 DOC, mati 78, afkir 18 → deplesi (78 + 18) ÷ 3.000 × 100 = **3,20%**
 - Panen 2.904 ekor, 5.750 kg → ABW = 5.750 ÷ 2.904 = **1,980 kg**

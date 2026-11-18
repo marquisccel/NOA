@@ -6,7 +6,7 @@
             <x-page-header title="Selamat datang di NOA" subtitle="Mulai dengan mendaftarkan kandang pertama Anda." />
 
             <x-empty-state icon="warehouse" title="Belum ada kandang terdaftar"
-                text="Ringkasan dan siklus akan muncul setelah Anda menambahkan kandang. Siklus pemeliharaan dibuka terpisah, dari halaman detail kandang.">
+                text="Ringkasan dan periode akan muncul setelah Anda menambahkan kandang. Periode pemeliharaan dibuka terpisah, dari halaman detail kandang.">
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-empty-state>
         @else
@@ -45,31 +45,34 @@
                 </section>
             @endif
 
-            <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" data-tur="Ringkasan peternakan|Empat angka utama: kandang, siklus yang sedang berjalan, dan jumlah ayam saat ini." data-tur-urut="3">
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" data-tur="Ringkasan peternakan|Empat angka utama: kandang, periode yang sedang berjalan, dan jumlah ayam saat ini." data-tur-urut="3">
                 <x-kpi label="Total Kandang" :value="F::angka($ringkasan['total_kandang'], 0)" caption="Terdaftar atas nama Anda" icon="warehouse" />
                 <x-kpi label="Kandang Aktif" :value="F::angka($ringkasan['kandang_aktif'], 0)"
-                       :caption="$ringkasan['kandang_aktif'] ? 'Punya siklus yang belum ditutup' : 'Tidak ada siklus terbuka'" icon="house" />
-                <x-kpi label="Siklus Berjalan" :value="F::angka($ringkasan['siklus_berjalan'], 0)"
+                       :caption="$ringkasan['kandang_aktif'] ? 'Punya periode yang belum ditutup' : 'Tidak ada periode terbuka'" icon="house" />
+                <x-kpi label="Periode Berjalan" :value="F::angka($ringkasan['siklus_berjalan'], 0)"
                        :caption="$ringkasan['siklus_berjalan'] ? 'Masih dalam pemeliharaan' : '—'" icon="refresh-cw" />
                 <x-kpi label="Populasi Ayam Aktif" :value="$ringkasan['siklus_berjalan'] ? F::angka($ringkasan['populasi_aktif'], 0) : '—'"
-                       :caption="$ringkasan['siklus_berjalan'] ? 'Ekor, dari siklus berjalan' : 'Belum ada siklus berjalan'" icon="feather" />
+                       :caption="$ringkasan['siklus_berjalan'] ? 'Ekor, dari periode berjalan' : 'Belum ada periode berjalan'" icon="feather" />
             </div>
 
             @if ($perhatian->isNotEmpty())
-                <section aria-labelledby="perlu-perhatian" class="space-y-3" data-tur="Perlu perhatian|Hal yang sebaiknya segera Anda urus di semua siklus: catatan yang terlewat, stok pakan menipis, dan baris yang belum diparaf." data-tur-urut="4">
+                <section aria-labelledby="perlu-perhatian" class="space-y-3" data-tur="Perlu perhatian|Hal yang sebaiknya segera Anda urus di semua periode: catatan yang terlewat, stok pakan menipis, dan baris yang belum diparaf." data-tur-urut="4">
                     <div>
                         <h2 id="perlu-perhatian" class="text-base font-bold text-ink">Perlu perhatian</h2>
-                        <p class="text-[13px] text-ink-secondary">Hal yang sebaiknya diurus dulu di siklus yang sedang berjalan.</p>
+                        <p class="text-[13px] text-ink-secondary">Hal yang sebaiknya diurus dulu. Ketuk untuk membukanya.</p>
                     </div>
-                    <ul class="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
+                    <ul class="divide-y divide-line-subtle overflow-hidden rounded-lg border border-line bg-surface">
                         @foreach ($perhatian as $h)
-                            <li class="flex items-start gap-3 rounded-[16px] border {{ $h['tingkat'] === 'penting' ? 'border-warning-border bg-warning-soft' : 'border-line bg-surface' }} p-4">
-                                <span class="mt-0.5 shrink-0 {{ $h['tingkat'] === 'penting' ? 'text-warning-text' : 'text-ink-brand' }}"><x-icon :name="$h['tingkat'] === 'penting' ? 'triangle-alert' : 'info'" class="size-5" /></span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-bold">{{ $h['judul'] }}</p>
-                                    <p class="text-xs text-ink-secondary">{{ $h['siklus'] }} · {{ $h['teks'] }}</p>
-                                    <a href="{{ $h['tautan'] }}" class="mt-1 inline-flex min-h-11 items-center text-[13px] font-bold text-ink-brand hover:underline">{{ $h['label'] }} →</a>
-                                </div>
+                            <li>
+                                <a href="{{ $h['tautan'] }}" class="group flex min-h-[60px] items-center gap-3.5 px-4 py-3 transition-colors hover:bg-state-hover">
+                                    <span class="size-2 shrink-0 rounded-full {{ $h['tingkat'] === 'penting' ? 'bg-warning' : 'bg-info' }}" aria-hidden="true"></span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block truncate text-sm font-semibold text-ink">{{ $h['judul'] }}</span>
+                                        <span class="block truncate text-[13px] text-ink-muted">{{ $h['siklus'] }}</span>
+                                    </span>
+                                    <span class="hidden shrink-0 text-[13px] font-semibold text-ink-brand sm:inline">{{ $h['label'] }}</span>
+                                    <x-icon name="chevron-right" class="size-4 shrink-0 text-ink-muted transition-transform group-hover:translate-x-0.5" />
+                                </a>
                             </li>
                         @endforeach
                     </ul>
@@ -80,16 +83,16 @@
                 <section aria-labelledby="judul-siklus-aktif" class="space-y-3.5">
                     <div class="flex items-end justify-between gap-3">
                         <div>
-                            <h2 id="judul-siklus-aktif" class="text-base font-bold text-ink">Siklus aktif</h2>
-                            <p class="text-[13px] text-ink-secondary">Siklus yang belum ditutup, per kandang.</p>
+                            <h2 id="judul-siklus-aktif" class="text-base font-bold text-ink">Periode aktif</h2>
+                            <p class="text-[13px] text-ink-secondary">Periode yang belum ditutup, per kandang.</p>
                         </div>
                         <a href="{{ route('kandang.index') }}" class="inline-flex min-h-11 items-center text-[13px] font-semibold text-ink-brand hover:underline">Lihat semua kandang</a>
                     </div>
 
                     @if ($ringkasan['siklus']->isEmpty())
-                        <x-empty-state icon="calendar-plus" title="Belum ada siklus berjalan"
-                            text="Kandang Anda sudah terdaftar, tetapi belum ada siklus pemeliharaan yang dibuka. Buka siklus dari halaman detail kandang.">
-                            <x-button :href="route('kandang.index')">Buka Siklus</x-button>
+                        <x-empty-state icon="calendar-plus" title="Belum ada periode berjalan"
+                            text="Kandang Anda sudah terdaftar, tetapi belum ada periode pemeliharaan yang dibuka. Buka periode dari halaman detail kandang.">
+                            <x-button :href="route('kandang.index')">Buka Periode</x-button>
                         </x-empty-state>
                     @else
                         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
@@ -98,7 +101,7 @@
                                 <article class="flex flex-col gap-4 rounded-[16px] border border-line bg-surface p-5">
                                     <div class="flex items-start justify-between gap-2">
                                         <div class="min-w-0">
-                                            <h3 class="font-heading text-lg font-semibold leading-snug">Siklus {{ $k['nomor'] }}</h3>
+                                            <h3 class="font-heading text-lg font-semibold leading-snug">Periode {{ $k['nomor'] }}</h3>
                                             <p class="mt-1 flex items-center gap-1.5 truncate text-[13px] text-ink-secondary"><x-icon name="warehouse" class="size-3.5" /> {{ $s->kandang->nama_farm }}</p>
                                         </div>
                                         <x-status-siklus :siklus="$s" />
@@ -110,7 +113,7 @@
                                         <div class="flex justify-between gap-3"><dt class="text-ink-secondary">Ayam hidup kini</dt><dd class="font-bold">{{ F::angka($k['populasi_kini'], 0) }} ekor</dd></div>
                                     </dl>
                                     <a href="{{ route('siklus.show', $s) }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-brand-border bg-tint text-[13px] font-bold text-ink-brand hover:bg-state-selected">
-                                        Buka detail siklus <x-icon name="arrow-right" class="size-4" />
+                                        Buka detail periode <x-icon name="arrow-right" class="size-4" />
                                     </a>
                                 </article>
                             @endforeach

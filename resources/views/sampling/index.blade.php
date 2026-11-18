@@ -6,7 +6,7 @@
 @endphp
 
 <x-app-layout title="Sampling bobot" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Sampling']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Sampling']]">
     <x-page>
         <x-page-header title="Riwayat sampling"
             :subtitle="count($baris).' sampling'.($interval ? ' · interval '.$interval.' hari' : '')">

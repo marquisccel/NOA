@@ -7,7 +7,7 @@
 @endphp
 
 <x-app-layout title="OVK" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['OVK']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['OVK']]">
     <x-page>
         <x-page-header title="Riwayat OVK"
             :subtitle="$riwayat->count().' pemberian · total '.$rp($totalBiaya)">
@@ -21,7 +21,7 @@
 
         @if ($riwayat->isEmpty())
             <x-empty-state icon="syringe" title="Belum ada pemberian OVK"
-                text="Catat obat, vitamin, dan vaksin beserta dosis dan biayanya. Biaya OVK ikut dihitung dalam biaya produksi siklus.">
+                text="Catat obat, vitamin, dan vaksin beserta dosis dan biayanya. Biaya OVK ikut dihitung dalam biaya produksi periode.">
                 @if ($bisaCatat)<x-button :href="route('ovk.create', $siklus)">Pemberian OVK pertama</x-button>@endif
             </x-empty-state>
         @else

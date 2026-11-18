@@ -325,3 +325,11 @@ Konteks: proyek mata kuliah Pengembangan Aplikasi Web Lanjut, dinilai lewat demo
 - [x] Uji: total 442 lulus (kenaikan 35 sejak Performa)
 
 Catatan: penayangan di Vercel belum diuji (butuh akun Vercel dan Neon); langkah ada di `docs/DEPLOY.md`, dengan Render sebagai cadangan.
+
+### Penyempurnaan UI/UX putaran 2 (18 Nov 2026)
+
+- [x] Mode gelap: tabel `.tabel` memakai token (tanpa warna terang tertanam), kotak centang dan isian otomatis peramban ikut tema, halaman lama (siklus/acuan, standar, indeks) dipindah ke token; panel merek login tidak menyilaukan di mode gelap (`darkMode` Tailwind berbasis `[data-theme=dark]`)
+- [x] Logo tanpa kartu; wordmark NOA berwarna emas (topeng CSS dari WebP transparan, ikut tema)
+- [x] Istilah awam: Siklus → **Periode** di seluruh tampilan, pesan, laporan, CSV, glosarium dan dokumen; open/closed house → **Kandang terbuka/tertutup** dengan penjelasan satu kalimat; filter waktu di Performa memakai "Rentang waktu"/"Semua waktu"
+- [x] Menu: Dashboard → Kandang → Aktivitas; avatar ABK dihapus; kartu demo di login: judul + dua tombol ("Masuk sebagai peternak", "Masuk sebagai ABK"); "Perlu perhatian" jadi daftar tenang
+

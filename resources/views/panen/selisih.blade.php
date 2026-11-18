@@ -14,7 +14,7 @@
 @endphp
 
 <x-app-layout title="Selisih jumlah ayam" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Selisih jumlah ayam']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Selisih jumlah ayam']]">
     <x-page lebar="max-w-3xl">
         <x-page-header title="Selisih jumlah ayam" subtitle="Panen + deplesi dibandingkan populasi awal" />
 

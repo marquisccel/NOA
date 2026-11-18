@@ -128,7 +128,7 @@ class UiFase4Test extends TestCase
         $this->terkunci();
 
         $this->actingAs($this->peternak)->get(route('recording.index', $this->siklus))->assertOk()
-            ->assertSee('Siklus ditutup · semua baris hanya dapat dilihat')->assertDontSee('Isi recording hari ini')->assertSee('Terkunci');
+            ->assertSee('Periode ditutup · semua baris hanya dapat dilihat')->assertDontSee('Isi recording hari ini')->assertSee('Terkunci');
     }
 
     // ---- Recording: entri dan halaman sukses ----
@@ -306,7 +306,7 @@ class UiFase4Test extends TestCase
         $this->ovk(['biaya' => 100000]);
         $this->actingAs($this->peternak)->get(route('ovk.create', $this->siklus))->assertOk()
             ->assertSee('Jenis *')->assertSee('Obat')->assertSee('Vitamin')->assertSee('Vaksin')->assertSee('Nama produk *')->assertSee('Dosis *')->assertSee('Simpan OVK')
-            ->assertSee('Siklus sejauh ini')->assertSee('Rp 100.000')->assertSee('Rp 20 / ekor')->assertSee('terakhir hari ke-4');
+            ->assertSee('Periode sejauh ini')->assertSee('Rp 100.000')->assertSee('Rp 20 / ekor')->assertSee('terakhir hari ke-4');
     }
 
     public function test_kimia_lama_tetap_terbaca_saat_ubah(): void

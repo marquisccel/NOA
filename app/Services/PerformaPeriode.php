@@ -45,7 +45,7 @@ class PerformaPeriode
     public function label(string $periode): string
     {
         if ($periode === 'semua') {
-            return 'Semua periode';
+            return 'Semua waktu';
         }
 
         return strlen($periode) === 7 ? $this->rentang($periode)[0]->translatedFormat('F Y') : 'Tahun '.$periode;
@@ -82,7 +82,7 @@ class PerformaPeriode
             $tahun[(string) $t] = 'Tahun '.$t.($t === (int) now()->format('Y') ? ' (tahun ini)' : '');
         }
 
-        return ['bulan' => $bulan, 'tahun' => $tahun, 'semua' => ['semua' => 'Semua periode']];
+        return ['bulan' => $bulan, 'tahun' => $tahun, 'semua' => ['semua' => 'Semua waktu']];
     }
 
     /**

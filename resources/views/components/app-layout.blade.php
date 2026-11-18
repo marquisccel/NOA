@@ -110,7 +110,7 @@
             <div class="flex min-h-0 flex-1 gap-5 md:p-5 lg:gap-6 lg:p-6 print:p-0">
                 {{-- Sidebar: penuh di desktop, ikon saja di tablet atau bila diciutkan --}}
                 @if ($grup)
-                    <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang & Siklus, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
+                    <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
                         <x-shell-menu :grup="$grup" />
                         <div class="space-y-1 border-t border-line-subtle pt-2">

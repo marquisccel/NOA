@@ -59,7 +59,7 @@ class AktivitasBantuanTest extends TestCase
         PemberianOvk::create(['siklus_id' => $this->siklus->id, 'tanggal' => '2026-11-09', 'jenis' => 'vaksin', 'nama_produk' => 'Gumboro', 'dosis' => '1', 'biaya' => 100]);
 
         $this->actingAs($this->peternak)->get(route('aktivitas.index'))->assertOk()
-            ->assertSeeInOrder(['Hari ini', 'Recording harian', 'Pakan 12,50 sak · mati 3 · afkir 1', 'Kandang 1 · Siklus 1 · Hari ke-10', 'Kemarin'])
+            ->assertSeeInOrder(['Hari ini', 'Recording harian', 'Pakan 12,50 sak · mati 3 · afkir 1', 'Kandang 1 · Periode 1 · Hari ke-10', 'Kemarin'])
             ->assertSee('Vaksin · Gumboro')->assertSee(route('recording.index', $this->siklus), false)->assertSee(route('ovk.index', $this->siklus), false);
     }
 
@@ -119,7 +119,7 @@ class AktivitasBantuanTest extends TestCase
         $this->actingAs($this->peternak)->get(route('dashboard'))->assertSee(route('bantuan'), false);
 
         $r = $this->actingAs($this->peternak)->get(route('bantuan'))->assertOk()
-            ->assertSee('Alur satu siklus, langkah demi langkah')->assertSee('Daftarkan kandang')->assertSee('Tutup siklus')->assertSee('Langkah berikutnya')->assertSee('Arti istilah');
+            ->assertSee('Alur satu periode, langkah demi langkah')->assertSee('Daftarkan kandang')->assertSee('Tutup periode')->assertSee('Langkah berikutnya')->assertSee('Arti istilah');
         foreach (config('istilah') as $kunci => [$nama]) {
             $r->assertSee('id="'.$kunci.'"', false)->assertSee($nama);
         }
@@ -162,7 +162,7 @@ class AktivitasBantuanTest extends TestCase
         $this->actingAs($this->peternak)->get($url)->assertSee('Cocokkan dengan RHPP')->assertSee('Lihat perbandingan');
 
         $this->siklus->update(['status' => 'selesai']);
-        $this->actingAs($this->peternak)->get($url)->assertSee('Siklus ini sudah selesai')->assertSee('Buka siklus baru');
+        $this->actingAs($this->peternak)->get($url)->assertSee('Periode ini sudah selesai')->assertSee('Buka periode baru');
     }
 
     public function test_istilah_teknis_diganti_bahasa_sehari_hari_dan_kode_internal_dibuang(): void

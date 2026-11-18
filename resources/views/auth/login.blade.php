@@ -45,15 +45,11 @@
 
     @if (config('noa.demo'))
         <div class="space-y-3 rounded-md border border-brand-border bg-tint p-4" data-demo>
-            <div>
-                <p class="text-sm font-bold text-ink-brand">Coba demo tanpa daftar</p>
-                <p class="text-xs leading-[18px] text-ink-secondary">Masuk satu klik ke akun contoh yang sudah berisi data peternakan selama setahun.</p>
-            </div>
-            <div class="grid gap-2 sm:grid-cols-2">
-                <form method="POST" action="{{ route('demo.masuk', 'plasma') }}">@csrf<x-button variant="secondary" class="w-full"><x-icon name="warehouse" class="size-4" /> Masuk sebagai Plasma</x-button></form>
+            <p class="text-sm font-bold text-ink-brand">Coba demo tanpa daftar</p>
+            <div class="grid gap-2">
+                <form method="POST" action="{{ route('demo.masuk', 'plasma') }}">@csrf<x-button variant="secondary" class="w-full"><x-icon name="warehouse" class="size-4" /> Masuk sebagai peternak</x-button></form>
                 <form method="POST" action="{{ route('demo.masuk', 'abk') }}">@csrf<x-button variant="secondary" class="w-full"><x-icon name="clipboard-list" class="size-4" /> Masuk sebagai ABK</x-button></form>
             </div>
-            <p class="text-[11px] text-ink-muted">Plasma = peternak pemilik kandang. ABK = anak buah kandang yang hanya mencatat harian.</p>
         </div>
     @endif
 

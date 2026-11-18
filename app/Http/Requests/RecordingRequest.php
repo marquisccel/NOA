@@ -80,7 +80,7 @@ class RecordingRequest extends FormRequest
                 }
 
                 if ($hariKe > 60) {
-                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk siklus.');
+                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk periode.');
 
                     return;
                 }
@@ -88,7 +88,7 @@ class RecordingRequest extends FormRequest
                 // Deplesi kumulatif tidak boleh melebihi populasi awal.
                 $lain = app(RingkasanRecording::class)->deplesiLain($siklus, $recording?->id);
                 if ($lain + (int) $this->input('mati') + (int) $this->input('afkir') > $siklus->populasi) {
-                    $validator->errors()->add('mati', 'Total ayam mati dan afkir melebihi populasi awal siklus.');
+                    $validator->errors()->add('mati', 'Total ayam mati dan afkir melebihi populasi awal periode.');
                 }
             },
         ];

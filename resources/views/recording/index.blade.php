@@ -10,10 +10,10 @@
 @endphp
 
 <x-app-layout title="Recording harian" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording']]">
     <x-page>
         <x-page-header title="Recording harian"
-            :subtitle="$siklus->isTerkunci() ? 'Siklus ditutup · semua baris hanya dapat dilihat' : 'Kolom STD dari tabel standar kemitraan · angka oranye = di atas standar'">
+            :subtitle="$siklus->isTerkunci() ? 'Periode ditutup · semua baris hanya dapat dilihat' : 'Kolom STD dari tabel standar kemitraan · angka oranye = di atas standar'">
             <x-slot name="actions">
                 @if (! empty($daftar))<x-button variant="secondary" :href="route('recording.csv', $siklus)"><x-icon name="download" class="size-4" /> Unduh CSV</x-button>@endif
                 @if ($bisaIsi)

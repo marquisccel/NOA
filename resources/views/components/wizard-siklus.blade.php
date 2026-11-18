@@ -5,17 +5,17 @@
     $terakhir = $konteks['terakhir'];
 @endphp
 
-<x-app-layout title="Buka Siklus Baru" :crumbs="[['Kandang & Siklus', route('kandang.index')], [$kandang->nama_farm, route('kandang.show', $kandang)], ['Buka siklus baru']]">
+<x-app-layout title="Buka Periode Baru" :crumbs="[['Kandang', route('kandang.index')], [$kandang->nama_farm, route('kandang.show', $kandang)], ['Buka periode baru']]">
     <x-page>
         <div class="space-y-3">
             <a href="{{ route('kandang.show', $kandang) }}" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
                 <x-icon name="arrow-left" class="size-4" /> Kembali ke detail {{ $kandang->nama_farm }}
             </a>
-            <x-page-header :title="'Buka Siklus Baru · '.$kandang->nama_farm" />
+            <x-page-header :title="'Buka Periode Baru · '.$kandang->nama_farm" />
         </div>
 
         {{-- Stepper 5 langkah --}}
-        <nav aria-label="Langkah buka siklus" class="overflow-x-auto">
+        <nav aria-label="Langkah buka periode" class="overflow-x-auto">
             <ol class="flex min-w-max gap-2 sm:min-w-0 sm:grid sm:grid-cols-5">
                 @foreach ($langkahSemua as $no => $nama)
                     @php $selesai = $no < $langkah; $aktif = $no === $langkah; @endphp
@@ -44,21 +44,21 @@
             </div>
 
             <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5" aria-label="Konteks kandang">
-                <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Siklus untuk</p>
+                <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Periode untuk</p>
                 <dl class="space-y-3 text-[13px]">
                     <div><dt class="text-ink-muted">Kandang</dt><dd class="mt-0.5 font-semibold">{{ $kandang->nama_farm }}</dd></div>
                     <div><dt class="text-ink-muted">Tipe</dt><dd class="mt-0.5 font-semibold">{{ $kandang->labelTipe() ?? '–' }}</dd></div>
                     <div><dt class="text-ink-muted">Alamat</dt><dd class="mt-0.5 font-semibold">{{ $kandang->alamat ?: '–' }}</dd></div>
                     <div><dt class="text-ink-muted">Kapasitas</dt><dd class="mt-0.5 font-semibold">{{ number_format($kandang->kapasitas, 0, ',', '.') }} ekor</dd></div>
-                    <div><dt class="text-ink-muted">Siklus berikutnya</dt><dd class="mt-0.5 font-semibold">Siklus {{ $konteks['berikutnya'] }}</dd></div>
-                    <div><dt class="text-ink-muted">Siklus terakhir</dt>
+                    <div><dt class="text-ink-muted">Periode berikutnya</dt><dd class="mt-0.5 font-semibold">Periode {{ $konteks['berikutnya'] }}</dd></div>
+                    <div><dt class="text-ink-muted">Periode terakhir</dt>
                         <dd class="mt-0.5 font-semibold">
-                            @if ($terakhir) Siklus {{ $konteks['nomor_terakhir'] }} · {{ $terakhir->labelStatus() }}@if ($terakhir->ditutup_pada) {{ $terakhir->ditutup_pada->translatedFormat('j M Y') }}@endif
+                            @if ($terakhir) Periode {{ $konteks['nomor_terakhir'] }} · {{ $terakhir->labelStatus() }}@if ($terakhir->ditutup_pada) {{ $terakhir->ditutup_pada->translatedFormat('j M Y') }}@endif
                             @else Belum ada @endif
                         </dd>
                     </div>
                 </dl>
-                <p class="border-t border-line-subtle pt-3 text-xs leading-[18px] text-ink-muted">Isian tersimpan sebagai draf. Siklus baru dibuka setelah Langkah 5.</p>
+                <p class="border-t border-line-subtle pt-3 text-xs leading-[18px] text-ink-muted">Isian tersimpan sebagai draf. Periode baru dibuka setelah Langkah 5.</p>
             </aside>
         </div>
     </x-page>

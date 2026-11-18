@@ -181,7 +181,7 @@ class RekonsiliasiRhppTest extends TestCase
         $this->ubahRhpp(['total_tonase' => 5716]);
 
         $this->actingAs($this->peternak)->get(route('rhpp.show', $this->siklus))->assertOk()
-            ->assertDontSee('Tambah catatan')->assertDontSee('Ubah RHPP')->assertDontSee('Lanjut tutup siklus')->assertSee('Cetak lembar');
+            ->assertDontSee('Tambah catatan')->assertDontSee('Ubah RHPP')->assertDontSee('Lanjut tutup periode')->assertSee('Cetak lembar');
         $this->actingAs($this->peternak)->patch(route('rhpp.catatan', $this->siklus), ['catatan' => ['tonase' => 'x']])->assertForbidden();
     }
 

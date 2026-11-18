@@ -2,13 +2,13 @@
     $filter = ['' => 'Semua', 'berjalan' => 'Berjalan', 'selesai' => 'Ditutup', 'dihentikan' => 'Dihentikan'];
 @endphp
 
-<x-app-layout title="Riwayat siklus" :crumbs="[['Kandang & Siklus', route('kandang.index')], [$kandang->nama_farm, route('kandang.show', $kandang)], ['Riwayat siklus']]">
+<x-app-layout title="Riwayat periode" :crumbs="[['Kandang', route('kandang.index')], [$kandang->nama_farm, route('kandang.show', $kandang)], ['Riwayat periode']]">
     <x-page>
         <div class="space-y-3">
             <a href="{{ route('kandang.show', $kandang) }}" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
                 <x-icon name="arrow-left" class="size-4" /> Kembali ke detail kandang
             </a>
-            <x-page-header :title="'Riwayat siklus · '.$kandang->nama_farm" subtitle="Semua siklus pemeliharaan milik kandang ini. Siklus yang sudah ditutup tetap tersimpan dan dapat dibuka kembali." />
+            <x-page-header :title="'Riwayat periode · '.$kandang->nama_farm" subtitle="Semua periode pemeliharaan milik kandang ini. Periode yang sudah ditutup tetap tersimpan dan dapat dibuka kembali." />
         </div>
 
         <section class="rounded-[16px] border border-line bg-surface">
@@ -22,12 +22,12 @@
             </div>
 
             <div class="border-t border-line-subtle px-4 pb-1 pt-4 sm:px-5">
-                <h2 class="text-base font-bold">Riwayat siklus</h2>
-                <p class="text-[13px] text-ink-secondary">{{ $total }} siklus tercatat untuk kandang ini{{ $status ? ' · '.$siklus->count().' sesuai filter' : '' }}</p>
+                <h2 class="text-base font-bold">Riwayat periode</h2>
+                <p class="text-[13px] text-ink-secondary">{{ $total }} periode tercatat untuk kandang ini{{ $status ? ' · '.$siklus->count().' sesuai filter' : '' }}</p>
             </div>
 
             @if ($siklus->isEmpty())
-                <p class="px-5 py-10 text-center text-sm text-ink-secondary">Tidak ada siklus dengan status ini.</p>
+                <p class="px-5 py-10 text-center text-sm text-ink-secondary">Tidak ada periode dengan status ini.</p>
             @else
                 <div class="mt-3">@include('kandang.partials.tabel-riwayat', ['daftar' => $siklus])</div>
             @endif

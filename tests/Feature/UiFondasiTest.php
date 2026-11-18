@@ -35,7 +35,7 @@ class UiFondasiTest extends TestCase
     {
         $html = $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->getContent();
 
-        foreach (['Utama', 'Manajemen', 'Dashboard', 'Kandang &amp; Siklus', 'Pengguna &amp; Akses', 'Pengaturan', 'Peternak Plasma', 'Pak Budi Santoso', 'Ciutkan sidebar'] as $teks) {
+        foreach (['Utama', 'Manajemen', 'Dashboard', 'Kandang', 'Aktivitas', 'Pengguna &amp; Akses', 'Pengaturan', 'Peternak Plasma', 'Pak Budi Santoso', 'Ciutkan sidebar'] as $teks) {
             $this->assertStringContainsString($teks, $html, "Shell peternak tidak memuat: {$teks}");
         }
     }
@@ -62,11 +62,11 @@ class UiFondasiTest extends TestCase
     {
         $html = $this->actingAs($this->abk)->get(route('dashboard'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('Siklus Ditugaskan', $html);
+        $this->assertStringContainsString('Periode Ditugaskan', $html);
         $this->assertStringContainsString('Operasional', $html);
         $this->assertMatchesRegularExpression('/>\s*ABK\s*</', $html);
         $this->assertStringNotContainsString('Pengguna &amp; Akses', $html);
-        $this->assertStringNotContainsString('Kandang &amp; Siklus', $html);
+        $this->assertStringNotContainsString('href="'.route('kandang.index').'"', $html);
         $this->assertStringNotContainsString('aria-label="Navigasi bawah"', $html);
     }
 
@@ -219,7 +219,7 @@ class UiFondasiTest extends TestCase
             ->assertSee('Ingat saya di perangkat ini')
             ->assertSee('Peternak baru?')
             ->assertSee('Daftar akun')
-            ->assertSee('Pantau siklus secara real-time')
+            ->assertSee('Pantau setiap periode pemeliharaan')
             ->assertSee('Nitip, Openi, Adil');
     }
 

@@ -2,7 +2,7 @@
 
 <x-wizard-siklus :kandang="$kandang" :langkah="1" :konteks="$konteks">
     <h2 class="text-lg font-bold">Identitas &amp; DOC</h2>
-    <p class="mt-1 text-[13px] text-ink-secondary">Data dasar siklus. Tanggal DOC masuk menjadi hari ke-1.</p>
+    <p class="mt-1 text-[13px] text-ink-secondary">Data dasar periode. Tanggal DOC masuk menjadi hari ke-1.</p>
 
     <form method="POST" action="{{ route('siklus.baru.simpan', [$kandang, 1]) }}" novalidate class="mt-5 space-y-5">
         @csrf

@@ -47,7 +47,7 @@ class SamplingRequest extends FormRequest
                 $hariKe = $this->hariKe($siklus);
 
                 if ($hariKe > 60) {
-                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk siklus.');
+                    $validator->errors()->add('tanggal', 'Tanggal terlalu jauh dari tanggal masuk periode.');
 
                     return;
                 }

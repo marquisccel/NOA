@@ -59,7 +59,7 @@ class KandangController extends Controller
         $kandang = $request->user()->kandang()->create($request->validated());
 
         return redirect()->route('kandang.index')
-            ->with('status', "Kandang “{$kandang->nama_farm}” berhasil ditambahkan. Buka siklus baru dari halaman detail kandang.");
+            ->with('status', "Kandang “{$kandang->nama_farm}” berhasil ditambahkan. Buka periode baru dari halaman detail kandang.");
     }
 
     public function show(Kandang $kandang): View
@@ -122,7 +122,7 @@ class KandangController extends Controller
         Gate::authorize('delete', $kandang);
 
         if ($kandang->siklus()->whereIn('status', Siklus::TERBUKA)->exists()) {
-            return back()->withErrors(['kandang' => 'Kandang masih punya siklus berjalan, tidak bisa dihapus.']);
+            return back()->withErrors(['kandang' => 'Kandang masih punya periode berjalan, tidak bisa dihapus.']);
         }
 
         $kandang->delete();

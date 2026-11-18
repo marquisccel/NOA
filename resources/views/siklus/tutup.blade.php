@@ -8,14 +8,14 @@
     $panenTerakhir = $siklus->tanggal_panen ?? $siklus->panen()->max('tanggal');
     $panenTerakhir = $panenTerakhir ? \Illuminate\Support\Carbon::parse($panenTerakhir)->toDateString() : null;
     $aksi = $tanpaRhpp ? route('siklus.tutup-tanpa-rhpp.simpan', $siklus) : route('siklus.tutup.simpan', $siklus);
-    $judul = $tanpaRhpp ? 'Tutup tanpa RHPP' : 'Tutup siklus';
+    $judul = $tanpaRhpp ? 'Tutup tanpa RHPP' : 'Tutup periode';
     $nama = 'tutup-siklus';
 @endphp
 
 <x-app-layout :title="$judul" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor, route('siklus.show', $siklus)], [$judul]]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor, route('siklus.show', $siklus)], [$judul]]">
     <x-page>
-        <x-page-header :title="$judul" :subtitle="$tanpaRhpp ? 'Alternatif bila RHPP tidak diterbitkan inti. Data siklus akan dikunci.' : 'Langkah terakhir setelah rekonsiliasi. Data siklus akan dikunci.'" />
+        <x-page-header :title="$judul" :subtitle="$tanpaRhpp ? 'Alternatif bila RHPP tidak diterbitkan inti. Data periode akan dikunci.' : 'Langkah terakhir setelah rekonsiliasi. Data periode akan dikunci.'" />
 
         @if ($errors->has('siklus'))<x-alert variant="error">{{ $errors->first('siklus') }}</x-alert>@endif
 
@@ -43,7 +43,7 @@
                     <x-field name="tanggal_panen" label="Tanggal panen terakhir *" type="date" :value="$panenTerakhir" required />
                     <x-field name="tanggal_rechick" label="Rencana ayam masuk berikutnya" type="date" />
                 </div>
-                <p class="text-xs text-ink-muted">Re-chick-in = tanggal DOC berikutnya masuk ke {{ $siklus->kandang->nama_farm }}. Kandang dapat membuka siklus baru setelah siklus ini ditutup.</p>
+                <p class="text-xs text-ink-muted">Re-chick-in = tanggal DOC berikutnya masuk ke {{ $siklus->kandang->nama_farm }}. Kandang dapat membuka periode baru setelah periode ini ditutup.</p>
 
                 @if ($tanpaRhpp)
                     <x-alert variant="info"><p class="font-semibold">Rekonsiliasi tercatat kosong</p><p>Kolom RHPP dan selisih tetap “–”. Status menjadi Ditutup tanpa RHPP; data dikunci.</p></x-alert>
@@ -65,7 +65,7 @@
                     @else
                         <x-button variant="secondary" :href="route('siklus.tutup-tanpa-rhpp', $siklus)">Tutup tanpa RHPP</x-button>
                     @endif
-                    <x-button type="button" :disabled="! $bisaTutup" x-data @click="$dispatch('open-modal', '{{ $nama }}')">{{ $tanpaRhpp ? 'Tutup tanpa RHPP' : 'Tutup siklus' }}</x-button>
+                    <x-button type="button" :disabled="! $bisaTutup" x-data @click="$dispatch('open-modal', '{{ $nama }}')">{{ $tanpaRhpp ? 'Tutup tanpa RHPP' : 'Tutup periode' }}</x-button>
                 </div>
             </div>
 
@@ -88,12 +88,12 @@
             </aside>
 
             <x-modal :name="$nama">
-                <h2 id="{{ $nama }}-judul" class="font-heading text-lg font-semibold">{{ $tanpaRhpp ? 'Tutup Siklus '.$nomor.' tanpa RHPP?' : 'Tutup Siklus '.$nomor.'?' }}</h2>
+                <h2 id="{{ $nama }}-judul" class="font-heading text-lg font-semibold">{{ $tanpaRhpp ? 'Tutup Periode '.$nomor.' tanpa RHPP?' : 'Tutup Periode '.$nomor.'?' }}</h2>
                 <p class="text-sm leading-[21px] text-ink-secondary">
                     @if ($tanpaRhpp)
-                        Siklus ditutup dengan alasan yang Anda pilih. Rekonsiliasi tercatat kosong dan semua data dikunci.
+                        Periode ditutup dengan alasan yang Anda pilih. Rekonsiliasi tercatat kosong dan semua data dikunci.
                     @else
-                        Semua data siklus akan dikunci (hanya-baca): recording, sampling, OVK, panen, dan rekonsiliasi. Laporan tetap bisa dicetak dan siklus tetap terlihat di riwayat {{ $siklus->kandang->nama_farm }}. {{ $siklus->kandang->nama_farm }} bisa membuka siklus baru.
+                        Semua data periode akan dikunci (hanya-baca): recording, sampling, OVK, panen, dan rekonsiliasi. Laporan tetap bisa dicetak dan periode tetap terlihat di riwayat {{ $siklus->kandang->nama_farm }}. {{ $siklus->kandang->nama_farm }} bisa membuka periode baru.
                     @endif
                 </p>
                 <div class="flex items-center gap-2 text-sm">

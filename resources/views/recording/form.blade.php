@@ -16,7 +16,7 @@
 @endphp
 
 <x-app-layout :title="$judul" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], [$judul]]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], [$judul]]">
     <x-page lebar="max-w-xl">
         {{-- Pilih tanggal (entri mundur); formulir terpisah agar tidak bersarang dengan formulir simpan. --}}
         <div class="flex flex-wrap items-center justify-between gap-3 rounded-[16px] border border-line bg-surface px-4 py-3.5">
@@ -46,7 +46,7 @@
 
         @if ($bacaSaja)
             <div class="space-y-4 rounded-[16px] border border-line bg-surface p-5">
-                <x-alert variant="info">Siklus sudah ditutup, jadi isi baris ini terkunci. Penandaan paraf PPL tetap bisa dilakukan.</x-alert>
+                <x-alert variant="info">Periode sudah ditutup, jadi isi baris ini terkunci. Penandaan paraf PPL tetap bisa dilakukan.</x-alert>
                 <dl class="grid gap-3 text-sm sm:grid-cols-3">
                     <div><dt class="text-ink-muted">Pakan terpakai</dt><dd class="mt-0.5 font-semibold">{{ F::angka($recording->pakan_pakai_sak) }} sak</dd></div>
                     <div><dt class="text-ink-muted">Ayam mati</dt><dd class="mt-0.5 font-semibold">{{ $recording->mati }} ekor</dd></div>

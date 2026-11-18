@@ -222,7 +222,7 @@ class AkunAbkTest extends TestCase
         ] as $url) {
             $html = $this->actingAs($this->abk)->get($url)->assertOk()->getContent();
 
-            foreach (['7123', '7.123', '431777', '431.777', '20987', '20.987', 'Rp ', 'Kontrak', 'Rekonsiliasi', 'RHPP', 'Detail siklus', 'Biaya'] as $terlarang) {
+            foreach (['7123', '7.123', '431777', '431.777', '20987', '20.987', 'Rp ', 'Kontrak', 'Rekonsiliasi', 'RHPP', 'Detail periode', 'Biaya'] as $terlarang) {
                 $this->assertStringNotContainsString($terlarang, $html, "{$url} membocorkan: {$terlarang}");
             }
         }
@@ -251,7 +251,7 @@ class AkunAbkTest extends TestCase
 
     public function test_dashboard_peternak_tetap_normal(): void
     {
-        $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->assertSee('Farm Rahasia Harga')->assertSee('Buka detail siklus');
+        $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()->assertSee('Farm Rahasia Harga')->assertSee('Buka detail periode');
     }
 
     public function test_navigasi_peternak_memuat_menu_abk(): void

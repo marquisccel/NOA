@@ -33,7 +33,7 @@ Ada dua jalur. Untuk tugas kuliah, **pilih satu**, dan **uji sebelum hari presen
    ```
 
    (Di PowerShell: `$env:DB_URL="..."; php artisan migrate --force`.)
-5. **Deploy**, lalu buka alamat Vercel dan tekan **Masuk sebagai Plasma**.
+5. **Deploy**, lalu buka alamat Vercel dan tekan **Masuk sebagai peternak**.
 
 Bila fungsi gagal dimuat (halaman 500 atau tertulis runtime tidak dikenal), periksa *Logs* di dashboard Vercel, lalu pakai **Jalur B**.
 
@@ -60,7 +60,7 @@ Mode demo membuka dua akun contoh tanpa kata sandi **hanya untuk data contoh**. 
 ## Daftar periksa sebelum presentasi
 
 - [ ] Buka alamat publik dari ponsel dan laptop lain
-- [ ] Tombol **Masuk sebagai Plasma** dan **ABK** berfungsi
-- [ ] Dashboard memuat "Perlu perhatian" dan siklus aktif
+- [ ] Tombol **Masuk sebagai peternak** dan **ABK** berfungsi
+- [ ] Dashboard memuat "Perlu perhatian" dan periode aktif
 - [ ] **Kembalikan data demo** berhasil (butuh ±10 detik)
 - [ ] Cadangkan tangkapan layar dan rekaman layar demo bila koneksi di ruang presentasi buruk

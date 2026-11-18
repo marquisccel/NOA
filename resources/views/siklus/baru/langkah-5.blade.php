@@ -13,7 +13,7 @@
 
 <x-wizard-siklus :kandang="$kandang" :langkah="5" :konteks="$konteks">
     <h2 class="text-lg font-bold">Konfirmasi</h2>
-    <p class="mt-1 text-[13px] text-ink-secondary">Periksa kembali sebelum membuka siklus. Data dapat diubah nanti di tab Pengaturan Siklus.</p>
+    <p class="mt-1 text-[13px] text-ink-secondary">Periksa kembali sebelum membuka periode. Data dapat diubah nanti di tab Pengaturan Periode.</p>
 
     <div class="mt-5 space-y-4">
         @foreach ([
@@ -33,7 +33,7 @@
             [3, 'Skema bonus', collect($bonus)->map(fn ($label, $j) => [$label, ($b['bonus_'.$j] ?? false) ? 'Aktif · '.$rp($b['nilai_bonus_'.$j] ?? null, 'kg') : 'Nonaktif'])->values()->all()],
             [4, 'Standar harian', [
                 ['Tabel standar', ($s['dilewati'] ?? false) ? 'Belum ada — dilewati' : count($s['rows'] ?? []).' baris ('.($s['nama'] ?? '').')'],
-                ['Dampak', ($s['dilewati'] ?? false) ? 'Kolom standar tampil “–” sampai diunggah' : 'Kolom standar terisi di semua layar siklus'],
+                ['Dampak', ($s['dilewati'] ?? false) ? 'Kolom standar tampil “–” sampai diunggah' : 'Kolom standar terisi di semua layar periode'],
             ]],
         ] as [$no, $judul, $baris])
             <section class="rounded-md border border-line-subtle p-4">
@@ -53,7 +53,7 @@
             <x-button variant="secondary" :href="route('siklus.baru.langkah', [$kandang, 4])">Kembali</x-button>
             <form method="POST" action="{{ route('siklus.baru.buka', $kandang) }}" x-data="{ memproses: false }" @submit="memproses = true">
                 @csrf
-                <x-button x-bind:disabled="memproses">Buka Siklus</x-button>
+                <x-button x-bind:disabled="memproses">Buka Periode</x-button>
             </form>
         </div>
     </div>

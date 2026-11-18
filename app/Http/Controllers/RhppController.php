@@ -76,7 +76,7 @@ class RhppController extends Controller
         Gate::authorize('update', $siklus);
 
         if (! $this->bisaInput($siklus)) {
-            return redirect()->route('rhpp.show', $siklus)->withErrors(['rhpp' => 'RHPP hanya bisa diinput setelah panen ditandai selesai dan sebelum siklus ditutup.']);
+            return redirect()->route('rhpp.show', $siklus)->withErrors(['rhpp' => 'RHPP hanya bisa diinput setelah panen ditandai selesai dan sebelum periode ditutup.']);
         }
 
         $data = Arr::except($request->validated(), ['lampiran']);
@@ -100,7 +100,7 @@ class RhppController extends Controller
             $siklus->update(['status' => Siklus::STATUS_REKONSILIASI]);
         }
 
-        return redirect()->route('rhpp.show', $siklus)->with('status', 'RHPP tersimpan. Siklus masuk tahap Rekonsiliasi.');
+        return redirect()->route('rhpp.show', $siklus)->with('status', 'RHPP tersimpan. Periode masuk tahap Rekonsiliasi.');
     }
 
     /** Keterangan selisih per baris; dicetak di lembar perbandingan. */

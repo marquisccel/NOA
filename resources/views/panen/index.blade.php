@@ -9,7 +9,7 @@
 @endphp
 
 <x-app-layout title="Panen & BTPA" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen']]">
     <x-page>
         <x-page-header title="Panen & BTPA" subtitle="Setiap tahap dicatat dengan nomor BTPA. * umur panen rata-rata berbobot jumlah ekor.">
             <x-slot name="actions">
@@ -25,12 +25,12 @@
         @if ($errors->has('siklus'))<x-alert variant="error">{{ $errors->first('siklus') }}</x-alert>@endif
 
         @if ($p['tidak_sebanding'])
-            <x-alert variant="warning"><strong>Tidak sebanding:</strong> siklus dihentikan dini. FCR dan IP dihitung dari data yang ada dan tidak layak dibandingkan dengan siklus lengkap.</x-alert>
+            <x-alert variant="warning"><strong>Tidak sebanding:</strong> periode dihentikan dini. FCR dan IP dihitung dari data yang ada dan tidak layak dibandingkan dengan periode lengkap.</x-alert>
         @endif
 
         @if (! $adaTahap)
             <x-empty-state icon="truck" title="Belum ada panen"
-                text="{{ $mulai ? 'Siklus masih berjalan (hari ke-'.$siklus->umurHari().'). ' : '' }}Catat setiap tahap panen dengan tanggal, jumlah ekor, tonase, dan nomor BTPA.">
+                text="{{ $mulai ? 'Periode masih berjalan (hari ke-'.$siklus->umurHari().'). ' : '' }}Catat setiap tahap panen dengan tanggal, jumlah ekor, tonase, dan nomor BTPA.">
                 @if ($bisaCatat)<x-button :href="route('panen.create', $siklus)">Tambah tahap panen</x-button>@endif
             </x-empty-state>
             <x-alert variant="info">
@@ -109,7 +109,7 @@
 
         @if ($bisaCatat)
             <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="retur-judul">
-                <h2 id="retur-judul" class="text-base font-bold">Pakan sisa di akhir siklus</h2>
+                <h2 id="retur-judul" class="text-base font-bold">Pakan sisa di akhir periode</h2>
                 <p class="mt-1 text-[13px] leading-[19px] text-ink-secondary">
                     Pakan masuk {{ F::angka($p['pakan_masuk_sak']) }} sak, terpakai {{ F::angka($p['pakan_terpakai_sak']) }} sak (stok gudang {{ F::angka($p['pakan_masuk_sak'] - $p['pakan_terpakai_sak']) }} sak).
                     Angka ini dikurangkan dari pakan terpakai agar FCR tidak melar, dan jadi dasar perbandingan retur di RHPP. Isi hanya bila catatan harian masih mencakup pakan yang akhirnya tersisa atau diretur.
@@ -128,8 +128,8 @@
             <x-modal name="panen-selesai">
                 <form method="POST" action="{{ route('siklus.panen-selesai', $siklus) }}" class="space-y-4">
                     @csrf
-                    <h2 id="panen-selesai-judul" class="font-heading text-lg font-semibold">Tandai panen Siklus {{ $nomor }} selesai?</h2>
-                    <p class="text-sm leading-[21px] text-ink-secondary">Status berubah menjadi Menunggu RHPP. {{ $siklus->kandang->nama_farm }} tetap tertahan sampai siklus ditutup. Tahap panen masih dapat diubah sampai siklus ditutup.</p>
+                    <h2 id="panen-selesai-judul" class="font-heading text-lg font-semibold">Tandai panen Periode {{ $nomor }} selesai?</h2>
+                    <p class="text-sm leading-[21px] text-ink-secondary">Status berubah menjadi Menunggu RHPP. {{ $siklus->kandang->nama_farm }} tetap tertahan sampai periode ditutup. Tahap panen masih dapat diubah sampai periode ditutup.</p>
                     <div class="flex items-center gap-2 text-sm"><x-badge variant="success" :dot="true">Berjalan</x-badge><x-icon name="arrow-right" class="size-4 text-ink-muted" /><x-badge variant="warning" :dot="true">Menunggu RHPP</x-badge></div>
                     @if ($selisih !== 0)
                         <x-alert variant="warning">

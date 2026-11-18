@@ -6,10 +6,10 @@
     $rentangPanen = $panen->isEmpty() ? '–' : ($panen->first()->tanggal->format('j').'–'.$panen->last()->tanggal->translatedFormat('j M Y').' · '.$panen->count().' tahap');
 @endphp
 
-<x-cetak-layout :judul="'Laporan Siklus '.$nomor.' · '.$siklus->kandang->nama_farm" :kembali="route('laporan.siklus', $siklus)">
+<x-cetak-layout :judul="'Laporan Periode '.$nomor.' · '.$siklus->kandang->nama_farm" :kembali="route('laporan.siklus', $siklus)">
     <header class="border-b-2 border-black pb-3">
         <p class="text-[11px] font-semibold uppercase tracking-wide">NOA · catatan peternak</p>
-        <h1 class="mt-1 text-xl font-bold">Laporan Siklus {{ $nomor }} · {{ $siklus->kandang->nama_farm }}</h1>
+        <h1 class="mt-1 text-xl font-bold">Laporan Periode {{ $nomor }} · {{ $siklus->kandang->nama_farm }}</h1>
         <p class="text-xs">Dicetak {{ now()->translatedFormat('j M Y') }} · status {{ $siklus->labelStatus() }}</p>
         <dl class="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-[12px]">
             <div><dt class="inline font-semibold">Peternak:</dt> <dd class="inline">{{ $siklus->kandang->user->name }}</dd></div>
@@ -23,7 +23,7 @@
         </dl>
     </header>
 
-    @if ($p['tidak_sebanding'])<p class="mt-3 border border-black p-2 text-[12px] font-semibold">Tidak sebanding: siklus dihentikan dini{{ $siklus->alasan_penutupan ? ' ('.mb_strtolower($siklus->alasan_penutupan).')' : '' }}.</p>@endif
+    @if ($p['tidak_sebanding'])<p class="mt-3 border border-black p-2 text-[12px] font-semibold">Tidak sebanding: periode dihentikan dini{{ $siklus->alasan_penutupan ? ' ('.mb_strtolower($siklus->alasan_penutupan).')' : '' }}.</p>@endif
 
     <table class="mt-4 w-full border-collapse text-[12px]">
         <thead><tr class="border-b border-black text-left"><th class="py-1">Performa</th><th class="py-1">Nilai</th><th class="py-1">Keterangan</th></tr></thead>

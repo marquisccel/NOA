@@ -5,10 +5,10 @@
     $kelasSelect = 'mt-2 block min-h-[46px] w-full rounded-md border-line-control bg-surface text-base focus:border-brand focus:ring-1 focus:ring-brand';
 @endphp
 
-<x-app-layout title="Ubah Pengaturan Siklus" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor, route('siklus.show', $siklus)], ['Ubah pengaturan']]">
+<x-app-layout title="Ubah Pengaturan Periode" :siklus="$siklus"
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor, route('siklus.show', $siklus)], ['Ubah pengaturan']]">
     <x-page lebar="max-w-3xl">
-        <x-page-header title="Ubah pengaturan siklus" subtitle="Data kontrak dan skema bonus hanya terlihat oleh peternak." />
+        <x-page-header title="Ubah pengaturan periode" subtitle="Data kontrak dan skema bonus hanya terlihat oleh peternak." />
 
         <form method="POST" action="{{ route('siklus.update', $siklus) }}" novalidate class="space-y-5">
             @csrf @method('PUT')

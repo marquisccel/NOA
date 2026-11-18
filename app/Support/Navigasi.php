@@ -21,7 +21,7 @@ class Navigasi
             return [[
                 'label' => 'Operasional',
                 'items' => [
-                    self::item('Siklus Ditugaskan', 'clipboard-list', 'dashboard', ['dashboard', 'recording.*']),
+                    self::item('Periode Ditugaskan', 'clipboard-list', 'dashboard', ['dashboard', 'recording.*']),
                 ],
             ]];
         }
@@ -35,10 +35,10 @@ class Navigasi
                 'label' => 'Utama',
                 'items' => [
                     self::item('Dashboard', 'layout-dashboard', 'dashboard', ['dashboard']),
-                    self::item('Aktivitas', 'history', 'aktivitas.index', ['aktivitas.*']),
-                    self::item('Kandang & Siklus', 'warehouse', 'kandang.index', [
+                    self::item('Kandang', 'warehouse', 'kandang.index', [
                         'kandang.*', 'siklus.*', 'recording.*', 'sampling.*', 'ovk.*', 'panen.*', 'rhpp.*', 'laporan.siklus', 'laporan.cetak',
                     ]),
+                    self::item('Aktivitas', 'history', 'aktivitas.index', ['aktivitas.*']),
                 ],
             ],
             [

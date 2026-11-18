@@ -7,8 +7,8 @@
     $bandingWarna = fn ($b) => $b === 'di atas standar' ? 'text-warning-text' : 'text-ink-muted';
 @endphp
 
-<x-app-layout title="Ringkasan Siklus" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor]]">
+<x-app-layout title="Ringkasan Periode" :siklus="$siklus"
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor]]">
     <x-page>
         @if ($siklus->isTerbuka() && ! $r['standar_ada'])
             <x-alert variant="info">
@@ -21,7 +21,7 @@
 
         <x-langkah-berikutnya :siklus="$siklus" />
 
-        <x-page-header title="Ringkasan siklus"
+        <x-page-header title="Ringkasan periode"
             :subtitle="$tutup
                 ? 'Angka final'.($siklus->ditutup_pada ? ' · ditutup '.$siklus->ditutup_pada->translatedFormat('j M Y') : '')
                 : ($r['ada_recording']
@@ -37,7 +37,7 @@
         </x-page-header>
 
         @if ($f && ($tutup || $f['jumlah_tahap'] > 0))
-            {{-- Angka final siklus (R10: kosong sampai ada panen) --}}
+            {{-- Angka final periode (R10: kosong sampai ada panen) --}}
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
                 <x-kpi label="Total ekor panen" :value="$f['jumlah_tahap'] ? F::angka($f['total_ekor'], 0).' ekor' : '–'" :caption="'Dari '.F::angka($siklus->populasi, 0).' ekor DOC'" />
                 <x-kpi label="Deplesi" istilah="deplesi" :value="F::angka($f['deplesi_persen']).'%'" :caption="F::angka($f['deplesi'], 0).' ekor · daya hidup '.F::angka($f['liveability']).'%'" />
@@ -128,7 +128,7 @@
         @if ($r['penutupan'])
             @php $t = $r['penutupan']; @endphp
             <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-penutupan">
-                <h2 id="judul-penutupan" class="text-sm font-bold">Penutupan siklus</h2>
+                <h2 id="judul-penutupan" class="text-sm font-bold">Penutupan periode</h2>
                 <dl class="mt-3 grid gap-4 text-[13px] sm:grid-cols-2 lg:grid-cols-5">
                     <div><dt class="text-ink-secondary">Panen terakhir</dt><dd class="mt-0.5 font-bold">{{ $t['panen_terakhir']?->translatedFormat('j M Y') ?? '—' }}</dd></div>
                     <div><dt class="text-ink-secondary">Ditutup</dt><dd class="mt-0.5 font-bold">{{ $t['ditutup_pada']?->translatedFormat('j M Y') ?? '—' }}</dd></div>

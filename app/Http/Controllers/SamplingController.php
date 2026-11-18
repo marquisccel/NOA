@@ -37,7 +37,7 @@ class SamplingController extends Controller
     public function create(Siklus $siklus): View
     {
         Gate::authorize('update', $siklus);
-        abort_if($siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
+        abort_if($siklus->isTerkunci(), 403, 'Periode sudah ditutup; data hanya dapat dilihat.');
 
         return view('sampling.form', $this->dataForm($siklus, new SamplingBobot));
     }
@@ -45,7 +45,7 @@ class SamplingController extends Controller
     public function store(SamplingRequest $request, Siklus $siklus): RedirectResponse
     {
         Gate::authorize('update', $siklus);
-        abort_if($siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
+        abort_if($siklus->isTerkunci(), 403, 'Periode sudah ditutup; data hanya dapat dilihat.');
 
         $sampling = $siklus->samplings()->create($request->validated() + ['hari_ke' => $request->hariKe($siklus)]);
 
@@ -55,7 +55,7 @@ class SamplingController extends Controller
     public function edit(SamplingBobot $sampling): View
     {
         Gate::authorize('update', $sampling);
-        abort_if($sampling->siklus->isTerkunci(), 403, 'Siklus sudah ditutup; data hanya dapat dilihat.');
+        abort_if($sampling->siklus->isTerkunci(), 403, 'Periode sudah ditutup; data hanya dapat dilihat.');
 
         return view('sampling.form', $this->dataForm($sampling->siklus, $sampling));
     }

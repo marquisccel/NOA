@@ -61,7 +61,7 @@ class PenjelasRumus
                 'rumus' => '(daya hidup % × bobot rata-rata kg) ÷ (FCR × umur panen) × 100',
                 'angka' => '('.F::angka($daya).' × '.F::angka($p['abw'], 3).') ÷ ('.F::angka($p['fcr'], 3).' × '.F::angka($p['umur_panen']).') × 100',
                 'hasil' => F::angka($p['ip'], 0),
-                'catatan' => 'Rumus mengikuti pengaturan kemitraan siklus ini. Makin besar makin baik.',
+                'catatan' => 'Rumus mengikuti pengaturan kemitraan periode ini. Makin besar makin baik.',
             ],
         ];
 

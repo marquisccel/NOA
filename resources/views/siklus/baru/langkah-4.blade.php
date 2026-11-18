@@ -64,12 +64,12 @@
                 @endif
             </section>
         @elseif ($s && $s['dilewati'])
-            <x-alert variant="info">Tabel standar dilewati. Kolom standar tampil “–” sampai tabelnya diunggah dari Pengaturan Siklus.</x-alert>
+            <x-alert variant="info">Tabel standar dilewati. Kolom standar tampil “–” sampai tabelnya diunggah dari Pengaturan Periode.</x-alert>
         @endif
 
         <div class="grid gap-3 sm:grid-cols-2">
-            <div class="rounded-md border border-line-subtle p-4"><p class="text-sm font-bold">Parameter manajemen per rentang umur</p><p class="mt-0.5 text-xs text-ink-secondary">Suhu, kepadatan, frekuensi pakan, TMA/TRA</p><p class="mt-2 text-xs text-ink-muted">Opsional · diatur di Pengaturan Siklus setelah siklus dibuka.</p></div>
-            <div class="rounded-md border border-line-subtle p-4"><p class="text-sm font-bold">Jadwal vaksin per hari umur</p><p class="mt-0.5 text-xs text-ink-secondary">Nama vaksin dan hari ke-</p><p class="mt-2 text-xs text-ink-muted">Opsional · diatur di Pengaturan Siklus setelah siklus dibuka.</p></div>
+            <div class="rounded-md border border-line-subtle p-4"><p class="text-sm font-bold">Parameter manajemen per rentang umur</p><p class="mt-0.5 text-xs text-ink-secondary">Suhu, kepadatan, frekuensi pakan, TMA/TRA</p><p class="mt-2 text-xs text-ink-muted">Opsional · diatur di Pengaturan Periode setelah periode dibuka.</p></div>
+            <div class="rounded-md border border-line-subtle p-4"><p class="text-sm font-bold">Jadwal vaksin per hari umur</p><p class="mt-0.5 text-xs text-ink-secondary">Nama vaksin dan hari ke-</p><p class="mt-2 text-xs text-ink-muted">Opsional · diatur di Pengaturan Periode setelah periode dibuka.</p></div>
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-4">

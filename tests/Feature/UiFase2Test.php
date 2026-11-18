@@ -91,9 +91,9 @@ class UiFase2Test extends TestCase
 
         $r->assertSee('Ringkasan peternakan per 10 Nov 2026.')
             ->assertSee('Total Kandang')->assertSee('Terdaftar atas nama Anda')
-            ->assertSee('Siklus 1')->assertSee('Hari ke-25')
+            ->assertSee('Periode 1')->assertSee('Hari ke-25')
             ->assertSee('4.906 ekor')   // 5.000 - (90 + 4)
-            ->assertSee('Buka detail siklus')
+            ->assertSee('Buka detail periode')
             ->assertDontSee('Aktivitas terbaru');
         $ringkas = app(\App\Services\RingkasanDashboard::class)->peternak($this->peternak);
         $this->assertSame([2, 1, 1, 4906], [$ringkas['total_kandang'], $ringkas['kandang_aktif'], $ringkas['siklus_berjalan'], $ringkas['populasi_aktif']]);
@@ -110,7 +110,7 @@ class UiFase2Test extends TestCase
         $this->siklus($this->kandang(), '2026-05-01', 'selesai');
 
         $this->actingAs($this->peternak)->get(route('dashboard'))
-            ->assertSee('Belum ada siklus berjalan')->assertSee('Tidak ada siklus terbuka');
+            ->assertSee('Belum ada periode berjalan')->assertSee('Tidak ada periode terbuka');
     }
 
     public function test_sapaan_menurut_jam(): void
@@ -133,7 +133,7 @@ class UiFase2Test extends TestCase
 
         $this->assertCount(5, $a);
         $this->assertStringContainsString('Hari ke-7', $a->first()['keterangan']);
-        $this->assertStringContainsString('Siklus 1', $a->first()['keterangan']);
+        $this->assertStringContainsString('Periode 1', $a->first()['keterangan']);
     }
 
     public function test_dashboard_abk_hanya_siklus_ditugaskan(): void
@@ -143,14 +143,14 @@ class UiFase2Test extends TestCase
         $abk = $this->abk($this->siklus($k), ['name' => 'Andi']);
 
         $this->actingAs($abk)->get(route('dashboard'))
-            ->assertSee('Siklus Ditugaskan')->assertSee('Kandang A')->assertSee('Buka Recording Harian')
+            ->assertSee('Periode Ditugaskan')->assertSee('Kandang A')->assertSee('Buka Recording Harian')
             ->assertDontSee('Kandang Lain')->assertDontSee('Tambah Kandang');
     }
 
     public function test_dashboard_abk_belum_ditugaskan_atau_nonaktif(): void
     {
         $abk = $this->abk();
-        $this->actingAs($abk)->get(route('dashboard'))->assertSee('Belum ada siklus yang ditugaskan');
+        $this->actingAs($abk)->get(route('dashboard'))->assertSee('Belum ada periode yang ditugaskan');
     }
 
     // ---- Kandang ----
@@ -162,7 +162,7 @@ class UiFase2Test extends TestCase
         $this->siklus($closed);
 
         $this->actingAs($this->peternak)->get(route('kandang.index'))
-            ->assertSee('2 kandang · 1 punya siklus terbuka');
+            ->assertSee('2 kandang · 1 punya periode terbuka');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['q' => 'suka']))->assertSee('Sukamaju')->assertDontSee('Pujon')->assertSee('1 hasil');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['tipe' => 'closed_house']))->assertSee('Pujon')->assertDontSee('Sukamaju');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['status' => 'berjalan']))->assertSee('Pujon')->assertDontSee('Sukamaju');
@@ -207,20 +207,20 @@ class UiFase2Test extends TestCase
     {
         $this->actingAs($this->peternak)->post(route('kandang.store'), ['nama_farm' => 'Kandang 4', 'alamat' => 'Desa X', 'kapasitas' => 4000, 'tipe' => 'open_house'])
             ->assertRedirect(route('kandang.index'))
-            ->assertSessionHas('status', 'Kandang “Kandang 4” berhasil ditambahkan. Buka siklus baru dari halaman detail kandang.');
+            ->assertSessionHas('status', 'Kandang “Kandang 4” berhasil ditambahkan. Buka periode baru dari halaman detail kandang.');
 
         $k = Kandang::firstOrFail();
-        $this->assertSame('Open House', $k->labelTipe());
+        $this->assertSame('Kandang terbuka', $k->labelTipe());
 
         $this->actingAs($this->peternak)->put(route('kandang.update', $k), ['nama_farm' => 'Kandang 4B', 'alamat' => 'Desa Y', 'kapasitas' => 4500, 'tipe' => 'closed_house'])
             ->assertRedirect(route('kandang.show', $k))->assertSessionHas('status', 'Perubahan data kandang berhasil disimpan.');
-        $this->assertSame('Closed House', $k->fresh()->labelTipe());
+        $this->assertSame('Kandang tertutup', $k->fresh()->labelTipe());
     }
 
     public function test_form_menampilkan_pilihan_tipe_dan_panel_info(): void
     {
         $this->actingAs($this->peternak)->get(route('kandang.create'))
-            ->assertSee('Open House')->assertSee('Closed House')->assertSee('Ventilasi alami')->assertSee('Setelah kandang tersimpan')->assertSee('Alamat kandang *');
+            ->assertSee('Kandang terbuka')->assertSee('Kandang tertutup')->assertSee('udara mengalir alami')->assertSee('Setelah kandang tersimpan')->assertSee('Alamat kandang *');
 
         $k = $this->kandang();
         $this->actingAs($this->peternak)->get(route('kandang.edit', $k))->assertSee('Tentang perubahan')->assertSee('Hapus kandang');
@@ -239,10 +239,10 @@ class UiFase2Test extends TestCase
         $this->siklus($k, '2026-10-15');
 
         $this->actingAs($this->peternak)->get(route('kandang.show', $k))
-            ->assertSee('Siklus saat ini')->assertSee('Siklus 2')->assertSee('Buka Detail Siklus')
-            ->assertSee('Siklus baru dapat dibuka setelah Siklus 2 ditutup.')
-            ->assertSee('1 siklus tercatat untuk kandang ini')
-            ->assertDontSee('Lanjut ke inisialisasi siklus');
+            ->assertSee('Periode saat ini')->assertSee('Periode 2')->assertSee('Buka Detail Periode')
+            ->assertSee('Periode baru dapat dibuka setelah Periode 2 ditutup.')
+            ->assertSee('1 periode tercatat untuk kandang ini')
+            ->assertDontSee('Lanjut ke inisialisasi periode');
     }
 
     public function test_detail_kandang_tanpa_siklus_terbuka_memuat_dialog_buka_siklus(): void
@@ -251,15 +251,15 @@ class UiFase2Test extends TestCase
         $this->siklus($k, '2026-02-01', 'selesai');
 
         $this->actingAs($this->peternak)->get(route('kandang.show', $k))
-            ->assertSee('Tidak ada siklus terbuka')->assertSee('Siklus 1 sudah ditutup')
-            ->assertSee('Siklus berikutnya: Siklus 2')->assertSee('Lanjut ke inisialisasi siklus')
+            ->assertSee('Tidak ada periode terbuka')->assertSee('Periode 1 sudah ditutup')
+            ->assertSee('Berikutnya: Periode 2')->assertSee('Lanjut ke inisialisasi periode')
             ->assertSee(route('siklus.create', ['kandang_id' => $k->id]), false);
     }
 
     public function test_detail_kandang_belum_pernah_dipakai(): void
     {
         $this->actingAs($this->peternak)->get(route('kandang.show', $this->kandang()))
-            ->assertSee('belum pernah dipakai')->assertSee('Siklus berikutnya: Siklus 1');
+            ->assertSee('belum pernah dipakai')->assertSee('Berikutnya: Periode 1');
     }
 
     public function test_riwayat_siklus_dan_filter_status(): void
@@ -270,9 +270,9 @@ class UiFase2Test extends TestCase
         $this->siklus($k, '2026-10-01', 'berjalan');
 
         $this->actingAs($this->peternak)->get(route('kandang.riwayat', $k))
-            ->assertOk()->assertSee('3 siklus tercatat')->assertSee('Siklus 3')->assertSee('Dihentikan')->assertSee('Ditutup');
+            ->assertOk()->assertSee('3 periode tercatat')->assertSee('Periode 3')->assertSee('Dihentikan')->assertSee('Ditutup');
         $this->actingAs($this->peternak)->get(route('kandang.riwayat', [$k, 'status' => 'dihentikan']))
-            ->assertSee('1 sesuai filter')->assertSee('Siklus 2')->assertDontSee('Siklus 3');
+            ->assertSee('1 sesuai filter')->assertSee('Periode 2')->assertDontSee('Periode 3');
     }
 
     public function test_riwayat_menampilkan_panen_terakhir_dan_rechick_in(): void
@@ -301,7 +301,7 @@ class UiFase2Test extends TestCase
 
         $this->actingAs($this->peternak)->post(route('abk.store'), ['name' => 'Andi', 'email' => 'andi@noa.id', 'password' => 'Rahasia2026', 'siklus_id' => $s->id])
             ->assertRedirect(route('abk.index'))
-            ->assertSessionHas('status', 'Akun ABK “Andi” berhasil dibuat dan ditugaskan ke Kandang 1 · Siklus 1.');
+            ->assertSessionHas('status', 'Akun ABK “Andi” berhasil dibuat dan ditugaskan ke Kandang 1 · Periode 1.');
 
         $abk = User::where('email', 'andi@noa.id')->firstOrFail();
         $this->assertSame([User::ROLE_ABK, $this->peternak->id, $s->id, true], [$abk->role, $abk->peternak_id, $abk->siklus_id, $abk->aktif]);
@@ -313,7 +313,7 @@ class UiFase2Test extends TestCase
         $ditutup = $this->siklus($this->kandang('Tutup'), '2026-01-01', 'selesai');
         $data = ['name' => 'Andi', 'email' => 'andi@noa.id', 'password' => 'Rahasia2026'];
 
-        $this->actingAs($this->peternak)->post(route('abk.store'), $data + ['siklus_id' => $milikLain->id])->assertSessionHasErrors(['siklus_id' => 'Pilih siklus berjalan milik kandang Anda.']);
+        $this->actingAs($this->peternak)->post(route('abk.store'), $data + ['siklus_id' => $milikLain->id])->assertSessionHasErrors(['siklus_id' => 'Pilih periode berjalan milik kandang Anda.']);
         $this->actingAs($this->peternak)->post(route('abk.store'), $data + ['siklus_id' => $ditutup->id])->assertSessionHasErrors('siklus_id');
         $this->assertSame(0, User::where('email', 'andi@noa.id')->count());
     }
@@ -333,7 +333,7 @@ class UiFase2Test extends TestCase
         $nonaktif->forceFill(['aktif' => false])->save();
 
         $this->actingAs($this->peternak)->get(route('abk.index'))
-            ->assertSee('2 akun ABK · 1 aktif')->assertSee('Kandang 1 · Siklus 1')->assertSee('— (belum ditugaskan)')->assertSee('Nonaktif')->assertSee('Aktifkan');
+            ->assertSee('2 akun ABK · 1 aktif')->assertSee('Kandang 1 · Periode 1')->assertSee('— (belum ditugaskan)')->assertSee('Nonaktif')->assertSee('Aktifkan');
         $this->actingAs($this->peternak)->get(route('abk.index', ['q' => 'agus']))->assertSee('agus@noa.id')->assertDontSee('andi@noa.id');
     }
 

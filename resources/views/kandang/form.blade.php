@@ -7,13 +7,13 @@
 @endphp
 
 <x-app-layout :title="$ada ? 'Ubah Kandang' : 'Tambah Kandang'"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$ada ? 'Ubah Kandang' : 'Tambah Kandang']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$ada ? 'Ubah Kandang' : 'Tambah Kandang']]">
     <x-page>
         <div class="space-y-3">
             <a href="{{ $ada ? route('kandang.show', $kandang) : route('kandang.index') }}" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
                 <x-icon name="arrow-left" class="size-4" /> {{ $ada ? 'Kembali ke detail kandang' : 'Kembali ke daftar kandang' }}
             </a>
-            <x-page-header :title="$judul" :subtitle="$ada ? 'Perbarui nama, alamat, kapasitas, atau tipe kandang.' : 'Daftarkan kandang baru. Siklus pemeliharaan dibuka terpisah.'" />
+            <x-page-header :title="$judul" :subtitle="$ada ? 'Perbarui nama, alamat, kapasitas, atau tipe kandang.' : 'Daftarkan kandang baru. Periode pemeliharaan dibuka terpisah.'" />
         </div>
 
         <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -74,8 +74,8 @@
                     <h2 class="text-sm font-bold text-ink">{{ $ada ? 'Tentang perubahan' : 'Setelah kandang tersimpan' }}</h2>
                     <ol class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
                         @foreach ($ada
-                            ? ['Nama, alamat, kapasitas, dan tipe dapat diubah kapan saja.', 'Riwayat siklus tetap tersimpan di halaman detail kandang.', 'Kandang tetap terhubung dengan akun pemilik Anda.']
-                            : ['Kandang otomatis terhubung dengan akun Anda sebagai pemilik.', 'Siklus pemeliharaan tidak dibuat otomatis.', 'Buka siklus baru dari halaman detail kandang.'] as $i => $teks)
+                            ? ['Nama, alamat, kapasitas, dan tipe dapat diubah kapan saja.', 'Riwayat periode tetap tersimpan di halaman detail kandang.', 'Kandang tetap terhubung dengan akun pemilik Anda.']
+                            : ['Kandang otomatis terhubung dengan akun Anda sebagai pemilik.', 'Periode pemeliharaan tidak dibuat otomatis.', 'Buka periode baru dari halaman detail kandang.'] as $i => $teks)
                             <li class="flex gap-3">
                                 <span class="grid size-5 shrink-0 place-items-center rounded-full bg-tint text-[11px] font-bold text-ink-brand">{{ $i + 1 }}</span>
                                 <span>{{ $teks }}</span>
@@ -87,7 +87,7 @@
                 @if ($ada)
                     <section class="rounded-[16px] border border-line bg-surface p-5">
                         <h2 class="text-sm font-bold text-ink">Hapus kandang</h2>
-                        <p class="mt-1 text-[13px] leading-[19px] text-ink-secondary">Kandang disembunyikan dari daftar; riwayatnya tetap tersimpan. Tidak bisa selama masih ada siklus berjalan.</p>
+                        <p class="mt-1 text-[13px] leading-[19px] text-ink-secondary">Kandang disembunyikan dari daftar; riwayatnya tetap tersimpan. Tidak bisa selama masih ada periode berjalan.</p>
                         @error('kandang')<p class="mt-2 text-xs text-danger-text" role="alert">{{ $message }}</p>@enderror
                         <x-button type="button" variant="secondary" class="mt-3 !text-danger-text" x-data x-on:click="$dispatch('open-modal', 'hapus-kandang')">
                             <x-icon name="trash-2" class="size-4" /> Hapus kandang
@@ -96,7 +96,7 @@
 
                     <x-modal name="hapus-kandang">
                         <h2 id="hapus-kandang-judul" class="font-heading text-lg font-semibold">Hapus {{ $kandang->nama_farm }}?</h2>
-                        <p class="text-sm leading-[21px] text-ink-secondary">Kandang tidak muncul lagi di daftar. Riwayat siklus tetap tersimpan.</p>
+                        <p class="text-sm leading-[21px] text-ink-secondary">Kandang tidak muncul lagi di daftar. Riwayat periode tetap tersimpan.</p>
                         <form method="POST" action="{{ route('kandang.destroy', $kandang) }}" class="flex justify-end gap-2.5 pt-2">
                             @csrf @method('DELETE')
                             <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', 'hapus-kandang')">Batal</x-button>

@@ -29,7 +29,7 @@ class SiklusAlurController extends Controller
         Gate::authorize('update', $siklus);
 
         if ($siklus->status !== Siklus::STATUS_BERJALAN) {
-            return back()->withErrors(['siklus' => 'Siklus ini sudah tidak berjalan.']);
+            return back()->withErrors(['siklus' => 'Periode ini sudah tidak berjalan.']);
         }
         if (! $siklus->panen()->exists()) {
             return back()->withErrors(['siklus' => 'Catat minimal satu tahap panen sebelum menandai panen selesai.']);
@@ -41,7 +41,7 @@ class SiklusAlurController extends Controller
 
         $siklus->update(['status' => Siklus::STATUS_MENUNGGU_RHPP, 'tanggal_panen' => $data['tanggal_panen']]);
 
-        return redirect()->route('rhpp.show', $siklus)->with('status', 'Panen ditandai selesai. Siklus menunggu RHPP.');
+        return redirect()->route('rhpp.show', $siklus)->with('status', 'Panen ditandai selesai. Periode menunggu RHPP.');
     }
 
     public function tutupForm(Siklus $siklus): View|RedirectResponse
@@ -60,13 +60,13 @@ class SiklusAlurController extends Controller
         Gate::authorize('update', $siklus);
 
         if ($siklus->status !== Siklus::STATUS_REKONSILIASI) {
-            return back()->withErrors(['siklus' => 'Siklus hanya bisa ditutup setelah RHPP diinput. Tanpa RHPP, pakai “Tutup tanpa RHPP”.']);
+            return back()->withErrors(['siklus' => 'Periode hanya bisa ditutup setelah RHPP diinput. Tanpa RHPP, pakai “Tutup tanpa RHPP”.']);
         }
 
         $data = $this->dataPenutupan($request, $siklus);
         $siklus->update($data + ['status' => Siklus::STATUS_SELESAI, 'ditutup_pada' => now()->toDateString()]);
 
-        return redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditutup. Semua data dikunci dan laporan tetap bisa dicetak.');
+        return redirect()->route('siklus.show', $siklus)->with('status', 'Periode ditutup. Semua data dikunci dan laporan tetap bisa dicetak.');
     }
 
     /** Tutup tanpa RHPP: rekonsiliasi tercatat kosong; wajib alasan. */
@@ -75,7 +75,7 @@ class SiklusAlurController extends Controller
         Gate::authorize('update', $siklus);
 
         if (! in_array($siklus->status, [Siklus::STATUS_MENUNGGU_RHPP, Siklus::STATUS_REKONSILIASI], true)) {
-            return back()->withErrors(['siklus' => 'Siklus ini tidak sedang menunggu RHPP.']);
+            return back()->withErrors(['siklus' => 'Periode ini tidak sedang menunggu RHPP.']);
         }
 
         $data = $this->dataPenutupan($request, $siklus) + $request->validate([
@@ -85,7 +85,7 @@ class SiklusAlurController extends Controller
 
         $siklus->update($data + ['status' => Siklus::STATUS_DITUTUP_TANPA_RHPP, 'ditutup_pada' => now()->toDateString()]);
 
-        return redirect()->route('siklus.show', $siklus)->with('status', 'Siklus ditutup tanpa RHPP. Semua data dikunci.');
+        return redirect()->route('siklus.show', $siklus)->with('status', 'Periode ditutup tanpa RHPP. Semua data dikunci.');
     }
 
     public function hentikanForm(Siklus $siklus): View|RedirectResponse
@@ -105,7 +105,7 @@ class SiklusAlurController extends Controller
         Gate::authorize('update', $siklus);
 
         if ($siklus->status !== Siklus::STATUS_BERJALAN) {
-            return back()->withErrors(['siklus' => 'Hanya siklus yang berjalan yang bisa dihentikan.']);
+            return back()->withErrors(['siklus' => 'Hanya periode yang berjalan yang bisa dihentikan.']);
         }
 
         $data = $request->validate([
@@ -123,7 +123,7 @@ class SiklusAlurController extends Controller
             'ditutup_pada' => $data['tanggal_dihentikan'],
         ]);
 
-        return redirect()->route('siklus.show', $siklus)->with('status', 'Siklus dihentikan. Data terkunci.');
+        return redirect()->route('siklus.show', $siklus)->with('status', 'Periode dihentikan. Data terkunci.');
     }
 
     private function formPenutupan(Siklus $siklus, bool $tanpaRhpp): View|RedirectResponse

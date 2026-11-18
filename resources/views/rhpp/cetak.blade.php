@@ -6,11 +6,11 @@
     $bisaCatat = false;
 @endphp
 
-<x-cetak-layout :judul="'Lembar perbandingan · '.$siklus->kandang->nama_farm.' · Siklus '.$nomor" :kembali="route('rhpp.show', $siklus)">
+<x-cetak-layout :judul="'Lembar perbandingan · '.$siklus->kandang->nama_farm.' · Periode '.$nomor" :kembali="route('rhpp.show', $siklus)">
     <header class="border-b-2 border-black pb-3">
         <p class="text-[11px] font-semibold uppercase tracking-wide">NOA · catatan peternak</p>
         <h1 class="mt-1 text-xl font-bold">Lembar Perbandingan Catatan Peternak vs RHPP</h1>
-        <p class="text-xs">{{ $siklus->kandang->nama_farm }} · Siklus {{ $nomor }} · dicetak {{ now()->translatedFormat('j M Y H.i') }} WIB</p>
+        <p class="text-xs">{{ $siklus->kandang->nama_farm }} · Periode {{ $nomor }} · dicetak {{ now()->translatedFormat('j M Y H.i') }} WIB</p>
         <dl class="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-[12px]">
             <div><dt class="inline font-semibold">Peternak:</dt> <dd class="inline">{{ $siklus->kandang->user->name }}</dd></div>
             <div><dt class="inline font-semibold">Inti:</dt> <dd class="inline">{{ $siklus->nama_inti ?: '–' }}</dd></div>

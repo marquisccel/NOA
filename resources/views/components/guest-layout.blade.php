@@ -27,13 +27,18 @@
 
             {{-- Panel merek: hanya di layar lebar --}}
             <aside class="hidden w-[560px] shrink-0 flex-col justify-between rounded-xl bg-brand p-10 lg:flex" aria-hidden="true">
-                <div class="grid h-[44%] min-h-[260px] place-items-center rounded-lg bg-[#FAF8F0] p-8">
-                    <img src="{{ asset('images/noa-logo.webp') }}" alt="" width="520" height="237" class="h-auto w-full max-w-[420px]" loading="lazy">
+                <div class="grid h-[44%] min-h-[260px] place-items-center rounded-lg bg-[#FAF8F0] p-8 dark:bg-page">
+                    {{-- Terang: logo penuh di kartu krem. Gelap: tanda + wordmark emas di kartu gelap (tanpa kartu terang yang menyilaukan). --}}
+                    <img src="{{ asset('images/noa-logo.webp') }}" alt="" width="520" height="237" class="h-auto w-full max-w-[420px] dark:hidden" loading="lazy">
+                    <span class="hidden items-center gap-5 dark:inline-flex">
+                        <img src="{{ asset('images/noa-mark.webp') }}" alt="" width="80" height="102" class="h-[102px] w-[80px]">
+                        <span class="block h-[66px] w-[190px] bg-gold" style="-webkit-mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat; mask: url('{{ asset('images/noa-wordmark.webp') }}') center / contain no-repeat;"></span>
+                    </span>
                 </div>
                 <div class="space-y-3.5">
-                    <p class="text-xs font-semibold uppercase tracking-[1.4px] text-brand-mint">Pantau siklus secara real-time</p>
+                    <p class="text-xs font-semibold uppercase tracking-[1.4px] text-brand-mint">Pantau setiap periode pemeliharaan</p>
                     <p class="font-heading text-4xl font-semibold leading-[41px] tracking-[-0.8px] text-white">Data kandang yang rapi, panen yang lebih pasti.</p>
-                    <p class="text-[15px] leading-[23px] text-white/80">Catat mortalitas, bobot, pakan, dan OVK harian — lalu lihat FCR dan IP siklus langsung di dashboard.</p>
+                    <p class="text-[15px] leading-[23px] text-white/80">Catat mortalitas, bobot, pakan, dan OVK harian — lalu lihat FCR dan IP periode langsung di dashboard.</p>
                 </div>
             </aside>
         </div>

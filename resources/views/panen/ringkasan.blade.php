@@ -6,7 +6,7 @@
 @endphp
 
 <x-app-layout title="Ringkasan panen" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Ringkasan']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], ['Ringkasan']]">
     <x-page>
         <x-page-header title="Ringkasan panen" subtitle="FCR dan IP baru dihitung setelah ada catatan panen">
             <x-slot name="actions"><x-button variant="secondary" :href="route('panen.index', $siklus)">Lihat tahap</x-button></x-slot>

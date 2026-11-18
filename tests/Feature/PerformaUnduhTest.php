@@ -90,23 +90,23 @@ class PerformaUnduhTest extends TestCase
     public function test_dashboard_tidak_lagi_memuat_performa_dan_sidebar_punya_menu_performa(): void
     {
         $this->actingAs($this->peternak)->get(route('dashboard'))->assertOk()
-            ->assertDontSee('Siklus dipanen')->assertDontSee('Per bulan')->assertSee(route('performa.index'), false)->assertDontSee('>Laporan<', false);
+            ->assertDontSee('Periode dipanen')->assertDontSee('Per bulan')->assertSee(route('performa.index'), false)->assertDontSee('>Laporan<', false);
     }
 
     public function test_halaman_performa_memuat_ringkasan_pilihan_periode_tabel_dan_grafik(): void
     {
         $this->actingAs($this->peternak)->get(route('performa.index'))->assertOk()
-            ->assertSee('Performa')->assertSee('Ringkasan · Tahun 2026')->assertSee('Siklus dipanen')->assertSee('Total panen')->assertSee('2.904 ekor')->assertSee('1,652')
-            ->assertSee('Semua periode')->assertSee('Per bulan')->assertSee('Per tahun')->assertSee('November 2026 (bulan ini)')->assertSee('Tahun 2026 (tahun ini)')
-            ->assertSee('Periode lalu: –')->assertSee('Siklus yang dipanen')->assertSee('IP per siklus')->assertSee('FCR per siklus')->assertSee(route('laporan.siklus', $this->siklus), false)
+            ->assertSee('Performa')->assertSee('Ringkasan · Tahun 2026')->assertSee('Periode dipanen')->assertSee('Total panen')->assertSee('2.904 ekor')->assertSee('1,652')
+            ->assertSee('Semua waktu')->assertSee('Per bulan')->assertSee('Per tahun')->assertSee('November 2026 (bulan ini)')->assertSee('Tahun 2026 (tahun ini)')
+            ->assertSee('Sebelumnya: –')->assertSee('Periode yang dipanen')->assertSee('IP per periode')->assertSee('FCR per periode')->assertSee(route('laporan.siklus', $this->siklus), false)
             ->assertSeeInOrder(['<option value="2026" selected', 'Tahun 2026 (tahun ini)'], false);
     }
 
     public function test_performa_semua_periode_tanpa_pembanding_dan_periode_kosong_menjelaskan(): void
     {
-        $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => 'semua']))->assertOk()->assertSee('Ringkasan · Semua periode')->assertSee('Tanpa pembanding');
+        $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => 'semua']))->assertOk()->assertSee('Ringkasan · Semua waktu')->assertSee('Tanpa pembanding');
         $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => '2025']))->assertOk()
-            ->assertSee('Belum ada siklus yang dipanen pada Tahun 2025')->assertSee('Lihat semua periode')->assertDontSee('Ringkasan · ');
+            ->assertSee('Belum ada periode yang dipanen pada Tahun 2025')->assertSee('Lihat semua waktu')->assertDontSee('Ringkasan · ');
         $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => 'ngawur']))->assertOk()->assertSee('Ringkasan · Tahun 2026');
         $this->actingAs($this->peternak)->get(route('performa.index', ['periode' => $this->bulanPanen]))->assertOk()->assertSee('2.904 ekor');
     }

@@ -3,9 +3,9 @@
 @endphp
 
 @if ($siklus->isEmpty())
-    <p class="mt-4 text-base text-gray-600">Belum ada siklus.</p>
+    <p class="mt-4 text-base text-ink-secondary">Belum ada periode.</p>
 @else
-    <ul class="mt-4 divide-y divide-gray-200">
+    <ul class="mt-4 divide-y divide-line-subtle">
         @foreach ($siklus as $s)
             <li class="py-3 flex flex-wrap items-center justify-between gap-2 text-base">
                 <a href="{{ route('siklus.show', $s) }}" class="text-indigo-700 underline min-h-11 inline-flex items-center">
@@ -14,7 +14,7 @@
                 </a>
                 <span class="flex items-center gap-3">
                     <a href="{{ route('recording.index', $s) }}" class="text-indigo-700 underline min-h-11 inline-flex items-center">Recording</a>
-                    <span class="px-2 py-1 rounded-md bg-gray-100 text-gray-800 text-sm">{{ $label[$s->status] ?? $s->status }}</span>
+                    <span class="px-2 py-1 rounded-md bg-state-hover text-ink text-sm">{{ $label[$s->status] ?? $s->status }}</span>
                 </span>
             </li>
         @endforeach

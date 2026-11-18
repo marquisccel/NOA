@@ -8,7 +8,7 @@
 @endphp
 
 <x-app-layout title="Panen & BTPA" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], [$judul]]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Panen', route('panen.index', $siklus)], [$judul]]">
     <x-page>
         <x-page-header :title="$judul" :subtitle="'Tahap '.$nomorTahap" />
 

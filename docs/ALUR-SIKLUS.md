@@ -1,15 +1,15 @@
-# Alur status siklus
+# Alur status periode
 
-Satu siklus = satu putaran memelihara ayam di satu kandang, dari DOC masuk sampai ditutup. Ada **7 status**. Empat pertama dianggap **terbuka** dan menahan kandang (tidak bisa membuka siklus baru); tiga terakhir **terkunci** (data hanya bisa dilihat).
+Satu periode = satu putaran memelihara ayam di satu kandang, dari DOC masuk sampai ditutup. Ada **7 status**. Empat pertama dianggap **terbuka** dan menahan kandang (tidak bisa membuka periode baru); tiga terakhir **terkunci** (data hanya bisa dilihat).
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Berjalan: Buka siklus (wizard 5 langkah)
+    [*] --> Berjalan: Buka periode (wizard 5 langkah)
     Berjalan --> MenungguRHPP: Tandai panen selesai
     Berjalan --> Dihentikan: Hentikan dini (wabah, bencana, ...)
     MenungguRHPP --> Rekonsiliasi: Input RHPP dari inti
     MenungguRHPP --> DitutupTanpaRHPP: Tutup tanpa RHPP (alasan wajib)
-    Rekonsiliasi --> Ditutup: Tutup siklus (data dikunci)
+    Rekonsiliasi --> Ditutup: Tutup periode (data dikunci)
     Rekonsiliasi --> DitutupTanpaRHPP: Tutup tanpa RHPP
     Ditutup --> [*]
     DitutupTanpaRHPP --> [*]
@@ -32,11 +32,11 @@ stateDiagram-v2
 | Ditutup tanpa RHPP | tidak | tidak | tidak | tidak | **ya** |
 | Dihentikan | tidak | tidak | tidak | tidak | **ya** (angka ditandai "tidak sebanding") |
 
-## Alur kerja peternak (satu siklus)
+## Alur kerja peternak (satu periode)
 
 ```mermaid
 flowchart LR
-    A[Daftarkan kandang] --> B[Buka siklus]
+    A[Daftarkan kandang] --> B[Buka periode]
     B --> C[Catat harian<br/>pakan, mati, afkir]
     C --> D[Timbang sampel<br/>+ catat obat/vaksin]
     D --> E[Catat panen<br/>tiap tahap + BTPA]
@@ -44,11 +44,11 @@ flowchart LR
     F --> G[Input RHPP]
     G --> H[Cocokkan:<br/>Sama / Berbeda]
     H --> I[Cetak lembar<br/>untuk musyawarah]
-    I --> J[Tutup siklus]
+    I --> J[Tutup periode]
     C -.-> C
 ```
 
-Kartu **Langkah berikutnya** di halaman Ringkasan Siklus menunjuk tindakan yang sesuai dengan status dan data saat ini, sehingga pengguna baru tidak perlu menghafal alur ini.
+Kartu **Langkah berikutnya** di halaman Ringkasan Periode menunjuk tindakan yang sesuai dengan status dan data saat ini, sehingga pengguna baru tidak perlu menghafal alur ini.
 
 ## Alur rekonsiliasi RHPP
 

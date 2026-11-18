@@ -20,8 +20,8 @@ class Kandang extends Model
 
     /** Tipe kandang yang dipilih di formulir: kunci => [label, keterangan]. */
     public const TIPE = [
-        self::TIPE_OPEN_HOUSE => ['Open House', 'Ventilasi alami, dinding terbuka/tirai.'],
-        self::TIPE_CLOSED_HOUSE => ['Closed House', 'Lingkungan terkontrol, ventilasi mekanis.'],
+        self::TIPE_OPEN_HOUSE => ['Kandang terbuka', 'Dinding terbuka atau bertirai; udara mengalir alami.'],
+        self::TIPE_CLOSED_HOUSE => ['Kandang tertutup', 'Tertutup rapat; suhu dan udara diatur kipas dan pendingin.'],
     ];
 
     protected $guarded = [];

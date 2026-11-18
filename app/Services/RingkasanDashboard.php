@@ -93,7 +93,7 @@ class RingkasanDashboard
                 ->each(fn ($r) => $semua->push([
                     'jenis' => $jenis,
                     'ikon' => $ikon,
-                    'keterangan' => $r->siklus->kandang->nama_farm.' · Siklus '.($nomor[$r->siklus_id] ?? 1).' · '.$detail($r),
+                    'keterangan' => $r->siklus->kandang->nama_farm.' · Periode '.($nomor[$r->siklus_id] ?? 1).' · '.$detail($r),
                     'ringkas' => $ringkas($r),
                     'url' => route($rute, $r->siklus_id),
                     'tanggal' => Carbon::parse($r->tanggal),
@@ -121,7 +121,7 @@ class RingkasanDashboard
             ->each(function (Siklus $s) use ($ringkasan, $nomor, $semua) {
                 foreach ($ringkasan->hitung($s)['perhatian'] as $h) {
                     $mendesak = str_contains($h['judul'], 'belum diisi') || str_starts_with($h['judul'], 'Stok pakan');
-                    $semua->push($h + ['siklus' => $s->kandang->nama_farm.' · Siklus '.($nomor[$s->id] ?? 1), 'tingkat' => $mendesak ? 'penting' : 'info']);
+                    $semua->push($h + ['siklus' => $s->kandang->nama_farm.' · Periode '.($nomor[$s->id] ?? 1), 'tingkat' => $mendesak ? 'penting' : 'info']);
                 }
             });
 
@@ -141,7 +141,7 @@ class RingkasanDashboard
 
         return [
             ['judul' => 'Daftarkan kandang', 'teks' => 'Nama, alamat, dan kapasitas kandang.', 'selesai' => $kandangIds->isNotEmpty(), 'tautan' => route('kandang.create'), 'label' => 'Tambah kandang'],
-            ['judul' => 'Buka siklus pertama', 'teks' => 'Tanggal DOC masuk, jumlah ayam, dan harga kontrak.', 'selesai' => $siklusIds->isNotEmpty(), 'tautan' => route('kandang.index'), 'label' => 'Buka siklus'],
+            ['judul' => 'Buka periode pertama', 'teks' => 'Tanggal DOC masuk, jumlah ayam, dan harga kontrak.', 'selesai' => $siklusIds->isNotEmpty(), 'tautan' => route('kandang.index'), 'label' => 'Buka periode'],
             ['judul' => 'Isi catatan harian', 'teks' => 'Pakan, ayam mati, dan ayam afkir. Kurang dari satu menit.', 'selesai' => RecordingHarian::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('recording.create', $pertama) : route('kandang.index'), 'label' => 'Isi catatan'],
             ['judul' => 'Timbang sampel atau catat obat', 'teks' => 'Sekitar seminggu sekali; obat dan vaksin tiap diberikan.', 'selesai' => SamplingBobot::whereIn('siklus_id', $siklusIds)->exists() || PemberianOvk::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('sampling.create', $pertama) : route('kandang.index'), 'label' => 'Timbang sampel'],
             ['judul' => 'Catat panen', 'teks' => 'Tiap tahap panen dengan nomor BTPA.', 'selesai' => Panen::whereIn('siklus_id', $siklusIds)->exists(), 'tautan' => $pertama ? route('panen.create', $pertama) : route('kandang.index'), 'label' => 'Catat panen'],

@@ -14,6 +14,6 @@ class RecordingTerkunci extends DomainException
 
     public static function siklusSelesai(): self
     {
-        return new self('Siklus sudah selesai; recording dikunci dari penyuntingan.');
+        return new self('Periode sudah selesai; recording dikunci dari penyuntingan.');
     }
 }

@@ -1,7 +1,7 @@
 @php $d = $draf['kontrak'] ?? []; @endphp
 
 <x-wizard-siklus :kandang="$kandang" :langkah="2" :konteks="$konteks">
-    <h2 class="text-lg font-bold">Kontrak siklus</h2>
+    <h2 class="text-lg font-bold">Kontrak periode</h2>
     <p class="mt-1 text-[13px] text-ink-secondary">Harga sesuai kontrak dengan inti. Hanya terlihat oleh peternak (tidak oleh ABK).</p>
 
     <form method="POST" action="{{ route('siklus.baru.simpan', [$kandang, 2]) }}" novalidate class="mt-5 space-y-5">

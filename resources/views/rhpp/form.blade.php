@@ -7,7 +7,7 @@
 @endphp
 
 <x-app-layout title="Input RHPP" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['RHPP', route('rhpp.show', $siklus)], ['Input RHPP']]">
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['RHPP', route('rhpp.show', $siklus)], ['Input RHPP']]">
     <x-page lebar="max-w-3xl">
         <x-page-header title="Input RHPP" subtitle="Salin angka persis dari dokumen RHPP inti. Satuan mengikuti dokumen." />
 
@@ -74,7 +74,7 @@
             </section>
 
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <p class="text-xs text-ink-secondary">{{ $siklus->status === \App\Models\Siklus::STATUS_MENUNGGU_RHPP ? 'Setelah disimpan, status siklus berubah menjadi Rekonsiliasi.' : 'Perubahan RHPP memperbarui tabel rekonsiliasi.' }}</p>
+                <p class="text-xs text-ink-secondary">{{ $siklus->status === \App\Models\Siklus::STATUS_MENUNGGU_RHPP ? 'Setelah disimpan, status periode berubah menjadi Rekonsiliasi.' : 'Perubahan RHPP memperbarui tabel rekonsiliasi.' }}</p>
                 <div class="flex gap-2.5">
                     <x-button variant="secondary" :href="route('rhpp.show', $siklus)">Batal</x-button>
                     <x-button>Simpan RHPP</x-button>

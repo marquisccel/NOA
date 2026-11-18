@@ -7,12 +7,12 @@
     $bonus = ['fcr' => 'Bonus FCR', 'deplesi' => 'Bonus deplesi', 'ip' => 'Bonus IP', 'harga_pasar' => 'Bonus harga pasar'];
 @endphp
 
-<x-app-layout title="Pengaturan Siklus" :siklus="$siklus"
-    :crumbs="[['Kandang & Siklus', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Siklus '.$nomor], ['Pengaturan']]">
+<x-app-layout title="Pengaturan Periode" :siklus="$siklus"
+    :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor], ['Pengaturan']]">
     <x-page>
         @if ($kunci)
             <x-alert variant="info">
-                <strong>Data siklus terkunci.</strong> Siklus berstatus Ditutup, Ditutup tanpa RHPP, atau Dihentikan tidak dapat diubah.
+                <strong>Data periode terkunci.</strong> Periode berstatus Ditutup, Ditutup tanpa RHPP, atau Dihentikan tidak dapat diubah.
                 Data tetap dapat dilihat dan dicetak dari tab Laporan. Riwayat tersimpan di Detail Kandang.
             </x-alert>
         @endif
@@ -101,18 +101,18 @@
 
                 @if (! $kunci)
                     <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-tutup">
-                        <h2 id="s-tutup" class="text-base font-bold">Akhiri siklus</h2>
+                        <h2 id="s-tutup" class="text-base font-bold">Akhiri periode</h2>
                         @if ($siklus->status === \App\Models\Siklus::STATUS_BERJALAN)
-                            <p class="mt-1 text-[13px] text-ink-secondary">Siklus normal berakhir lewat panen: tandai panen selesai, input RHPP, lalu tutup siklus. Bila terjadi kejadian luar biasa (misalnya wabah), siklus bisa dihentikan dini.</p>
+                            <p class="mt-1 text-[13px] text-ink-secondary">Periode normal berakhir lewat panen: tandai panen selesai, input RHPP, lalu tutup periode. Bila terjadi kejadian luar biasa (misalnya wabah), periode bisa dihentikan dini.</p>
                             <div class="mt-4 flex flex-wrap gap-2.5">
                                 <x-button :href="route('panen.index', $siklus)">Ke Panen</x-button>
-                                <x-button variant="secondary" :href="route('siklus.hentikan', $siklus)">Hentikan siklus dini</x-button>
+                                <x-button variant="secondary" :href="route('siklus.hentikan', $siklus)">Hentikan periode dini</x-button>
                             </div>
                         @else
-                            <p class="mt-1 text-[13px] text-ink-secondary">Siklus sedang {{ mb_strtolower($siklus->labelStatus()) }}. Lanjutkan ke RHPP dan penutupan.</p>
+                            <p class="mt-1 text-[13px] text-ink-secondary">Periode sedang {{ mb_strtolower($siklus->labelStatus()) }}. Lanjutkan ke RHPP dan penutupan.</p>
                             <div class="mt-4 flex flex-wrap gap-2.5">
                                 <x-button :href="route('rhpp.show', $siklus)">Ke RHPP</x-button>
-                                <x-button variant="secondary" :href="route('siklus.tutup', $siklus)">Tutup siklus</x-button>
+                                <x-button variant="secondary" :href="route('siklus.tutup', $siklus)">Tutup periode</x-button>
                             </div>
                         @endif
                     </section>
@@ -123,10 +123,10 @@
                 <section class="rounded-[16px] border border-line bg-surface p-5">
                     <h2 class="text-sm font-bold">Tentang perubahan</h2>
                     <ul class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
-                        <li>Mengubah standar harian memperbarui kolom standar di semua layar siklus ini.</li>
+                        <li>Mengubah standar harian memperbarui kolom standar di semua layar periode ini.</li>
                         <li>Bobot per sak dipakai untuk konversi sak ↔ kg; perubahan memengaruhi FCR dan stok pakan.</li>
                         <li>Kontrak &amp; skema bonus tidak terlihat oleh ABK.</li>
-                        <li>Ubah tidak tersedia setelah siklus ditutup.</li>
+                        <li>Ubah tidak tersedia setelah periode ditutup.</li>
                     </ul>
                 </section>
             </aside>

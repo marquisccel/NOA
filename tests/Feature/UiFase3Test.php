@@ -163,7 +163,7 @@ class UiFase3Test extends TestCase
 
         $this->actingAs($this->peternak)->get(route('siklus.baru.langkah', [$this->kandang, 1]))->assertOk()
             ->assertSee('Identitas &amp; DOC', false)->assertSee('Tanggal DOC masuk *')->assertSee('Kapasitas kandang 4.000 ekor.')
-            ->assertSee('Siklus berikutnya')->assertSee('Siklus 2')->assertSee('Siklus terakhir')->assertSee('Ditutup')
+            ->assertSee('Periode berikutnya')->assertSee('Periode 2')->assertSee('Periode terakhir')->assertSee('Ditutup')
             ->assertSee('Langkah 5')->assertSee('Isian tersimpan sebagai draf');
     }
 
@@ -248,7 +248,7 @@ class UiFase3Test extends TestCase
 
         $this->actingAs($this->peternak)->get(route('siklus.baru.langkah', [$this->kandang, 5]))->assertOk()
             ->assertSee('Rp 6.500 / ekor')->assertSee('Rp 412.500 / sak')->assertSee('Aktif · Rp 200 / kg')->assertSee('Nonaktif')
-            ->assertSee('CP 707 · BR-1')->assertSee('Rina · PT Sumber')->assertSee('Ubah · Langkah 1')->assertSee('Ubah · Langkah 4')->assertSee('Buka Siklus');
+            ->assertSee('CP 707 · BR-1')->assertSee('Rina · PT Sumber')->assertSee('Ubah · Langkah 1')->assertSee('Ubah · Langkah 4')->assertSee('Buka Periode');
     }
 
     public function test_buka_siklus_membuat_siklus_kontrak_nilai_bonus_dan_standar_turunan(): void
@@ -283,7 +283,7 @@ class UiFase3Test extends TestCase
 
         $this->assertSame(0, Siklus::firstOrFail()->standarHarian()->count());
         $this->assertNull(session('siklus_baru.'.$this->kandang->id));
-        $this->actingAs($this->peternak)->get(route('siklus.baru.langkah', [$this->kandang, 2]))->assertOk()->assertSee('masih punya siklus yang belum ditutup');
+        $this->actingAs($this->peternak)->get(route('siklus.baru.langkah', [$this->kandang, 2]))->assertOk()->assertSee('masih punya periode yang belum ditutup');
     }
 
     public function test_buka_siklus_sebelum_langkah_lengkap_ditolak(): void
@@ -299,7 +299,7 @@ class UiFase3Test extends TestCase
         $siklus = Siklus::firstOrFail();
 
         $this->actingAs($this->peternak)->get(route('siklus.dibuka', $siklus))->assertOk()
-            ->assertSee('Siklus 1 di Kandang 4 berhasil dibuka')->assertSee('9 Nov 2026')->assertSee('Unggah standar')->assertSee('Ke Ringkasan Siklus')
+            ->assertSee('Periode 1 di Kandang 4 berhasil dibuka')->assertSee('9 Nov 2026')->assertSee('Unggah standar')->assertSee('Ke Ringkasan Periode')
             ->assertSee('http-equiv="refresh"', false);
     }
 
@@ -309,9 +309,9 @@ class UiFase3Test extends TestCase
 
         foreach ([route('siklus.baru', $this->kandang), route('siklus.baru.langkah', [$this->kandang, 1])] as $url) {
             $this->actingAs($this->peternak)->get($url)->assertOk()
-                ->assertSee('Kandang 4 masih punya siklus yang belum ditutup')->assertSee('Menunggu RHPP')->assertSee('menunggu RHPP dari PT Sumber Unggas')->assertSee('Buka Siklus 1');
+                ->assertSee('Kandang 4 masih punya periode yang belum ditutup')->assertSee('Menunggu RHPP')->assertSee('menunggu RHPP dari PT Sumber Unggas')->assertSee('Buka Periode 1');
         }
-        $this->actingAs($this->peternak)->post(route('siklus.baru.buka', $this->kandang))->assertOk()->assertSee('masih punya siklus yang belum ditutup');
+        $this->actingAs($this->peternak)->post(route('siklus.baru.buka', $this->kandang))->assertOk()->assertSee('masih punya periode yang belum ditutup');
         $this->assertSame(1, Siklus::count());
     }
 
@@ -372,8 +372,8 @@ class UiFase3Test extends TestCase
 
         foreach ([route('siklus.show', $s), route('recording.index', $s), route('sampling.index', $s), route('ovk.index', $s), route('panen.index', $s), route('rhpp.show', $s), route('laporan.siklus', $s), route('siklus.pengaturan', $s)] as $url) {
             $this->actingAs($this->peternak)->get($url)->assertOk()
-                ->assertSee('data-siklus-header', false)->assertSee('Siklus 1')->assertSee('Berjalan')->assertSee('Tab siklus')
-                ->assertSee('Pengaturan Siklus')->assertSee('Kandang 4');
+                ->assertSee('data-siklus-header', false)->assertSee('Periode 1')->assertSee('Berjalan')->assertSee('Tab periode')
+                ->assertSee('Pengaturan Periode')->assertSee('Kandang 4');
         }
     }
 
@@ -392,7 +392,7 @@ class UiFase3Test extends TestCase
         $abk->forceFill(['siklus_id' => $s->id])->save();
 
         $this->actingAs($abk)->get(route('recording.index', $s))->assertOk()->assertSee('data-siklus-header', false)
-            ->assertDontSee('Tab siklus')->assertDontSee('Pengaturan Siklus')->assertDontSee('RHPP');
+            ->assertDontSee('Tab periode')->assertDontSee('Pengaturan Periode')->assertDontSee('RHPP');
     }
 
     public function test_ringkasan_siklus_tanpa_recording_menampilkan_tanda_strip_dan_peringatan(): void
@@ -448,8 +448,8 @@ class UiFase3Test extends TestCase
         $peternak = $s->kandang->user;
 
         $this->actingAs($peternak)->get(route('siklus.show', $s))->assertOk()
-            ->assertSee('Siklus 1 sudah ditutup. Semua data hanya dapat dilihat.')->assertSee('Angka final')->assertSee('2.904 ekor')
-            ->assertSee('1,652')->assertSee('3,20%')->assertSee('Cetak laporan')->assertSee('Penutupan siklus')
+            ->assertSee('Periode 1 sudah ditutup. Semua data hanya dapat dilihat.')->assertSee('Angka final')->assertSee('2.904 ekor')
+            ->assertSee('1,652')->assertSee('3,20%')->assertSee('Cetak laporan')->assertSee('Penutupan periode')
             ->assertSee('30 Okt 2026')->assertSee('20 Nov 2026')->assertSee('Diterima')->assertSee('Selesai')
             ->assertDontSee('Perlu perhatian');
     }
@@ -463,8 +463,8 @@ class UiFase3Test extends TestCase
 
         $this->actingAs($this->peternak)->get(route('siklus.pengaturan', $s))->assertOk()
             ->assertSee('Rp 6.500 / ekor')->assertSee('Rp 412.500 / sak')->assertSee('Aktif · Rp 200 / kg')->assertSee('Hanya peternak')
-            ->assertSee('Belum diunggah')->assertSee('Belum diisi (opsional)')->assertSee('Ubah')->assertSee('Akhiri siklus')->assertSee('Tentang perubahan')
-            ->assertDontSee('Data siklus terkunci');
+            ->assertSee('Belum diunggah')->assertSee('Belum diisi (opsional)')->assertSee('Ubah')->assertSee('Akhiri periode')->assertSee('Tentang perubahan')
+            ->assertDontSee('Data periode terkunci');
     }
 
     public function test_pengaturan_siklus_tertutup_terkunci_tanpa_tombol_ubah(): void
@@ -472,7 +472,7 @@ class UiFase3Test extends TestCase
         $s = $this->siklus('ditutup_tanpa_rhpp', '2026-06-01');
 
         $this->actingAs($this->peternak)->get(route('siklus.pengaturan', $s))->assertOk()
-            ->assertSee('Data siklus terkunci')->assertSee('Terkunci')->assertDontSee('Akhiri siklus')->assertDontSee(route('siklus.edit', $s), false);
+            ->assertSee('Data periode terkunci')->assertSee('Terkunci')->assertDontSee('Akhiri periode')->assertDontSee(route('siklus.edit', $s), false);
     }
 
     public function test_edit_dan_update_ditolak_untuk_siklus_tertutup(): void
@@ -493,7 +493,7 @@ class UiFase3Test extends TestCase
         $this->actingAs($this->peternak)->put(route('siklus.update', $s), [
             'tanggal_masuk' => '2026-10-15', 'populasi' => 3900, 'bobot_sak_kg' => 50,
             'kontrak' => ['harga_doc' => 6600, 'bonus_ip' => 1, 'nilai_bonus_ip' => 150],
-        ])->assertRedirect(route('siklus.pengaturan', $s))->assertSessionHas('status', 'Pengaturan siklus berhasil disimpan.');
+        ])->assertRedirect(route('siklus.pengaturan', $s))->assertSessionHas('status', 'Pengaturan periode berhasil disimpan.');
 
         $s->refresh();
         $this->assertSame(3900, $s->populasi);
@@ -519,6 +519,6 @@ class UiFase3Test extends TestCase
         $this->siklus('selesai', '2026-01-01');
         $s = $this->siklus('berjalan', '2026-10-01');
 
-        $this->actingAs($this->peternak)->get(route('siklus.show', $s))->assertSee('Siklus 2')->assertSee('<title>Ringkasan Siklus · NOA</title>', false);
+        $this->actingAs($this->peternak)->get(route('siklus.show', $s))->assertSee('Periode 2')->assertSee('<title>Ringkasan Periode · NOA</title>', false);
     }
 }

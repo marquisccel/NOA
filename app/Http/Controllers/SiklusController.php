@@ -88,7 +88,7 @@ class SiklusController extends Controller
         Gate::authorize('update', $siklus);
 
         if ($siklus->isTerkunci()) {
-            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Siklus sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
+            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Periode sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
         }
 
         return view('siklus.form', ['siklus' => $siklus->load(['kandang', 'kontrak']), 'kontrak' => $siklus->kontrak]);
@@ -99,7 +99,7 @@ class SiklusController extends Controller
         Gate::authorize('update', $siklus);
 
         if ($siklus->isTerkunci()) {
-            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Siklus sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
+            return redirect()->route('siklus.pengaturan', $siklus)->withErrors(['recording' => 'Periode sudah ditutup; datanya terkunci dan hanya dapat dilihat.']);
         }
 
         $data = $request->validated();
@@ -109,7 +109,7 @@ class SiklusController extends Controller
             $siklus->kontrak()->updateOrCreate([], $data['kontrak']);
         });
 
-        return redirect()->route('siklus.pengaturan', $siklus)->with('status', 'Pengaturan siklus berhasil disimpan.');
+        return redirect()->route('siklus.pengaturan', $siklus)->with('status', 'Pengaturan periode berhasil disimpan.');
     }
 
     public function destroy(Siklus $siklus): RedirectResponse
@@ -119,6 +119,6 @@ class SiklusController extends Controller
         $kandang = $siklus->kandang;
         $siklus->delete();
 
-        return redirect()->route('kandang.show', $kandang)->with('status', 'Siklus dihapus.');
+        return redirect()->route('kandang.show', $kandang)->with('status', 'Periode dihapus.');
     }
 }
