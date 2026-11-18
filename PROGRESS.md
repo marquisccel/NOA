@@ -333,3 +333,7 @@ Catatan: penayangan di Vercel belum diuji (butuh akun Vercel dan Neon); langkah 
 - [x] Istilah awam: Siklus → **Periode** di seluruh tampilan, pesan, laporan, CSV, glosarium dan dokumen; open/closed house → **Kandang terbuka/tertutup** dengan penjelasan satu kalimat; filter waktu di Performa memakai "Rentang waktu"/"Semua waktu"
 - [x] Menu: Dashboard → Kandang → Aktivitas; avatar ABK dihapus; kartu demo di login: judul + dua tombol ("Masuk sebagai peternak", "Masuk sebagai ABK"); "Perlu perhatian" jadi daftar tenang
 
+### Perombakan halaman masuk (18 Nov 2026)
+
+- [x] Logo baru berbentuk SVG (tanda N dari garis naik + titik emas, wordmark berupa teks yang mengikuti warna konteks), favicon SVG
+- [x] Hero kanvas `resources/js/masuk.js` (medan aliran, percikan saat klik, kartu kaca miring 3D, grafik contoh, angka menghitung naik), panel formulir bergaya Apple, tombol dengan efek tekan; tampilan terang/gelap dan ponsel diuji

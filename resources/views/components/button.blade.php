@@ -8,7 +8,7 @@
         'danger' => 'bg-danger-text text-white hover:opacity-90 active:opacity-100',
     ][$variant] ?? '';
 
-    $kelas = 'inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md px-[18px] text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 '.$varian;
+    $kelas = 'inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md px-[18px] text-sm font-semibold transition duration-150 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-60 '.$varian;
 @endphp
 
 @if ($href)

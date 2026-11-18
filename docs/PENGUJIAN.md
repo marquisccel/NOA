@@ -1,6 +1,6 @@
 # Pengujian
 
-**450 tes otomatis** (PHPUnit) dijalankan terhadap PostgreSQL sungguhan (bukan SQLite), jadi batasan `CHECK`, indeks unik parsial, dan kolom turunan ikut teruji.
+**451 tes otomatis** (PHPUnit) dijalankan terhadap PostgreSQL sungguhan (bukan SQLite), jadi batasan `CHECK`, indeks unik parsial, dan kolom turunan ikut teruji.
 
 ```bash
 php artisan test              # seluruh tes
@@ -41,7 +41,7 @@ Pipeline **GitHub Actions** (`.github/workflows/tests.yml`) menjalankan migrasi,
 | `FaseAPenayanganDemoTest` | 13 | Berkas penayangan, mode demo, Perlu perhatian, toast, tur |
 | `LaporanSiklusTest` | 12 | Biaya, grafik, cetak, CSV |
 | `FaseBVisualTest` | 8 | Grafik garis, sparkline, bandingkan periode, tema gelap |
-| `UiPutaran2Test` | 8 | Urutan menu, logo, kartu demo, istilah awam, token warna mode gelap |
+| `UiPutaran2Test` | 9 | Urutan menu, logo, kartu demo, istilah awam, token warna mode gelap |
 | `SimulasiSeederTest`, `SchemaIntegrityTest`, `ProfileTest` | 7 + 7 + 4 | Data simulasi, skema, profil |
 
 ## Pengujian manual yang dilakukan

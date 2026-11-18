@@ -14,7 +14,7 @@ Tujuan: dalam delapan menit penonton paham **masalahnya**, **cara NOA membantu**
 | 6:15 | Performa | "Peternak bisa melihat naik-turun hasil dari waktu ke waktu." | Pilih periode, sparkline di kartu, tren IP/FCR, lalu **Bandingkan dua periode**. |
 | 7:00 | Peran dan keamanan | "ABK dibuat peternak dan hanya bisa mencatat." | Keluar, **Masuk sebagai ABK**: hanya satu periode, tanpa biaya; buka `/performa` → halaman 403. |
 | 7:30 | Mode gelap + ponsel | "Dipakai di kandang, di ponsel, malam hari." | Ganti ke tema gelap; perkecil jendela / buka di ponsel. |
-| 8:00 | Penutup | "450 tes otomatis, aturan bisnis dijaga basis data, dan seluruh dokumentasi ada di repositori." | Tampilkan README + ERD. |
+| 8:00 | Penutup | "451 tes otomatis, aturan bisnis dijaga basis data, dan seluruh dokumentasi ada di repositori." | Tampilkan README + ERD. |
 
 ## Cadangan bila ada masalah
 
