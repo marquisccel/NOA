@@ -355,6 +355,69 @@ select:not([multiple]) {
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 14px 30px -14px rgb(0 0 0 / 0.6);
 }
 
+/* Maskot ayam berlapis: perspektif dan kedalaman lapisan dikendalikan lewat variabel CSS dari ayam2d.js. */
+.ayam-tombol {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    perspective: 1000px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ayam-lompat { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; }
+
+.ayam-bayang {
+    position: absolute;
+    left: 16%;
+    right: 16%;
+    bottom: -1.2%;
+    height: 5%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgb(70 35 12 / 0.4), transparent 70%);
+}
+
+.ayam-adegan {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    transform-origin: 50% 85%;
+    transform: rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg));
+}
+
+.ayam-lapis { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.ayam-badan { transform-origin: 50% 100%; transform: scaleY(var(--nap, 1)); }
+
+.ayam-kepala {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    transform-origin: 69% 40%;
+    transform: translateZ(46px) translate(var(--hx, 0px), var(--hy, 0px)) rotate(var(--hr, 0deg));
+}
+
+.ayam-mata {
+    position: absolute;
+    inset: 0;
+    display: block;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+
+.ayam-mata img {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--blink, 1));
+}
+
 @keyframes naik {
     from { opacity: 0; transform: translateY(18px); filter: blur(8px); }
     to { opacity: 1; transform: none; filter: blur(0); }

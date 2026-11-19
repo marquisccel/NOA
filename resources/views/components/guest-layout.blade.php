@@ -26,13 +26,26 @@
                         <p class="font-heading text-[clamp(1.9rem,min(3vw,5.6vh),2.9rem)] font-semibold leading-[1.06] tracking-[-0.035em]">
                             Catatan kandang yang <span class="text-ink-brand">jujur</span>.<br>Panen yang <span class="text-ink-brand">adil</span>.
                         </p>
-                        <p class="max-w-[380px] text-[15px] leading-[24px] text-ink-secondary">Catat kandang tiap hari, lihat hasilnya, lalu cocokkan dengan RHPP dari inti.</p>
+                        <p class="max-w-[330px] text-[15px] leading-[24px] text-ink-secondary">Catat kandang tiap hari, lihat hasilnya, lalu cocokkan dengan RHPP dari inti.</p>
                     </div>
 
-                    {{-- Ayam 3D (three.js, dimuat malas hanya di layar lebar). Bila gagal dimuat, area ini kosong. --}}
-                    <div data-ayam3d class="absolute inset-x-0 bottom-0 top-[18%] [@media(max-height:600px)]:top-[24%]" style="opacity:0;transition:opacity 1.2s">
-                        <canvas class="size-full"></canvas>
-                        <button type="button" data-colek tabindex="-1" aria-label="Colek ayam" class="absolute rounded-full" style="cursor:pointer"></button>
+                    {{-- Maskot ayam berlapis (badan, kepala, mata) dengan kedalaman CSS 3D. Matanya mengikuti kursor. --}}
+                    <div data-ayam class="absolute inset-x-0 bottom-[3%] top-[29%] [@media(max-height:600px)]:top-[34%]" style="opacity:0;transition:opacity .8s">
+                        <button type="button" data-colek aria-label="Colek ayam" class="ayam-tombol">
+                            <span class="ayam-lompat" data-lompat>
+                                <span class="ayam-bayang"></span>
+                                <span class="ayam-adegan" data-adegan2>
+                                    <img class="ayam-lapis ayam-badan" src="{{ asset('images/ayam/badan.webp') }}" alt="" draggable="false">
+                                    <span class="ayam-kepala" data-kepala>
+                                        <img class="ayam-lapis" src="{{ asset('images/ayam/kepala.webp') }}" alt="" draggable="false">
+                                        <span class="ayam-mata" style="-webkit-mask-image:url('{{ asset('images/ayam/kepala.webp') }}');mask-image:url('{{ asset('images/ayam/kepala.webp') }}')">
+                                            <img src="{{ asset('images/ayam/mata1.webp') }}" alt="" draggable="false" style="left:63.25%;top:19.37%;width:10.13%;height:7.17%">
+                                            <img src="{{ asset('images/ayam/mata2.webp') }}" alt="" draggable="false" style="left:82.33%;top:20.06%;width:4.42%;height:5.34%">
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                        </button>
                     </div>
 
                     {{-- Tiga kartu keunggulan sistem: sedikit membesar dan naik saat disorot --}}

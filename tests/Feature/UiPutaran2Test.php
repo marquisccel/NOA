@@ -116,14 +116,15 @@ class UiPutaran2Test extends TestCase
     {
         $html = $this->get(route('login'))->assertOk()->getContent();
 
-        foreach (['class="latar"', 'data-hero', 'panel-gambar', 'statistik', 'kaca-form', 'Recording harian', 'Pantau kandang', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam3d', 'data-colek'] as $penanda) {
+        foreach (['class="latar"', 'data-hero', 'panel-gambar', 'statistik', 'kaca-form', 'Recording harian', 'Pantau kandang', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam', 'data-colek', 'images/ayam/badan.webp', 'images/ayam/kepala.webp'] as $penanda) {
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
         $this->assertStringContainsString('noa-mark.webp', $html);
         $this->assertStringContainsString('noa-wordmark.webp', $html);
         $this->assertFileExists(resource_path('js/masuk.js'));
-        $this->assertFileExists(resource_path('js/ayam3d.js'));
-        $this->assertStringContainsString("import('./ayam3d.js')", file_get_contents(resource_path('js/masuk.js')));
+        $this->assertFileExists(resource_path('js/ayam2d.js'));
+        $this->assertFileExists(public_path('images/ayam/mata1.webp'));
+        $this->assertStringContainsString("import('./ayam2d.js')", file_get_contents(resource_path('js/masuk.js')));
         $this->assertStringContainsString('prefers-reduced-motion', file_get_contents(resource_path('css/app.css')));
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Halaman tamu: paralaks halus (latar, lingkaran cahaya, dan kartu statistik bergeser mengikuti kursor)
- * dan pemuatan malas maskot ayam 3D. Ringan: hanya mengubah dua variabel CSS di <body>.
+ * dan maskot ayam berlapis. Ringan: hanya mengubah dua variabel CSS di <body>.
  */
 const gerakMinimal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -33,25 +33,11 @@ if (!gerakMinimal && window.matchMedia('(pointer: fine)').matches) {
     });
 }
 
-// Maskot ayam 3D: dimuat malas (three.js) hanya di layar lebar dan bila WebGL tersedia.
-const wadahAyam = document.querySelector('[data-ayam3d]');
+// Maskot ayam berlapis: hanya di layar lebar (di ponsel panel gambar disembunyikan).
+const wadahAyam = document.querySelector('[data-ayam]');
 
 if (wadahAyam && window.matchMedia('(min-width: 1024px)').matches) {
-    const bisaWebgl = (() => {
-        try {
-            const c = document.createElement('canvas');
-
-            return !!(c.getContext('webgl2') || c.getContext('webgl'));
-        } catch (e) {
-            return false;
-        }
-    })();
-
-    if (bisaWebgl) {
-        import('./ayam3d.js')
-            .then((m) => m.mulaiAyam(wadahAyam, { gerakMinimal }))
-            .catch(() => { wadahAyam.style.display = 'none'; });
-    } else {
-        wadahAyam.style.display = 'none';
-    }
+    import('./ayam2d.js')
+        .then((m) => m.mulaiAyam2d(wadahAyam, { gerakMinimal }))
+        .catch(() => { wadahAyam.style.display = 'none'; });
 }
