@@ -1,13 +1,13 @@
 /*
  * Maskot ayam untuk halaman masuk.
- * Gambar ayam dipecah menjadi beberapa bagian: badan utuh (termasuk kepala, tanpa mata), ekor, jengger, dan mata.
- * Kepala tidak digeser terpisah supaya tidak ada tepi ganda. Yang bergerak: mata asli di dalam wajah, ekor dan jengger
- * pada pangkalnya (dengan pegas, jadi mengayun dan mereda alami), serta badan yang condong ke arah kursor dengan kaki
- * sebagai tumpuan. Semua memakai transformasi 2D supaya gambar tetap tajam. Tanpa WebGL dan langsung tampil.
+ * Badan, kepala, ekor, dan jengger adalah satu gambar utuh (piksel asli, tanpa sambungan yang bisa terlihat). Hanya mata
+ * yang dipisah: bola mata asli bergerak di dalam wajah, dan kelopak berupa kulit kepala yang turun menutupinya. Badan
+ * bernapas dan condong ke arah kursor dengan kaki sebagai tumpuan. Semua memakai transformasi 2D supaya gambar tetap
+ * tajam. Tanpa WebGL dan langsung tampil.
  *
  *  - Mata mengikuti kursor; bila kursor diam, melirik sendiri. Berkedip (kadang dua kali).
  *  - Mengisi email: menoleh ke kartu masuk. Mengisi kata sandi: memejam dan membuang muka.
- *  - Dicolek: melompat dengan gepeng-lonjong, ekor dan jengger bergoyang.
+ *  - Dicolek: melompat dengan gepeng-lonjong.
  */
 const klem = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -64,9 +64,6 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         badan: 0,              // condong badan (-1..1), lebih lambat dari mata
         tutup: 0,
         kedipMulai: -1, kedipBerikut: 2.4, kedipLagi: false,
-        ekor: 0, ekorV: 0,     // pegas ekor
-        jg: 0, jgV: 0,         // pegas jengger
-        badanLalu: 0,
         tLalu: null,
     };
 
@@ -101,8 +98,6 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         kini.x = lerp(kini.x, tx, ke);
         kini.y = lerp(kini.y, ty, ke);
         kini.badan = lerp(kini.badan, tx, kb);
-        const lajuBadan = (kini.badan - kini.badanLalu) / dt;
-        kini.badanLalu = kini.badan;
 
         // berkedip (kadang dua kali berturut-turut), atau memejam saat mengisi kata sandi
         let kedip = 1;
@@ -132,7 +127,6 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         let y = 0;
         let sy = 1;
         let sx = 1;
-        let tendang = 0;
         if (aksi.lompat >= 0) {
             const p = (t - aksi.lompat) / 0.8;
             if (p >= 1) {
@@ -142,30 +136,11 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
                 const gep = p < 0.14 ? -Math.sin((p / 0.14) * Math.PI / 2) * 0.1 : p > 0.86 ? -Math.sin(((1 - p) / 0.14) * Math.PI / 2) * 0.09 : Math.sin(p * Math.PI) * 0.06;
                 sy = 1 + gep;
                 sx = 1 - gep * 0.6;
-                tendang = p < 0.14 ? 1 : p > 0.86 ? -1 : 0;
             }
         }
-        const sejakColek = t - aksi.lompat;
-
-        // ekor dan jengger: pegas teredam yang digerakkan goyang halus, laju condong badan, dan colekan
-        if (!gerakMinimal) {
-            const gEkor = Math.sin(t * 1.4) * 1.5 + Math.sin(t * 0.55) * 0.7 - lajuBadan * 1.2 + (sejakColek < 1.6 ? Math.sin(sejakColek * 15) * 4.5 * Math.exp(-sejakColek * 2.4) : 0);
-            kini.ekorV += (-(kini.ekor - gEkor) * 70 - kini.ekorV * 7) * dt;
-            kini.ekor += kini.ekorV * dt;
-
-            const gJg = Math.sin(t * 1.9 + 1) * 0.5 + lajuBadan * 1.6 + tendang * 2.2 + (sejakColek < 1.6 ? Math.sin(sejakColek * 13 + 1) * 2.2 * Math.exp(-sejakColek * 3) : 0);
-            kini.jgV += (-(kini.jg - gJg) * 110 - kini.jgV * 9) * dt;
-            kini.jg += kini.jgV * dt;
-        } else {
-            kini.ekor = 0;
-            kini.jg = 0;
-        }
-
         const set = (n, v) => adegan.style.setProperty(n, v);
         set('--rz', `${(kini.badan * 1.7 + (gerakMinimal ? 0 : Math.sin(t * 0.8) * 0.6)).toFixed(3)}deg`);
         set('--sk', `${(-kini.badan * 0.8).toFixed(3)}deg`);
-        set('--ek', `${klem(kini.ekor, -2.6, 2.6).toFixed(3)}deg`);
-        set('--jg', `${klem(kini.jg, -3, 3).toFixed(3)}deg`);
         set('--ex', (kini.x * 17).toFixed(2));
         set('--ey', (kini.y * 13).toFixed(2));
                 set('--lid', klem((1 - blink) / 0.96, 0, 1).toFixed(3));
