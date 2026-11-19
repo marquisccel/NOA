@@ -29,6 +29,9 @@
                         <p class="max-w-[330px] text-[15px] leading-[24px] text-ink-secondary">Catat kandang tiap hari, lihat hasilnya, lalu cocokkan dengan RHPP dari inti.</p>
                     </div>
 
+                    @php
+                        $ayam = fn (string $f) => asset('images/ayam/'.$f).'?v='.@filemtime(public_path('images/ayam/'.$f));
+                    @endphp
                     {{-- Maskot ayam: badan utuh, ekor dan jengger yang bergoyang, dan mata asli yang bergerak di dalam wajah. Matanya mengikuti kursor. --}}
                     <div data-ayam class="absolute inset-x-0 bottom-[3%] top-[29%] [@media(max-height:600px)]:top-[34%]" style="opacity:0;transition:opacity .8s">
                         <button type="button" data-colek aria-label="Colek ayam" class="ayam-tombol">
@@ -36,20 +39,20 @@
                                 <span class="ayam-bayang"></span>
                                 <span class="ayam-adegan" data-adegan2>
                                     <span class="ayam-napas">
-                                        <span class="ayam-ekor"><img class="ayam-lapis" src="{{ asset('images/ayam/ekor.webp') }}" alt="" draggable="false"></span>
-                                        <span class="ayam-jengger"><img class="ayam-lapis" src="{{ asset('images/ayam/jengger.webp') }}" alt="" draggable="false"></span>
-                                        <img class="ayam-lapis" src="{{ asset('images/ayam/badan.webp') }}" alt="" draggable="false">
-                                        <span class="ayam-mata" data-kepala style="-webkit-mask-image:url('{{ asset('images/ayam/kepala.webp') }}');mask-image:url('{{ asset('images/ayam/kepala.webp') }}')">
+                                        <span class="ayam-ekor"><img class="ayam-lapis" src="{{ $ayam('ekor.webp') }}" alt="" draggable="false"></span>
+                                        <span class="ayam-jengger"><img class="ayam-lapis" src="{{ $ayam('jengger.webp') }}" alt="" draggable="false"></span>
+                                        <img class="ayam-lapis" src="{{ $ayam('badan.webp') }}" alt="" draggable="false">
+                                        <span class="ayam-mata" data-kepala style="-webkit-mask-image:url('{{ $ayam('kepala.webp') }}');mask-image:url('{{ $ayam('kepala.webp') }}')">
                                             <span class="ayam-oko" style="left:63.25%;top:19.37%;width:10.13%;height:7.17%">
-                                                <img src="{{ asset('images/ayam/mata1.webp') }}" alt="" draggable="false">
-                                                <span class="ayam-kulit" style="background-image:url('{{ asset('images/ayam/badan.webp') }}');background-size:987.1% 1394.7%;background-position:70.38% 20.87%;-webkit-mask-image:url('{{ asset('images/ayam/mata1.webp') }}');mask-image:url('{{ asset('images/ayam/mata1.webp') }}')"></span>
+                                                <img src="{{ $ayam('mata1.webp') }}" alt="" draggable="false">
+                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:987.1% 1394.7%;background-position:70.38% 20.87%;-webkit-mask-image:url('{{ $ayam('mata1.webp') }}');mask-image:url('{{ $ayam('mata1.webp') }}')"></span>
                                                 <i class="ayam-garis"></i>
                                             </span>
                                         </span>
                                         <span class="ayam-mata ayam-mata-jauh">
                                             <span class="ayam-oko" style="left:82.33%;top:20.06%;width:5.17%;height:5.49%">
-                                                <img src="{{ asset('images/ayam/mata2.webp') }}" alt="" draggable="false">
-                                                <span class="ayam-kulit" style="background-image:url('{{ asset('images/ayam/badan.webp') }}');background-size:1934% 1821%;background-position:86.82% 21.22%;-webkit-mask-image:url('{{ asset('images/ayam/mata2.webp') }}');mask-image:url('{{ asset('images/ayam/mata2.webp') }}')"></span>
+                                                <img src="{{ $ayam('mata2.webp') }}" alt="" draggable="false">
+                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:1934% 1821%;background-position:86.82% 21.22%;-webkit-mask-image:url('{{ $ayam('mata2.webp') }}');mask-image:url('{{ $ayam('mata2.webp') }}')"></span>
                                                 <i class="ayam-garis ayam-garis-jauh"></i>
                                             </span>
                                         </span>
