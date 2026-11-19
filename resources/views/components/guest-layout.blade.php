@@ -29,18 +29,20 @@
                         <p class="max-w-[330px] text-[15px] leading-[24px] text-ink-secondary">Catat kandang tiap hari, lihat hasilnya, lalu cocokkan dengan RHPP dari inti.</p>
                     </div>
 
-                    {{-- Maskot ayam berlapis (badan, kepala, mata) dengan kedalaman CSS 3D. Matanya mengikuti kursor. --}}
+                    {{-- Maskot ayam: badan utuh, ekor yang bergoyang, dan mata asli yang bergerak di dalam wajah. Matanya mengikuti kursor. --}}
                     <div data-ayam class="absolute inset-x-0 bottom-[3%] top-[29%] [@media(max-height:600px)]:top-[34%]" style="opacity:0;transition:opacity .8s">
                         <button type="button" data-colek aria-label="Colek ayam" class="ayam-tombol">
                             <span class="ayam-lompat" data-lompat>
                                 <span class="ayam-bayang"></span>
                                 <span class="ayam-adegan" data-adegan2>
-                                    <img class="ayam-lapis ayam-badan" src="{{ asset('images/ayam/badan.webp') }}" alt="" draggable="false">
-                                    <span class="ayam-kepala" data-kepala>
-                                        <img class="ayam-lapis" src="{{ asset('images/ayam/kepala.webp') }}" alt="" draggable="false">
-                                        <span class="ayam-mata" style="-webkit-mask-image:url('{{ asset('images/ayam/kepala.webp') }}');mask-image:url('{{ asset('images/ayam/kepala.webp') }}')">
+                                    <span class="ayam-napas">
+                                        <span class="ayam-ekor"><img class="ayam-lapis" src="{{ asset('images/ayam/ekor.webp') }}" alt="" draggable="false"></span>
+                                        <img class="ayam-lapis" src="{{ asset('images/ayam/badan.webp') }}" alt="" draggable="false">
+                                        <span class="ayam-mata" data-kepala style="-webkit-mask-image:url('{{ asset('images/ayam/kepala.webp') }}');mask-image:url('{{ asset('images/ayam/kepala.webp') }}')">
                                             <img src="{{ asset('images/ayam/mata1.webp') }}" alt="" draggable="false" style="left:63.25%;top:19.37%;width:10.13%;height:7.17%">
-                                            <img src="{{ asset('images/ayam/mata2.webp') }}" alt="" draggable="false" style="left:82.33%;top:20.06%;width:4.42%;height:5.34%">
+                                            <img src="{{ asset('images/ayam/mata2.webp') }}" alt="" draggable="false" style="left:82.33%;top:20.06%;width:4.42%;height:5.34%;--f:.6">
+                                            <i class="ayam-kelopak" style="left:65.1%;top:21%;width:6.4%;height:2%"></i>
+                                            <i class="ayam-kelopak" style="left:83.1%;top:21%;width:2.8%;height:1.7%"></i>
                                         </span>
                                     </span>
                                 </span>

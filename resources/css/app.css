@@ -387,21 +387,18 @@ select:not([multiple]) {
     display: block;
     transform-style: preserve-3d;
     transform-origin: 50% 85%;
-    transform: rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg));
+    transform: rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg)) rotate(var(--rz, 0deg));
 }
 
 .ayam-lapis { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
-.ayam-badan { transform-origin: 50% 100%; transform: scaleY(var(--nap, 1)); }
 
-.ayam-kepala {
-    position: absolute;
-    inset: 0;
-    display: block;
-    transform-style: preserve-3d;
-    transform-origin: 69% 40%;
-    transform: translateZ(46px) translate(var(--hx, 0px), var(--hy, 0px)) rotate(var(--hr, 0deg));
-}
+/* Seluruh badan bernapas sebagai satu kesatuan, jadi tidak ada sambungan yang terlihat. */
+.ayam-napas { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; transform: scale(var(--nx, 1), var(--nap, 1)); }
 
+/* Ekor dipisah dan berputar pada pangkalnya (di balik badan). */
+.ayam-ekor { position: absolute; inset: 0; display: block; transform-origin: 38.7% 53.3%; transform: rotate(var(--ek, 0deg)); }
+
+/* Mata dipotong ke bentuk wajah, jadi tidak pernah keluar dari kepala. */
 .ayam-mata {
     position: absolute;
     inset: 0;
@@ -415,7 +412,21 @@ select:not([multiple]) {
 .ayam-mata img {
     position: absolute;
     pointer-events: none;
-    transform: translate(var(--ex, 0px), var(--ey, 0px)) scaleY(var(--blink, 1));
+    translate: calc(var(--ex, 0) * var(--f, 1) * 1%) calc(var(--ey, 0) * var(--f, 1) * 1%);
+    scale: 1 var(--blink, 1);
+    opacity: var(--mo, 1);
+    filter: drop-shadow(0 0 3px rgb(150 30 15 / 0.45));
+}
+
+/* Mata terpejam: garis lengkung halus, bukan bola mata yang digepengkan. */
+.ayam-kelopak {
+    position: absolute;
+    display: block;
+    border-bottom: 3px solid #3b150d;
+    border-radius: 2px;
+    opacity: var(--kl, 0);
+    pointer-events: none;
+    translate: calc(var(--ex, 0) * 0.4%) calc(var(--ey, 0) * 0.3%);
 }
 
 @keyframes naik {

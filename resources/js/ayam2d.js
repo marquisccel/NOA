@@ -1,8 +1,8 @@
 /*
- * Maskot ayam berlapis (pseudo-3D) untuk halaman masuk.
- * Gambar ayam dipecah menjadi lapisan: badan, kepala (tanpa mata), dan mata. Lapisan diberi kedalaman lewat
- * CSS 3D sehingga kepala dan mata bergeser lebih jauh daripada badan saat kursor bergerak, dan mata yang
- * mengikuti kursor adalah potongan mata asli dari gambar. Tanpa WebGL, tanpa pustaka, dan langsung tampil.
+ * Maskot ayam untuk halaman masuk.
+ * Gambar ayam dipecah menjadi tiga bagian: badan utuh (termasuk kepala, tanpa mata), ekor hijau, dan mata.
+ * Kepala tidak digeser terpisah supaya tidak ada tepi ganda; yang bergerak adalah mata asli di dalam wajah,
+ * ekor pada pangkalnya, dan seluruh badan sedikit miring mengikuti kursor. Tanpa WebGL dan langsung tampil.
  *
  *  - Kepala menoleh dan mata mengikuti kursor; bila kursor diam, melirik sendiri.
  *  - Bernapas, berkedip. Mengisi email: menoleh ke kartu masuk. Mengisi kata sandi: memejam dan membuang muka.
@@ -105,16 +105,24 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
 
         const nap = gerakMinimal ? 0 : Math.sin(t * 2.0);
 
+        // ekor bergoyang pelan; setelah dicolek bergoyang cepat lalu mereda
+        let goyang = gerakMinimal ? 0 : Math.sin(t * 1.4) * 1.8 + Math.sin(t * 0.55) * 0.8;
+        if (aksi.lompat >= 0 || t - aksi.lompat < 1.8) {
+            goyang += Math.sin((t - aksi.lompat) * 15) * 5 * Math.exp(-(t - aksi.lompat) * 2.4);
+        }
+
         const set = (n, v) => adegan.style.setProperty(n, v);
-        set('--ry', `${(kini.x * 7).toFixed(2)}deg`);
-        set('--rx', `${(-kini.y * 4).toFixed(2)}deg`);
-        set('--hx', `${(kini.x * 22).toFixed(1)}px`);
-        set('--hy', `${(kini.y * 10 + nap * 1.2).toFixed(1)}px`);
-        set('--hr', `${(kini.x * 3.2).toFixed(2)}deg`);
-        set('--ex', `${(kini.x * 11).toFixed(1)}px`);
-        set('--ey', `${(kini.y * 8).toFixed(1)}px`);
+        set('--ry', `${(kini.x * 5).toFixed(2)}deg`);
+        set('--rx', `${(-kini.y * 3).toFixed(2)}deg`);
+        set('--rz', `${(gerakMinimal ? 0 : Math.sin(t * 0.9) * 0.8).toFixed(2)}deg`);
+        set('--ek', `${goyang.toFixed(2)}deg`);
+        set('--ex', (kini.x * 17).toFixed(1));
+        set('--ey', (kini.y * 13).toFixed(1));
         set('--blink', blink.toFixed(3));
-        set('--nap', (1 + nap * 0.007).toFixed(4));
+        set('--mo', klem((blink - 0.25) / 0.45, 0, 1).toFixed(3));
+        set('--kl', klem((0.75 - blink) / 0.45, 0, 1).toFixed(3));
+        set('--nap', (1 + nap * 0.008).toFixed(4));
+        set('--nx', (1 - nap * 0.003).toFixed(4));
 
         // lompat dengan gepeng-lonjong
         let y = 0;
