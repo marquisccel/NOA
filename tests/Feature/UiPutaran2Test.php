@@ -116,7 +116,7 @@ class UiPutaran2Test extends TestCase
     {
         $html = $this->get(route('login'))->assertOk()->getContent();
 
-        foreach (['class="latar"', 'data-hero', 'panel-gambar', 'statistik', 'kaca-form', 'Recording harian', 'Pantau kandang', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam', 'data-colek', 'images/ayam/badan.webp', 'images/ayam/ekor.webp'] as $penanda) {
+        foreach (['class="latar"', 'data-hero', 'panel-gambar', 'statistik', 'kaca-form', 'Recording harian', 'Pantau kandang', 'Cocokkan RHPP', 'jujur', 'adil', 'Nitip, Openi, Adil', 'data-ayam', 'data-colek', 'images/ayam/badan.webp', 'images/ayam/ekor.webp', 'images/ayam/jengger.webp'] as $penanda) {
             $this->assertStringContainsString($penanda, $html, "Tidak ada: {$penanda}");
         }
         $this->assertStringContainsString('noa-mark.webp', $html);
