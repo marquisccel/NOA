@@ -18,7 +18,7 @@
 
         <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
             <form method="POST" action="{{ $ada ? route('kandang.update', $kandang) : route('kandang.store') }}" novalidate
-                  class="space-y-6 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+                  class="space-y-6 kartu p-5 sm:p-6">
                 @csrf
                 @if ($ada) @method('PUT') @endif
 
@@ -70,7 +70,7 @@
             </form>
 
             <aside class="space-y-4">
-                <section class="rounded-[16px] border border-line bg-surface p-5">
+                <section class="kartu p-5">
                     <h2 class="text-sm font-bold text-ink">{{ $ada ? 'Tentang perubahan' : 'Setelah kandang tersimpan' }}</h2>
                     <ol class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
                         @foreach ($ada
@@ -85,7 +85,7 @@
                 </section>
 
                 @if ($ada)
-                    <section class="rounded-[16px] border border-line bg-surface p-5">
+                    <section class="kartu p-5">
                         <h2 class="text-sm font-bold text-ink">Hapus kandang</h2>
                         <p class="mt-1 text-[13px] leading-[19px] text-ink-secondary">Kandang disembunyikan dari daftar; riwayatnya tetap tersimpan. Tidak bisa selama masih ada periode berjalan.</p>
                         @error('kandang')<p class="mt-2 text-xs text-danger-text" role="alert">{{ $message }}</p>@enderror

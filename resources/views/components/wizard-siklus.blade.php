@@ -39,11 +39,11 @@
         </nav>
 
         <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div class="rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <div class="kartu p-5 sm:p-6">
                 {{ $slot }}
             </div>
 
-            <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5" aria-label="Konteks kandang">
+            <aside class="space-y-3 kartu p-5" aria-label="Konteks kandang">
                 <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Periode untuk</p>
                 <dl class="space-y-3 text-[13px]">
                     <div><dt class="text-ink-muted">Kandang</dt><dd class="mt-0.5 font-semibold">{{ $kandang->nama_farm }}</dd></div>

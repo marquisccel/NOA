@@ -22,7 +22,7 @@
             <h2 id="alur" class="text-base font-bold">Alur satu periode, langkah demi langkah</h2>
             <ol class="space-y-2.5">
                 @foreach ($langkah as $i => [$judul, $isi])
-                    <li class="flex gap-3.5 rounded-[16px] border border-line bg-surface p-4">
+                    <li class="flex gap-3.5 kartu p-4">
                         <span class="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-white" aria-hidden="true">{{ $i + 1 }}</span>
                         <div><p class="text-sm font-bold">{{ $judul }}</p><p class="mt-0.5 text-[13px] leading-[19px] text-ink-secondary">{{ $isi }}</p></div>
                     </li>
@@ -33,7 +33,7 @@
 
         <section aria-labelledby="istilah" class="space-y-3">
             <h2 id="istilah" class="text-base font-bold">Arti istilah</h2>
-            <dl class="divide-y divide-line-subtle overflow-hidden rounded-[16px] border border-line bg-surface">
+            <dl class="divide-y divide-line-subtle overflow-hidden kartu">
                 @foreach ($istilah as $kunci => [$nama, $lengkap, $arti, $baca])
                     <div id="{{ $kunci }}" class="scroll-mt-24 space-y-1 px-5 py-4 target:bg-tint">
                         <dt class="text-sm font-bold">{{ $nama }} <span class="font-normal text-ink-secondary">— {{ $lengkap }}</span></dt>

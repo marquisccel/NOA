@@ -25,7 +25,7 @@
                 @if ($bisaCatat)<x-button :href="route('ovk.create', $siklus)">Pemberian OVK pertama</x-button>@endif
             </x-empty-state>
         @else
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[820px]">
                     <caption class="sr-only">Riwayat pemberian OVK, terbaru di atas</caption>
                     <thead>

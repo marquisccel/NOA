@@ -21,7 +21,7 @@
     };
 @endphp
 
-<section aria-labelledby="langkah-berikutnya" class="flex flex-wrap items-center justify-between gap-4 rounded-[16px] border border-brand-border bg-tint p-5">
+<section aria-labelledby="langkah-berikutnya" class="flex flex-wrap items-center justify-between gap-4 kartu-merek p-5">
     <div class="min-w-0 flex-1 basis-64 space-y-1">
         <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-brand">Langkah berikutnya</p>
         <h2 id="langkah-berikutnya" class="font-heading text-lg font-semibold">{{ $langkah[0] }}</h2>

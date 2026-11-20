@@ -18,7 +18,7 @@
         </div>
 
         <div class="grid items-start gap-5 xl:grid-cols-2">
-            <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-info">
+            <section class="kartu p-5" aria-labelledby="judul-info">
                 <div class="flex items-center justify-between gap-3">
                     <h2 id="judul-info" class="text-base font-bold">Informasi kandang</h2>
                     <a href="{{ route('kandang.edit', $kandang) }}" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline"><x-icon name="pencil" class="size-4" /> Ubah</a>
@@ -46,7 +46,7 @@
             </section>
 
             @if ($berjalan)
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="judul-saat-ini">
+                <section class="kartu p-5" aria-labelledby="judul-saat-ini">
                     <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Periode saat ini</p>
                     <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-2.5">
@@ -64,7 +64,7 @@
                     <p class="mt-3 text-xs text-ink-muted">Periode baru dapat dibuka setelah {{ $namaSiklus($berjalan) }} ditutup.</p>
                 </section>
             @else
-                <section class="rounded-[16px] border border-gold-border bg-gold-tint p-5" aria-labelledby="judul-saat-ini">
+                <section class="kartu !border-gold-border p-5" aria-labelledby="judul-saat-ini">
                     <div class="flex items-start gap-3">
                         <span class="grid size-10 shrink-0 place-items-center rounded-md bg-gold-soft text-ink-gold"><x-icon name="calendar-plus" /></span>
                         <div class="min-w-0 flex-1 space-y-1.5">
@@ -84,7 +84,7 @@
             @endif
         </div>
 
-        <section class="rounded-[16px] border border-line bg-surface" aria-labelledby="judul-riwayat">
+        <section class="kartu" aria-labelledby="judul-riwayat">
             <div class="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
                 <div>
                     <h2 id="judul-riwayat" class="text-base font-bold">Riwayat periode</h2>

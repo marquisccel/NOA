@@ -51,7 +51,7 @@
             @csrf
             @if ($ada) @method('PUT') @endif
 
-            <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <div class="space-y-5 kartu p-5 sm:p-6">
                 <div class="flex flex-wrap items-end justify-between gap-3">
                     <div>
                         <p class="font-heading text-lg font-semibold leading-snug"><span x-text="hari ? 'Hari ke-' + hari : 'Pilih tanggal'">Hari ini</span></p>
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5" aria-live="polite">
+            <aside class="space-y-3 kartu p-5" aria-live="polite">
                 <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Hasil (dihitung otomatis)</p>
                 <dl class="space-y-3 text-sm">
                     <div class="rounded-md border border-line-subtle p-3.5">

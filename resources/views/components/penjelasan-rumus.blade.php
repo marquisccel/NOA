@@ -6,7 +6,7 @@
 
 @if ($daftar)
     {{-- Setiap angka dijelaskan dengan rumus dan angka periode ini sendiri: transparan dan bisa diperiksa. --}}
-    <details class="group rounded-[16px] border border-line bg-surface" data-tur="Kenapa angkanya begini?|Buka ini untuk melihat rumus tiap angka lengkap dengan angka periode Anda sendiri. Tidak ada angka ajaib." data-tur-urut="6">
+    <details class="group kartu" data-tur="Kenapa angkanya begini?|Buka ini untuk melihat rumus tiap angka lengkap dengan angka periode Anda sendiri. Tidak ada angka ajaib." data-tur-urut="6">
         <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3">
             <span class="flex items-center gap-2.5">
                 <span class="grid size-9 place-items-center rounded-md bg-tint text-ink-brand"><x-icon name="calculator" class="size-5" /></span>

@@ -72,7 +72,7 @@
 
             @if ($rekon && $rhpp)
                 @php $tanpaCatatan = $r['jumlah_berbeda'] - $r['berbeda_bercatatan']; @endphp
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="siap-tutup">
+                <section class="kartu p-5" aria-labelledby="siap-tutup">
                     <div class="flex items-center gap-2.5"><x-icon name="circle-check" class="size-5 text-success-text" /><h2 id="siap-tutup" class="text-base font-bold">Rekonsiliasi siap ditutup</h2></div>
                     <dl class="mt-4 grid grid-cols-2 gap-3 text-sm lg:grid-cols-4">
                         <div class="rounded-md border border-line-subtle p-3.5"><dt class="text-xs text-ink-secondary">Baris dibandingkan</dt><dd class="font-heading text-xl font-semibold">{{ $r['jumlah_dibandingkan'] }}</dd></div>

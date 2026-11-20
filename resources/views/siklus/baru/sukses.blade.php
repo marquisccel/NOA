@@ -2,7 +2,7 @@
 
 <x-app-layout title="Periode dibuka" :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Periode '.$nomor]]">
     <x-page lebar="max-w-xl">
-        <div class="space-y-5 rounded-[16px] border border-line bg-surface p-6 text-center sm:p-8">
+        <div class="space-y-5 kartu p-6 text-center sm:p-8">
             <span class="mx-auto grid size-14 place-items-center rounded-full bg-success-soft text-success-text"><x-icon name="circle-check" class="size-7" /></span>
             <div class="space-y-1.5">
                 <h1 class="font-heading text-xl font-semibold">Periode {{ $nomor }} di {{ $siklus->kandang->nama_farm }} berhasil dibuka</h1>

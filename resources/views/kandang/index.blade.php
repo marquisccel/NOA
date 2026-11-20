@@ -14,7 +14,7 @@
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-empty-state>
         @else
-            <section class="rounded-[16px] border border-line bg-surface" aria-label="Daftar kandang">
+            <section class="kartu" aria-label="Daftar kandang">
                 <form method="GET" action="{{ route('kandang.index') }}" class="flex flex-wrap items-center gap-2.5 p-3 sm:p-4">
                     <div class="relative min-w-0 flex-1 sm:max-w-xs">
                         <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />

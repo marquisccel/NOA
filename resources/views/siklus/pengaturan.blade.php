@@ -24,7 +24,7 @@
                 @endphp
 
                 {{-- Identitas & DOC --}}
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-identitas">
+                <section class="kartu p-5" aria-labelledby="s-identitas">
                     <div class="flex items-center justify-between gap-3">
                         <h2 id="s-identitas" class="text-base font-bold">Identitas &amp; DOC</h2>
                         @if ($kunci)<x-badge variant="neutral"><x-icon name="lock" class="size-3" /> Terkunci</x-badge>
@@ -40,7 +40,7 @@
                 </section>
 
                 {{-- Kontrak --}}
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-kontrak">
+                <section class="kartu p-5" aria-labelledby="s-kontrak">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2.5">
                             <h2 id="s-kontrak" class="text-base font-bold">Kontrak</h2>
@@ -58,7 +58,7 @@
                 </section>
 
                 {{-- Skema bonus --}}
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-bonus">
+                <section class="kartu p-5" aria-labelledby="s-bonus">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-2.5">
                             <h2 id="s-bonus" class="text-base font-bold">Skema bonus</h2>
@@ -76,7 +76,7 @@
                 </section>
 
                 {{-- Standar harian --}}
-                <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-standar">
+                <section class="kartu p-5" aria-labelledby="s-standar">
                     <div class="flex items-center justify-between gap-3">
                         <h2 id="s-standar" class="text-base font-bold">Standar harian</h2>
                         @if ($kunci)<x-badge variant="neutral"><x-icon name="lock" class="size-3" /> Terkunci</x-badge>
@@ -100,7 +100,7 @@
                 </section>
 
                 @if (! $kunci)
-                    <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="s-tutup">
+                    <section class="kartu p-5" aria-labelledby="s-tutup">
                         <h2 id="s-tutup" class="text-base font-bold">Akhiri periode</h2>
                         @if ($siklus->status === \App\Models\Siklus::STATUS_BERJALAN)
                             <p class="mt-1 text-[13px] text-ink-secondary">Periode normal berakhir lewat panen: tandai panen selesai, input RHPP, lalu tutup periode. Bila terjadi kejadian luar biasa (misalnya wabah), periode bisa dihentikan dini.</p>
@@ -120,7 +120,7 @@
             </div>
 
             <aside class="space-y-4">
-                <section class="rounded-[16px] border border-line bg-surface p-5">
+                <section class="kartu p-5">
                     <h2 class="text-sm font-bold">Tentang perubahan</h2>
                     <ul class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
                         <li>Mengubah standar harian memperbarui kolom standar di semua layar periode ini.</li>

@@ -62,7 +62,7 @@
                 </x-alert>
             @endif
 
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[860px]">
                     <caption class="sr-only">Tahap panen dan nomor BTPA</caption>
                     <thead>
@@ -108,7 +108,7 @@
         @endif
 
         @if ($bisaCatat)
-            <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="retur-judul">
+            <section class="kartu p-5" aria-labelledby="retur-judul">
                 <h2 id="retur-judul" class="text-base font-bold">Pakan sisa di akhir periode</h2>
                 <p class="mt-1 text-[13px] leading-[19px] text-ink-secondary">
                     Pakan masuk {{ F::angka($p['pakan_masuk_sak']) }} sak, terpakai {{ F::angka($p['pakan_terpakai_sak']) }} sak (stok gudang {{ F::angka($p['pakan_masuk_sak'] - $p['pakan_terpakai_sak']) }} sak).

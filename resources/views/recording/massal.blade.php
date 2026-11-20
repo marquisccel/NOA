@@ -16,7 +16,7 @@
         <form method="POST" action="{{ route('recording.massal.simpan', $siklus) }}" novalidate x-data="{ ada: 0 }"
               x-init="ada = $el.querySelectorAll('input[data-pakan]').length" class="space-y-4">
             @csrf
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[760px]">
                     <caption class="sr-only">Isian beberapa hari sekaligus</caption>
                     <thead>

@@ -25,7 +25,7 @@
         <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
             <div class="space-y-5">
                 <form method="POST" action="{{ $ada ? route('abk.update', $abk) : route('abk.store') }}" novalidate
-                      class="space-y-6 rounded-[16px] border border-line bg-surface p-5 sm:p-6"
+                      class="space-y-6 kartu p-5 sm:p-6"
                       x-data="{
                           pilihan: @js($pilihan),
                           kandang: @js($kandangAwal ? (int) $kandangAwal : ''),
@@ -77,7 +77,7 @@
                 </form>
 
                 @if ($ada)
-                    <section class="space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6" aria-labelledby="judul-keamanan">
+                    <section class="space-y-4 kartu p-5 sm:p-6" aria-labelledby="judul-keamanan">
                         <h2 id="judul-keamanan" class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Kata sandi</h2>
                         <p class="text-[13px] leading-[19px] text-ink-secondary">Atur ulang kata sandi awal ABK jika lupa. Kata sandi baru dibuat otomatis dan ditampilkan sekali.</p>
                         <form method="POST" action="{{ route('abk.reset', $abk) }}">
@@ -86,7 +86,7 @@
                         </form>
                     </section>
 
-                    <section class="space-y-3 rounded-[16px] border border-danger-border bg-surface p-5 sm:p-6" aria-labelledby="judul-status">
+                    <section class="space-y-3 kartu !border-danger-border p-5 sm:p-6" aria-labelledby="judul-status">
                         <h2 id="judul-status" class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Status akun</h2>
                         @if ($abk->aktif)
                             <p class="text-sm font-semibold">Nonaktifkan akun</p>
@@ -110,7 +110,7 @@
                 @endif
             </div>
 
-            <aside class="rounded-[16px] border border-line bg-surface p-5">
+            <aside class="kartu p-5">
                 <h2 class="text-sm font-bold">Hak akses ABK</h2>
                 <p class="mt-1 text-xs text-ink-muted">Tetap untuk semua akun ABK dan tidak dapat diubah.</p>
 

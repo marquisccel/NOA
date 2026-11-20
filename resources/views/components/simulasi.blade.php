@@ -6,7 +6,7 @@
 
 @if ($b)
     {{-- Kalkulator "bagaimana kalau": hitung penghematan atau tambahan hasil bila FCR atau deplesi berbeda. Hanya perkiraan; tidak disimpan. --}}
-    <section aria-labelledby="judul-simulasi" class="space-y-4 rounded-[16px] border border-line bg-surface p-5"
+    <section aria-labelledby="judul-simulasi" class="space-y-4 kartu p-5"
         x-data="{
             d: @js($b),
             fcr: @js($b['fcr']),

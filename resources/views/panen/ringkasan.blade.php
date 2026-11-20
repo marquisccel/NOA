@@ -30,7 +30,7 @@
                 </x-kpi>
             </div>
 
-            <section class="rounded-[16px] border border-line bg-surface p-5" aria-labelledby="cara-hitung">
+            <section class="kartu p-5" aria-labelledby="cara-hitung">
                 <h2 id="cara-hitung" class="text-base font-bold">Cara hitung</h2>
                 <ul class="mt-3 space-y-2.5 text-[13px] leading-[19px] text-ink-secondary">
                     <li><strong class="text-ink">Umur panen</strong> = Σ(ekor × umur) ÷ Σ ekor = ({{ $umurRumus }}) ÷ {{ F::angka($p['total_ekor'], 0) }} = {{ F::angka($p['umur_panen']) }} hari</li>

@@ -63,7 +63,7 @@
 
             <section aria-labelledby="tabel-performa" class="space-y-3">
                 <h2 id="tabel-performa" class="text-base font-bold">Periode yang dipanen</h2>
-                <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <div class="overflow-x-auto kartu">
                     <table class="tabel min-w-[900px]">
                         <caption class="sr-only">Perbandingan performa periode yang sudah dipanen</caption>
                         <thead>
@@ -107,11 +107,11 @@
                 </div>
                 @if (count($tren['labels']) >= 2)
                     <div class="grid gap-4 lg:grid-cols-2">
-                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                        <div class="kartu p-5">
                             <h3 class="text-sm font-bold">IP per periode</h3><p class="text-xs text-ink-secondary">Makin besar makin baik</p>
                             <div class="mt-2 h-56"><canvas id="grafik-ip" role="img" aria-label="Tren IP per periode"></canvas></div>
                         </div>
-                        <div class="rounded-[16px] border border-line bg-surface p-5">
+                        <div class="kartu p-5">
                             <h3 class="text-sm font-bold">FCR per periode</h3><p class="text-xs text-ink-secondary">Makin kecil makin baik</p>
                             <div class="mt-2 h-56"><canvas id="grafik-fcr" role="img" aria-label="Tren FCR per periode"></canvas></div>
                         </div>

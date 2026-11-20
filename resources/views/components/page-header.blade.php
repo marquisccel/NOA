@@ -2,7 +2,7 @@
 
 <div {{ $attributes->merge(['class' => 'flex flex-wrap items-end justify-between gap-4']) }}>
     <div class="min-w-0 space-y-1">
-        <h1 class="font-heading text-2xl font-semibold text-ink">{{ $title }}</h1>
+        <h1 class="font-heading text-[28px] font-semibold leading-tight tracking-[-0.03em] text-ink">{{ $title }}</h1>
         @if ($subtitle)<p class="text-sm text-ink-secondary">{{ $subtitle }}</p>@endif
     </div>
     @isset($actions)

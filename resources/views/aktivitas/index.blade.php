@@ -37,7 +37,7 @@
             @foreach ($kelompok as $tanggal => $daftar)
                 <section aria-labelledby="h-{{ $tanggal }}" class="space-y-2">
                     <h2 id="h-{{ $tanggal }}" class="text-[13px] font-bold uppercase tracking-wide text-ink-muted">{{ $label($daftar->first()['tanggal']) }}</h2>
-                    <ul class="divide-y divide-line-subtle overflow-hidden rounded-[16px] border border-line bg-surface">
+                    <ul class="divide-y divide-line-subtle overflow-hidden kartu">
                         @foreach ($daftar as $a)
                             <li>
                                 <a href="{{ $a['url'] }}" class="flex items-center gap-3 px-4 py-3.5 hover:bg-state-hover">

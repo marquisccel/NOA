@@ -15,16 +15,16 @@
                    title="{{ $item['label'] }}"
                    @if ($aktif) aria-current="page" @endif
                    @class([
-                       'flex h-11 items-center gap-3 rounded-md px-2.5 text-sm transition-colors',
-                       'bg-state-selected font-bold text-ink-brand' => $aktif,
+                       'flex h-11 items-center gap-3 rounded-[14px] px-2.5 text-sm transition-colors',
+                       'bg-gradient-to-r from-brand-soft to-transparent font-bold text-ink-brand ring-1 ring-inset ring-brand-border' => $aktif,
                        'font-medium text-ink hover:bg-state-hover' => ! $aktif,
                        'md:justify-center xl:justify-start' => ! $drawer,
                    ])
                    @unless ($drawer) :class="collapsed ? 'xl:!justify-center' : ''" @endunless>
                     <span @class([
-                        'grid size-[30px] shrink-0 place-items-center rounded-[9px]',
-                        'bg-brand text-white' => $aktif,
-                        'bg-page text-ink-secondary ring-1 ring-inset ring-line-subtle' => ! $aktif,
+                        'grid size-[30px] shrink-0 place-items-center rounded-[10px]',
+                        'bg-gradient-to-br from-brand-mint to-brand text-white shadow-[0_6px_14px_-6px_var(--brand-primary)]' => $aktif,
+                        'bg-surface/60 text-ink-secondary ring-1 ring-inset ring-line-subtle' => ! $aktif,
                     ])>
                         <x-icon :name="$item['ikon']" class="size-[17px]" />
                     </span>

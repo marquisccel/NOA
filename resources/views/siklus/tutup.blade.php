@@ -21,7 +21,7 @@
 
         <form method="POST" action="{{ $aksi }}" class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
             @csrf
-            <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <div class="space-y-5 kartu p-5 sm:p-6">
                 @if ($tanpaRhpp)
                     <h2 class="text-base font-bold">Alasan</h2>
                     <div>
@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5">
+            <aside class="space-y-3 kartu p-5">
                 <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Ringkasan akhir</p>
                 <dl class="space-y-2.5 text-sm">
                     @foreach ([

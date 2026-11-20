@@ -11,7 +11,7 @@
             <x-page-header :title="'Riwayat periode · '.$kandang->nama_farm" subtitle="Semua periode pemeliharaan milik kandang ini. Periode yang sudah ditutup tetap tersimpan dan dapat dibuka kembali." />
         </div>
 
-        <section class="rounded-[16px] border border-line bg-surface">
+        <section class="kartu">
             <div class="flex flex-wrap items-center gap-2 p-4 sm:p-5">
                 <span class="text-[13px] font-semibold text-ink-secondary">Status:</span>
                 @foreach ($filter as $kunci => $label)

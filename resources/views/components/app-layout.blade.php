@@ -25,10 +25,13 @@
         <title>{{ $judul ? $judul.' · NOA' : 'NOA' }}</title>
         <link rel="icon" href="{{ asset('images/noa-mark.webp') }}" type="image/webp">
         <script>(function(){try{var t=localStorage.getItem('noa.tema');if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}if(t){document.documentElement.dataset.theme=t}}catch(e){}})()</script>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/masuk.js'])
     </head>
-    <body class="min-h-screen bg-page font-sans text-ink antialiased print:bg-white" x-data="shell()" @keydown.escape.window="drawer = false"
+    <body class="isi-kaca min-h-screen bg-page font-sans text-ink antialiased print:bg-white" x-data="shell()" @keydown.escape.window="drawer = false"
           @if (request()->routeIs('dashboard') && $user->isPeternak()) data-tur="otomatis" @endif>
+        {{-- Latar aurora yang sama dengan halaman masuk --}}
+        <div class="latar print:hidden" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
         <div id="bilah-kemajuan" class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-brand opacity-0 transition-opacity print:hidden" aria-hidden="true"></div>
 
         {{-- Tur panduan (disorot per langkah) --}}
@@ -51,7 +54,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex min-h-screen flex-col">
+        <div class="relative z-10 flex min-h-screen flex-col">
             @if (config('noa.demo') && in_array($user->email, config('noa.akun_demo'), true))
                 <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-brand px-4 py-2 text-center text-xs font-medium text-white print:hidden" role="note" data-demo-banner>
                     <span><strong>Mode demo</strong> — data contoh untuk dicoba. Silakan tambah, ubah, atau hapus.</span>
@@ -65,10 +68,10 @@
                 </div>
             @endif
             {{-- Topbar desktop dan tablet --}}
-            <header class="hidden h-[68px] shrink-0 items-center justify-between border-b border-line bg-surface pl-[26px] pr-6 md:flex print:hidden">
+            <header class="kaca-bar sticky top-3 z-30 mx-5 mt-5 hidden h-[64px] shrink-0 items-center justify-between rounded-[22px] pl-5 pr-4 md:flex lg:mx-6 print:hidden">
                 <div class="flex min-w-0 items-center gap-6">
                     <a href="{{ route('dashboard') }}" aria-label="NOA, ke dashboard"><x-logo /></a>
-                    <span class="h-7 w-px bg-line" aria-hidden="true"></span>
+                    <span class="h-7 w-px bg-line-strong" aria-hidden="true"></span>
                     <div class="min-w-0">
                         <p class="truncate font-heading text-xl font-semibold leading-snug text-ink">{{ $judul ?? 'NOA' }}</p>
                     </div>
@@ -76,7 +79,7 @@
 
                 <div class="flex shrink-0 items-center gap-3">
                     <button type="button" x-data="tema()" @click="alternatif()" :aria-label="gelap ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'" :aria-pressed="gelap.toString()"
-                        class="grid size-11 shrink-0 place-items-center rounded-md text-ink-secondary hover:bg-state-hover">
+                        class="kaca-chip grid size-11 shrink-0 place-items-center rounded-full text-ink-secondary transition hover:text-ink active:scale-95">
                         <x-icon name="moon" class="size-5" x-show="! gelap" />
                         <x-icon name="sun" class="size-5" x-show="gelap" x-cloak />
                     </button>
@@ -89,9 +92,9 @@
             </header>
 
             {{-- Topbar ponsel --}}
-            <header class="flex h-[60px] shrink-0 items-center gap-2.5 border-b border-line bg-surface px-3 md:hidden print:hidden">
+            <header class="kaca-bar sticky top-2 z-30 mx-3 mt-3 flex h-[60px] shrink-0 items-center gap-2.5 rounded-[20px] px-2.5 md:hidden print:hidden">
                 <button type="button" @click="drawer = true" aria-label="Buka menu" aria-controls="drawer-menu"
-                    class="grid size-11 shrink-0 place-items-center rounded-md hover:bg-state-hover">
+                    class="grid size-11 shrink-0 place-items-center rounded-full hover:bg-state-hover">
                     <x-icon name="menu" />
                 </button>
                 <div class="min-w-0 flex-1">
@@ -107,10 +110,10 @@
                 </div>
             </header>
 
-            <div class="flex min-h-0 flex-1 gap-5 md:p-5 lg:gap-6 lg:p-6 print:p-0">
+            <div class="flex min-h-0 flex-1 gap-5 pt-3 md:p-5 lg:gap-6 lg:p-6 print:p-0">
                 {{-- Sidebar: penuh di desktop, ikon saja di tablet atau bila diciutkan --}}
                 @if ($grup)
-                    <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="sticky top-6 hidden h-[calc(100vh-68px-3rem)] shrink-0 flex-col justify-between self-start rounded-lg border border-line bg-surface p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
+                    <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="kaca-bar sticky top-[6.25rem] hidden h-[calc(100vh-6.25rem-1.5rem)] shrink-0 flex-col justify-between self-start rounded-[26px] p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
                         <x-shell-menu :grup="$grup" />
                         <div class="space-y-1 border-t border-line-subtle pt-2">
@@ -132,7 +135,7 @@
                     </aside>
                 @endif
 
-                <main id="isi" class="min-w-0 flex-1 pb-24 md:pb-0">
+                <main id="isi" class="min-w-0 flex-1 pb-28 md:pb-0">
                     <x-flash />
 
                     @if ($siklus)
@@ -150,7 +153,7 @@
 
         {{-- Navigasi bawah ponsel --}}
         @if ($bawah)
-            <nav aria-label="Navigasi bawah" class="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface px-2 pb-2.5 pt-1.5 md:hidden print:hidden">
+            <nav aria-label="Navigasi bawah" class="kaca-bar fixed inset-x-3 bottom-3 z-30 flex rounded-[24px] px-2 pb-2 pt-1.5 md:hidden print:hidden">
                 @foreach ($bawah as $item)
                     @php $aktif = Navigasi::aktif($item); @endphp
                     <a href="{{ route($item['rute']) }}" @if ($aktif) aria-current="page" @endif
@@ -170,12 +173,12 @@
         {{-- Drawer menu ponsel --}}
         <div id="drawer-menu" x-cloak :class="drawer ? 'block' : 'hidden'" class="fixed inset-0 z-50 md:!hidden print:hidden" role="dialog" aria-modal="true" aria-label="Menu">
             <div class="absolute inset-0 bg-black/40" @click="drawer = false"></div>
-            <div class="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col gap-5 overflow-y-auto bg-surface p-4 shadow-xl">
+            <div class="kaca-bar absolute inset-y-3 left-3 flex w-72 max-w-[85%] flex-col gap-5 overflow-y-auto rounded-[26px] p-4 shadow-xl" style="background: color-mix(in srgb, var(--bg-surface) 86%, transparent)">
                 <div class="flex items-center justify-between">
                     <x-logo />
                     <button type="button" @click="drawer = false" aria-label="Tutup menu" class="grid size-11 place-items-center rounded-md hover:bg-state-hover"><x-icon name="x" /></button>
                 </div>
-                <div class="flex items-center gap-2.5 rounded-md bg-page p-3">
+                <div class="flex items-center gap-2.5 rounded-[16px] bg-brand-soft p-3">
                     <span class="min-w-0">
                         <span class="block truncate text-[13px] font-semibold">{{ $user->name }}</span>
                         <x-badge variant="brand" class="mt-1">{{ $user->labelPeran() }}</x-badge>

@@ -34,7 +34,7 @@
             @csrf
             @if ($ada) @method('PUT') @endif
 
-            <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <div class="space-y-5 kartu p-5 sm:p-6">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <x-input-label for="tanggal" value="Tanggal panen *" />
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5" aria-live="polite">
+            <aside class="space-y-3 kartu p-5" aria-live="polite">
                 <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Pratinjau</p>
                 <dl class="space-y-3 text-sm">
                     <div class="rounded-md border border-line-subtle p-3.5">

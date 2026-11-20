@@ -9,7 +9,7 @@
 <x-app-layout title="Recording tersimpan" :siklus="$siklus"
     :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], ['Tersimpan']]">
     <x-page lebar="max-w-xl">
-        <div class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-7">
+        <div class="space-y-5 kartu p-5 sm:p-7">
             <div class="flex items-start gap-3.5">
                 <span class="grid size-12 shrink-0 place-items-center rounded-full bg-success-soft text-success-text"><x-icon name="circle-check" class="size-6" /></span>
                 <div class="min-w-0">

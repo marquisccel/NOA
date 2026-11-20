@@ -19,7 +19,7 @@
     :crumbs="[['Kandang', route('kandang.index')], [$siklus->kandang->nama_farm, route('kandang.show', $siklus->kandang)], ['Recording', route('recording.index', $siklus)], [$judul]]">
     <x-page lebar="max-w-xl">
         {{-- Pilih tanggal (entri mundur); formulir terpisah agar tidak bersarang dengan formulir simpan. --}}
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-[16px] border border-line bg-surface px-4 py-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-3 kartu px-4 py-3.5">
             <div>
                 <p class="font-heading text-lg font-semibold leading-snug">Hari ke-{{ $hariKe }} · {{ $tanggal->translatedFormat('D, j M Y') }}</p>
                 <p class="text-[13px] text-ink-secondary">{{ $edit ? 'Ubah recording' : ($hariIniTanggal ? 'Hari ini · ubah tanggal untuk entri mundur' : 'Tanggal lampau · entri mundur') }}</p>
@@ -45,7 +45,7 @@
         @endunless
 
         @if ($bacaSaja)
-            <div class="space-y-4 rounded-[16px] border border-line bg-surface p-5">
+            <div class="space-y-4 kartu p-5">
                 <x-alert variant="info">Periode sudah ditutup, jadi isi baris ini terkunci. Penandaan paraf PPL tetap bisa dilakukan.</x-alert>
                 <dl class="grid gap-3 text-sm sm:grid-cols-3">
                     <div><dt class="text-ink-muted">Pakan terpakai</dt><dd class="mt-0.5 font-semibold">{{ F::angka($recording->pakan_pakai_sak) }} sak</dd></div>
@@ -55,7 +55,7 @@
             </div>
         @else
             <form method="POST" action="{{ $edit ? route('recording.update', $recording) : route('recording.store', $siklus) }}"
-                  class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6"
+                  class="space-y-5 kartu p-5 sm:p-6"
                   x-data="{
                       masuk: @js($nilai('pakan_masuk_sak', 0)),
                       pakai: @js($nilai('pakan_pakai_sak')),
@@ -182,7 +182,7 @@
         @endif
 
         @if ($bisaParaf)
-            <form method="POST" action="{{ route('recording.paraf', $recording) }}" class="space-y-4 rounded-[16px] border border-line bg-surface p-5"
+            <form method="POST" action="{{ route('recording.paraf', $recording) }}" class="space-y-4 kartu p-5"
                   onsubmit="return confirm('Tandai sudah diparaf PPL? Baris ini tidak bisa disunting lagi.')">
                 @csrf @method('PATCH')
                 <h2 class="font-heading text-base font-semibold">Tandai sudah diparaf PPL</h2>

@@ -9,7 +9,7 @@
 @endphp
 
 {{-- Tabel rekonsiliasi: catatan peternak vs RHPP inti. Selisih = RHPP − peternak. --}}
-<div class="{{ $cetak ? '' : 'overflow-x-auto rounded-[16px] border border-line bg-surface' }}">
+<div class="{{ $cetak ? '' : 'overflow-x-auto kartu' }}">
     <table class="{{ $cetak ? 'w-full border-collapse text-[11px]' : 'tabel min-w-[960px]' }}">
         <caption class="sr-only">Perbandingan catatan peternak dengan RHPP inti</caption>
         <thead>

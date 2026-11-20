@@ -31,7 +31,7 @@
         @if ($pilihan->count() < 2)
             <x-empty-state icon="columns-2" title="Belum cukup periode untuk dibandingkan" text="Perbandingan butuh minimal dua periode yang sudah ada catatan panennya." />
         @else
-            <form method="GET" action="{{ route('performa.bandingkan') }}" class="grid gap-3 rounded-[16px] border border-line bg-surface p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <form method="GET" action="{{ route('performa.bandingkan') }}" class="grid gap-3 kartu p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
                 <div>
                     <label for="a" class="block text-sm font-semibold">Periode pertama</label>
                     <select id="a" name="a" class="mt-1.5 {{ $kelas }}">
@@ -55,7 +55,7 @@
                 <x-alert variant="warning">Pilih dua periode yang berbeda.</x-alert>
             @else
                 @php $menang = ['a' => 0, 'b' => 0]; @endphp
-                <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+                <div class="overflow-x-auto kartu">
                     <table class="tabel min-w-[640px]">
                         <caption class="sr-only">Perbandingan dua periode</caption>
                         <thead>

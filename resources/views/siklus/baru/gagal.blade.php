@@ -2,7 +2,7 @@
 
 <x-app-layout title="Tidak bisa membuka periode" :crumbs="[['Kandang', route('kandang.index')], [$kandang->nama_farm, route('kandang.show', $kandang)], ['Buka periode baru']]">
     <x-page lebar="max-w-xl">
-        <div class="space-y-5 rounded-[16px] border border-warning-border bg-surface p-6 sm:p-8">
+        <div class="space-y-5 kartu !border-warning-border p-6 sm:p-8">
             <span class="grid size-12 place-items-center rounded-full bg-warning-soft text-warning-text"><x-icon name="triangle-alert" class="size-6" /></span>
             <div class="space-y-1.5">
                 <h1 class="font-heading text-xl font-semibold">{{ $kandang->nama_farm }} masih punya periode yang belum ditutup</h1>

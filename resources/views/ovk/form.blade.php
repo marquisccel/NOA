@@ -18,7 +18,7 @@
         </x-page-header>
 
         <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
-            <form method="POST" action="{{ $ada ? route('ovk.update', $ovk) : route('ovk.store', $siklus) }}" class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6"
+            <form method="POST" action="{{ $ada ? route('ovk.update', $ovk) : route('ovk.store', $siklus) }}" class="space-y-5 kartu p-5 sm:p-6"
                   x-data="{ tanggal: @js($tanggal), masuk: @js($siklus->tanggal_masuk->toDateString()), get hari() { const a = new Date(this.tanggal), b = new Date(this.masuk); return isNaN(a) ? null : Math.round((a - b) / 86400000) + 1 } }">
                 @csrf
                 @if ($ada) @method('PUT') @endif
@@ -71,7 +71,7 @@
                 </div>
             </form>
 
-            <aside class="space-y-3 rounded-[16px] border border-line bg-surface p-5">
+            <aside class="space-y-3 kartu p-5">
                 <p class="text-xs font-bold uppercase tracking-wide text-ink-muted">Periode sejauh ini</p>
                 <dl class="space-y-3 text-sm">
                     <div class="rounded-md border border-line-subtle p-3.5">

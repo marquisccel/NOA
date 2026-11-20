@@ -22,7 +22,7 @@
         {{-- Halaman galat berdiri sendiri: tidak bergantung pada sesi, basis data, atau navigasi agar tetap tampil saat sistem bermasalah. --}}
         <div class="flex min-h-screen flex-col items-center justify-center gap-6 px-4 py-10">
             <a href="{{ url('/') }}" class="flex h-14 items-center" aria-label="NOA"><x-logo /></a>
-            <main class="w-full max-w-md space-y-3 rounded-[16px] border border-line bg-surface px-6 py-10 text-center sm:px-9" role="main">
+            <main class="w-full max-w-md space-y-3 kartu px-6 py-10 text-center sm:px-9" role="main">
                 <span class="mx-auto grid size-12 place-items-center rounded-full {{ $warnaIkon }}"><x-icon :name="$ikon" class="size-6" /></span>
                 <p class="text-[11px] font-bold uppercase tracking-[1.4px] text-ink-muted">{{ $label ?? 'Kode '.$kode }}</p>
                 <h1 class="font-heading text-xl font-semibold">{{ $judul }}</h1>

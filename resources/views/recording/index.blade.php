@@ -59,7 +59,7 @@
             @endunless
             
 
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[960px]">
                     <caption class="sr-only">Recording harian: nilai aktual dan standar kemitraan</caption>
                     <thead>

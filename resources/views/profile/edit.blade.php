@@ -4,7 +4,7 @@
     <x-page lebar="max-w-3xl">
         <x-page-header title="Pengaturan" subtitle="Profil dan keamanan akun" />
 
-        <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6" aria-labelledby="judul-profil">
+        <section class="space-y-5 kartu p-5 sm:p-6" aria-labelledby="judul-profil">
             <h2 id="judul-profil" class="text-base font-bold">Profil</h2>
 
             <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
@@ -19,7 +19,7 @@
             </form>
         </section>
 
-        <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6" aria-labelledby="judul-sandi">
+        <section class="space-y-5 kartu p-5 sm:p-6" aria-labelledby="judul-sandi">
             <h2 id="judul-sandi" class="text-base font-bold">Ubah kata sandi</h2>
 
             <form method="POST" action="{{ route('password.update') }}" class="space-y-4"

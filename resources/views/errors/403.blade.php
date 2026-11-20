@@ -12,7 +12,7 @@
 @if ($user)
     <x-app-layout title="Akses ditolak" :crumbs="[['Beranda', route('dashboard')], ['Akses ditolak']]">
         <x-page lebar="max-w-xl">
-            <div class="flex flex-col items-center gap-3 rounded-[16px] border border-line bg-surface px-6 py-14 text-center">
+            <div class="flex flex-col items-center gap-3 kartu px-6 py-14 text-center">
                 <span class="grid size-12 place-items-center rounded-full bg-danger-soft text-danger-text"><x-icon name="shield-alert" class="size-6" /></span>
                 <p class="text-[11px] font-bold uppercase tracking-[1.4px] text-danger-text">Kode 403</p>
                 <h1 class="font-heading text-xl font-semibold">{{ $judul }}</h1>

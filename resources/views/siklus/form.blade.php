@@ -17,7 +17,7 @@
                 <x-alert variant="error">Periksa kembali {{ $errors->count() }} isian yang ditandai sebelum menyimpan.</x-alert>
             @endif
 
-            <section id="identitas" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section id="identitas" class="scroll-mt-24 space-y-4 kartu p-5 sm:p-6">
                 <h2 class="text-base font-bold">Identitas &amp; DOC</h2>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <x-field name="tanggal_masuk" label="Tanggal DOC masuk *" type="date" :value="$siklus->tanggal_masuk?->toDateString()" required />
@@ -39,7 +39,7 @@
                 </div>
             </section>
 
-            <section id="kontrak" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section id="kontrak" class="scroll-mt-24 space-y-4 kartu p-5 sm:p-6">
                 <div class="flex items-center gap-2.5"><h2 class="text-base font-bold">Kontrak</h2><x-badge variant="brand">Hanya peternak</x-badge></div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <x-field name="kontrak[harga_doc]" label="Harga DOC (Rp / ekor)" type="number" min="0" step="0.01" inputmode="decimal" :value="$nilai('harga_doc')" />
@@ -49,7 +49,7 @@
                 </div>
             </section>
 
-            <section id="bonus" class="scroll-mt-24 space-y-4 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section id="bonus" class="scroll-mt-24 space-y-4 kartu p-5 sm:p-6">
                 <div class="flex items-center gap-2.5"><h2 class="text-base font-bold">Skema bonus</h2><x-badge variant="brand">Hanya peternak</x-badge></div>
                 <p class="text-[13px] text-ink-secondary">Aktifkan bonus yang tercantum di kontrak. Semua boleh nonaktif. NOA hanya menyimpan nilainya; rupiah bonus tidak dihitung.</p>
                 <div class="grid gap-4 sm:grid-cols-2">

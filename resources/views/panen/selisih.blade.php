@@ -26,7 +26,7 @@
             <x-alert variant="warning"><p class="font-semibold">Panen + deplesi melebihi populasi awal sebanyak {{ F::angka(abs($selisih), 0) }} ekor</p></x-alert>
         @endif
 
-        <div class="overflow-hidden rounded-[16px] border border-line bg-surface">
+        <div class="overflow-hidden kartu">
             <dl class="divide-y divide-line-subtle text-sm">
                 @foreach ($baris as [$label, $nilai, $tebal])
                     <div class="flex items-center justify-between gap-4 px-5 py-3.5 {{ $tebal ? 'bg-tint font-bold' : '' }}">

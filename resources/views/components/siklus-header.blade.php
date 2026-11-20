@@ -20,8 +20,8 @@
 
 {{-- Konteks periode dan tab. ABK hanya melihat konteks; tab menuju halaman komersial hanya untuk peternak (R13). --}}
 <div class="space-y-3" data-siklus-header>
-    <div class="flex flex-wrap items-center gap-3.5 rounded-[16px] border border-line bg-surface px-4 py-3 sm:px-5">
-        <span class="grid size-10 shrink-0 place-items-center rounded-[11px] border border-brand-border bg-tint text-ink-brand"><x-icon name="refresh-cw" class="size-5" /></span>
+    <div class="flex flex-wrap items-center gap-3.5 kartu px-4 py-3 sm:px-5">
+        <span class="chip-ikon size-11 shrink-0" data-nada="merek"><x-icon name="refresh-cw" class="size-5" /></span>
         <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
                 <h1 class="font-heading text-lg font-semibold leading-snug">Periode {{ $nomor }}</h1>
@@ -47,7 +47,7 @@
                     @php $aktif = request()->routeIs(...$pola); @endphp
                     <li>
                         <a href="{{ route($rute, $siklus) }}" @if ($aktif) aria-current="page" @endif
-                           class="inline-flex min-h-11 items-center rounded-[10px] border px-3.5 text-[13px] {{ $aktif ? 'border-line bg-surface font-bold text-ink-brand' : 'border-line-subtle font-medium text-ink-secondary hover:bg-state-hover' }}">{{ $label }}</a>
+                           class="inline-flex min-h-11 items-center rounded-full border px-4 text-[13px] transition {{ $aktif ? 'kaca-chip border-brand-border font-bold text-ink-brand shadow-sm' : 'border-transparent font-medium text-ink-secondary hover:bg-state-hover' }}">{{ $label }}</a>
                     </li>
                 @endforeach
             </ul>

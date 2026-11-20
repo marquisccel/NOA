@@ -14,7 +14,7 @@
                 <x-button :href="route('abk.create')"><x-icon name="user-plus" class="size-4" /> Tambah ABK pertama</x-button>
             </x-empty-state>
         @else
-            <section class="rounded-[16px] border border-line bg-surface" aria-label="Daftar akun ABK">
+            <section class="kartu" aria-label="Daftar akun ABK">
                 <form method="GET" action="{{ route('abk.index') }}" class="flex flex-wrap items-center gap-2.5 p-3 sm:p-4">
                     <div class="relative min-w-0 flex-1 sm:max-w-xs">
                         <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />

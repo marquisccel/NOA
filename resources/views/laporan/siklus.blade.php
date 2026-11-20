@@ -44,7 +44,7 @@
 
         <section class="space-y-3" aria-labelledby="biaya-judul">
             <h2 id="biaya-judul" class="text-base font-bold">Biaya produksi (catatan peternak)</h2>
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[560px]">
                     <caption class="sr-only">Biaya produksi menurut komponen</caption>
                     <thead><tr><th scope="col">Komponen</th><th scope="col">Dasar</th><th scope="col" class="text-right">Biaya</th><th scope="col" class="text-right">Porsi</th></tr></thead>
@@ -58,7 +58,7 @@
             </div>
             @unless ($biaya['lengkap'])<p class="text-xs text-ink-muted">* Belum lengkap: harga DOC atau pakan di kontrak belum diisi.</p>@endunless
 
-            <div class="overflow-x-auto rounded-[16px] border border-line bg-surface">
+            <div class="overflow-x-auto kartu">
                 <table class="tabel min-w-[560px]">
                     <caption class="sr-only">Biaya per kilogram dan per ekor panen</caption>
                     <thead><tr><th scope="col">Ukuran</th><th scope="col">Dasar</th><th scope="col" class="text-right">Per kg</th><th scope="col" class="text-right">Per ekor panen</th></tr></thead>
@@ -74,7 +74,7 @@
 
         <section class="space-y-3" aria-labelledby="produksi-judul">
             <h2 id="produksi-judul" class="text-base font-bold">Produksi</h2>
-            <div class="overflow-hidden rounded-[16px] border border-line bg-surface">
+            <div class="overflow-hidden kartu">
                 <dl class="divide-y divide-line-subtle text-sm">
                     @foreach ([
                         ['Populasi DOC', F::angka($p['populasi'], 0).' ekor'],
@@ -97,12 +97,12 @@
             <h2 id="grafik-judul" class="text-base font-bold">Grafik periode</h2>
             @if ($adaGrafik)
                 <div class="grid gap-4 lg:grid-cols-2">
-                    <div class="rounded-[16px] border border-line bg-surface p-5">
+                    <div class="kartu p-5">
                         <h3 class="text-sm font-bold">Bobot rata-rata (g)</h3>
                         <p class="text-xs text-ink-secondary">Sampling vs standar</p>
                         <div class="mt-2 h-64"><canvas id="grafik-bobot" role="img" aria-label="Grafik bobot aktual dibandingkan standar menurut umur"></canvas></div>
                     </div>
-                    <div class="rounded-[16px] border border-line bg-surface p-5">
+                    <div class="kartu p-5">
                         <h3 class="text-sm font-bold">Deplesi kumulatif (%)</h3>
                         <p class="text-xs text-ink-secondary">Ayam mati + ayam afkir ÷ DOC</p>
                         <div class="mt-2 h-64"><canvas id="grafik-deplesi" role="img" aria-label="Grafik deplesi kumulatif menurut umur"></canvas></div>

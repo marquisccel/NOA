@@ -3,7 +3,7 @@
 @php
     $varian = [
         'primary' => 'bg-brand text-ink-on-primary hover:bg-brand-hover active:bg-brand-active',
-        'secondary' => 'border border-line-control bg-surface text-ink hover:bg-state-hover active:bg-state-pressed',
+        'secondary' => 'kaca-chip !border-line-control text-ink hover:bg-state-hover active:bg-state-pressed',
         'ghost' => 'text-ink-brand hover:bg-state-hover active:bg-state-pressed',
         'danger' => 'bg-danger-text text-white hover:opacity-90 active:opacity-100',
     ][$variant] ?? '';

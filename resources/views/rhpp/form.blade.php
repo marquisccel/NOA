@@ -18,7 +18,7 @@
         <form method="POST" action="{{ route('rhpp.simpan', $siklus) }}" enctype="multipart/form-data" novalidate class="space-y-5">
             @csrf @method('PUT')
 
-            <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section class="space-y-5 kartu p-5 sm:p-6">
                 <h2 class="text-base font-bold">Dokumen RHPP</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
@@ -44,7 +44,7 @@
                 @endif
             </section>
 
-            <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section class="space-y-5 kartu p-5 sm:p-6">
                 <h2 class="text-base font-bold">Populasi &amp; produksi</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-input-satuan name="populasi_doc" label="Populasi DOC *" satuan="ekor" step="1" min="0" inputmode="numeric" :value="$rhpp?->populasi_doc ?? $siklus->populasi" />
@@ -60,7 +60,7 @@
                 </div>
             </section>
 
-            <section class="space-y-5 rounded-[16px] border border-line bg-surface p-5 sm:p-6">
+            <section class="space-y-5 kartu p-5 sm:p-6">
                 <h2 class="text-base font-bold">Biaya &amp; hasil (sesuai RHPP)</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-input-satuan name="biaya_doc" label="Biaya DOC *" awalan="Rp" step="1" min="0" inputmode="numeric" :value="$rhpp?->biaya_doc" />

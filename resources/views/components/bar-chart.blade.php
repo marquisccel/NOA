@@ -8,7 +8,7 @@
 @endphp
 
 {{-- Grafik batang ringan (tanpa pustaka): standar dan aktual berdampingan, nilainya juga ditulis sebagai angka. --}}
-<section class="rounded-[16px] border border-line bg-surface p-5" aria-label="{{ $judul }}">
+<section class="kartu p-5" aria-label="{{ $judul }}">
     <h3 class="text-sm font-bold">{{ $judul }}</h3>
     @if ($sub)<p class="mt-0.5 text-xs text-ink-secondary">{{ $sub }}</p>@endif
 

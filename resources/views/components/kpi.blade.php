@@ -1,11 +1,11 @@
-@props(['label', 'value', 'caption' => null, 'icon' => null, 'istilah' => null, 'spark' => null, 'naikBagus' => true])
+@props(['label', 'value', 'caption' => null, 'icon' => null, 'istilah' => null, 'spark' => null, 'naikBagus' => true, 'nada' => 'merek'])
 
-<div {{ $attributes->merge(['class' => 'flex flex-col gap-3 rounded-[16px] border border-line bg-surface p-5']) }}>
+<div {{ $attributes->merge(['class' => 'flex flex-col gap-3 kartu p-5']) }}>
     <div class="flex items-center justify-between gap-2">
         <p class="text-[13px] font-semibold text-ink-secondary">@if ($istilah)<x-istilah :k="$istilah">{{ $label }}</x-istilah>@else{{ $label }}@endif</p>
-        @if ($icon)<span class="grid size-8 place-items-center rounded-[9px] bg-tint text-ink-brand"><x-icon :name="$icon" class="size-4" /></span>@endif
+        @if ($icon)<span class="chip-ikon size-9" data-nada="{{ $nada }}"><x-icon :name="$icon" class="size-[18px]" /></span>@endif
     </div>
-    <p class="font-heading text-[30px] font-semibold leading-none text-ink">{{ $value }}</p>
+    <p class="font-heading text-[32px] font-semibold leading-none tracking-[-0.03em] text-ink">{{ $value }}</p>
     @if ($caption)<p class="text-xs text-ink-muted">{{ $caption }}</p>@endif
     @if ($spark && count(array_filter($spark, fn ($n) => $n !== null)) >= 2)
         @php
