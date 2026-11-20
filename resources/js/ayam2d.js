@@ -179,8 +179,8 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         const set = (n, v) => adegan.style.setProperty(n, v);
         set('--rz', `${(kini.badan * 1.7 + (gerakMinimal ? 0 : Math.sin(t * 0.8) * 0.6)).toFixed(3)}deg`);
         set('--sk', `${(-kini.badan * 0.8).toFixed(3)}deg`);
-        set('--ex', (kini.x * 17).toFixed(2));
-        set('--ey', (kini.y * 13).toFixed(2));
+        set('--ex', (kini.x * 14).toFixed(2));
+        set('--ey', (kini.y * 11).toFixed(2));
         // kelopak ikut turun sedikit saat menunduk
         set('--lid', klem((1 - blink) / 0.96 + Math.max(0, kini.y) * 0.06, 0, 1).toFixed(3));
         set('--nap', (1 + nap * 0.008).toFixed(4));
