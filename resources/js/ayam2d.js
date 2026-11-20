@@ -65,6 +65,7 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         tutup: 0,
         kedipMulai: -1, kedipBerikut: 2.4, kedipLagi: false,
         tLalu: null,
+        sx: 0, sy: 0, sakBerikut: 1,   // lirikan mikro (saccade)
     };
 
     function gambar(waktu = performance.now()) {
@@ -92,6 +93,17 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
             ty = Math.sin(t * 0.37 + 1) * 0.25;
         }
 
+        // lirikan mikro: mata tidak pernah benar-benar diam, kadang bergeser sedikit dan tertahan sebentar
+        if (!gerakMinimal && fokus.mode === 'bebas') {
+            if (t > kini.sakBerikut) {
+                kini.sx = (Math.random() - 0.5) * 0.16;
+                kini.sy = (Math.random() - 0.5) * 0.12;
+                kini.sakBerikut = t + 0.5 + Math.random() * 1.8;
+            }
+            tx = klem(tx + kini.sx, -1, 1);
+            ty = klem(ty + kini.sy, -1, 1);
+        }
+
         // pegas bebas-kecepatan-bingkai: mata cepat, badan lambat
         const ke = gerakMinimal ? 1 : 1 - Math.exp(-dt * 13);
         const kb = gerakMinimal ? 1 : 1 - Math.exp(-dt * 3.6);
@@ -104,8 +116,12 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         if (!gerakMinimal && fokus.mode !== 'sandi') {
             if (kini.kedipMulai < 0 && t > kini.kedipBerikut) kini.kedipMulai = t;
             if (kini.kedipMulai >= 0) {
-                const p = (t - kini.kedipMulai) / 0.16;
-                kedip = 1 - Math.sin(Math.min(1, p) * Math.PI) * 0.97;
+                // menutup cepat, membuka lebih lambat (seperti kedipan sungguhan)
+                const p = (t - kini.kedipMulai) / 0.21;
+                const q = Math.min(1, p);
+                const halus = (x) => x * x * (3 - 2 * x);
+                const tutup = q < 0.36 ? halus(q / 0.36) : 1 - halus((q - 0.36) / 0.64);
+                kedip = 1 - tutup * 0.97;
                 if (p >= 1) {
                     kini.kedipMulai = -1;
                     if (!kini.kedipLagi && Math.random() < 0.22) {
@@ -143,7 +159,8 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         set('--sk', `${(-kini.badan * 0.8).toFixed(3)}deg`);
         set('--ex', (kini.x * 17).toFixed(2));
         set('--ey', (kini.y * 13).toFixed(2));
-                set('--lid', klem((1 - blink) / 0.96, 0, 1).toFixed(3));
+        // kelopak ikut turun sedikit saat menunduk
+        set('--lid', klem((1 - blink) / 0.96 + Math.max(0, kini.y) * 0.06, 0, 1).toFixed(3));
         set('--nap', (1 + nap * 0.008).toFixed(4));
         set('--nx', (1 - nap * 0.003).toFixed(4));
         lompatEl.style.setProperty('--bx', (1 - y * 4).toFixed(3));
