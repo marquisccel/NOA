@@ -48,7 +48,7 @@
                                                     <i class="ayam-sorot ayam-sorot-kecil" style="left:63%;top:66%;width:14%;height:9%;--r:-35deg"></i>
                                                     <i class="ayam-teduh"></i>
                                                 </span>
-                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:987.1% 1394.7%;background-position:70.38% 20.87%;-webkit-mask-image:url('{{ $ayam('mata1.webp') }}');mask-image:url('{{ $ayam('mata1.webp') }}')"></span>
+                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:987.1% 1394.7%;background-position:calc(70.38% + var(--ex, 0) * 0.11273%) calc(20.87% + var(--ey, 0) * 0.07724%);-webkit-mask-image:url('{{ $ayam('mata1_kulit.webp') }}');mask-image:url('{{ $ayam('mata1_kulit.webp') }}')"></span>
                                                 <i class="ayam-garis"></i>
                                             </span>
                                         </span>
@@ -59,7 +59,7 @@
                                                     <i class="ayam-sorot" style="left:23.86%;top:22.1%;width:53.35%;height:13.25%;--r:53.2deg"></i>
                                                     <i class="ayam-teduh"></i>
                                                 </span>
-                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:1934% 1821%;background-position:86.82% 21.22%;-webkit-mask-image:url('{{ $ayam('mata2.webp') }}');mask-image:url('{{ $ayam('mata2.webp') }}')"></span>
+                                                <span class="ayam-kulit" style="background-image:url('{{ $ayam('badan.webp') }}');background-size:1934% 1821%;background-position:calc(86.82% + var(--ex, 0) * 0.006543%) calc(21.22% + var(--ey, 0) * 0.010459%);-webkit-mask-image:url('{{ $ayam('mata2_kulit.webp') }}');mask-image:url('{{ $ayam('mata2_kulit.webp') }}')"></span>
                                                 <i class="ayam-garis ayam-garis-jauh"></i>
                                             </span>
                                         </span>

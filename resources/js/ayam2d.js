@@ -61,7 +61,10 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
     // ---------- keadaan animasi ----------
     const kini = {
         x: 0, y: 0,            // arah pandang mata (-1..1)
+        vx: 0, vy: 0,          // kecepatan mata (untuk pegas)
         badan: 0,              // condong badan (-1..1), lebih lambat dari mata
+        vb: 0,
+        tx: 0, ty: 0,          // sasaran pandang yang sudah dihaluskan (kursor tidak langsung ditiru)
         tutup: 0,
         kedipMulai: -1, kedipBerikut: 2.4, kedipLagi: false,
         tLalu: null,
@@ -86,8 +89,9 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
             tx = -0.9;
             ty = 0.1;
         } else if (ptr.ada && t - ptr.terakhir < 5) {
-            tx = klem((ptr.x - hx) / (window.innerWidth * 0.3), -1, 1);
-            ty = klem((ptr.y - hy) / (window.innerHeight * 0.3), -1, 1);
+            // tanh: makin jauh kursor, makin pelan mendekati batas, tanpa tabrakan keras di ujung
+            tx = Math.tanh((ptr.x - hx) / (window.innerWidth * 0.28));
+            ty = Math.tanh((ptr.y - hy) / (window.innerHeight * 0.28));
         } else if (!gerakMinimal) {
             tx = Math.sin(t * 0.6) * 0.55 + Math.sin(t * 1.7 + 2) * 0.12;
             ty = Math.sin(t * 0.37 + 1) * 0.25;
@@ -105,11 +109,29 @@ export function mulaiAyam2d(wadah, { gerakMinimal = false } = {}) {
         }
 
         // pegas bebas-kecepatan-bingkai: mata cepat, badan lambat
-        const ke = gerakMinimal ? 1 : 1 - Math.exp(-dt * 13);
-        const kb = gerakMinimal ? 1 : 1 - Math.exp(-dt * 3.6);
-        kini.x = lerp(kini.x, tx, ke);
-        kini.y = lerp(kini.y, ty, ke);
-        kini.badan = lerp(kini.badan, tx, kb);
+        if (gerakMinimal) {
+            kini.x = tx;
+            kini.y = ty;
+            kini.badan = tx;
+        } else {
+            // sasaran disaring dulu supaya gerak kursor yang patah-patah menjadi mulus
+            const kf = 1 - Math.exp(-dt * 24);
+            kini.tx = lerp(kini.tx, tx, kf);
+            kini.ty = lerp(kini.ty, ty, kf);
+            // pegas hampir-teredam: mulai dan berhenti halus, sedikit melampaui sasaran lalu mantap
+            const pegas = (pos, vel, target, k, zeta) => {
+                const langkah = Math.max(1, Math.ceil(dt / 0.008));
+                const h = dt / langkah;
+                for (let i = 0; i < langkah; i++) {
+                    vel += (k * (target - pos) - 2 * zeta * Math.sqrt(k) * vel) * h;
+                    pos += vel * h;
+                }
+                return [pos, vel];
+            };
+            [kini.x, kini.vx] = pegas(kini.x, kini.vx, kini.tx, 220, 0.86);
+            [kini.y, kini.vy] = pegas(kini.y, kini.vy, kini.ty, 220, 0.86);
+            [kini.badan, kini.vb] = pegas(kini.badan, kini.vb, kini.tx, 22, 0.95);
+        }
 
         // berkedip (kadang dua kali berturut-turut), atau memejam saat mengisi kata sandi
         let kedip = 1;

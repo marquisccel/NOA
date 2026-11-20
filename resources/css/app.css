@@ -425,7 +425,7 @@ select:not([multiple]) {
     inset: -30%;
     border-radius: 50%;
     background: radial-gradient(closest-side, rgb(125 24 10 / 0.3) 50%, rgb(125 24 10 / 0.11) 76%, transparent 100%);
-    opacity: calc(1 - var(--lid, 0) * 0.5);
+    opacity: clamp(0, calc(1 - var(--lid, 0) * 1.7), 1);
     pointer-events: none;
 }
 
@@ -434,7 +434,8 @@ select:not([multiple]) {
 /* Mata jauh (di tepi wajah) hanya bergeser sedikit, seperti pada gambar aslinya. */
 .ayam-mata-jauh .ayam-oko { translate: calc(var(--ex, 0) * 0.12%) calc(var(--ey, 0) * 0.18%); }
 
-/* Kelopak: kulit kepala (diambil dari gambar badan) turun dari atas menutupi bola mata, lalu garis kelopak tipis. */
+/* Kelopak: kulit kepala (diambil dari gambar badan) turun dari atas menutupi bola mata, lalu garis kelopak tipis.
+   Posisi latar kulit dikoreksi (var --ex/--ey) agar tetap sejajar dengan wajah walau mata bergeser, jadi tidak ada bercak pucat. */
 .ayam-kulit {
     position: absolute;
     inset: 0;
