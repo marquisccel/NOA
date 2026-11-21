@@ -401,7 +401,7 @@ class UiFase3Test extends TestCase
 
         $this->actingAs($this->peternak)->get(route('siklus.show', $s))->assertOk()
             ->assertSee('Belum ada recording tersimpan')->assertSee('Isi recording hari ke-1')->assertSee('Jumlah ayam awal (DOC)')
-            ->assertSee('Grafik muncul setelah sampling bobot pertama')->assertSee('Grafik muncul setelah recording harian pertama')
+            ->assertDontSee('Grafik muncul setelah sampling bobot pertama')->assertDontSee('Grafik muncul setelah recording harian pertama')
             ->assertSee('Standar harian belum diunggah')->assertSee('Pakan masuk belum dicatat')->assertSee('Recording hari ke-1 belum diisi');
     }
 

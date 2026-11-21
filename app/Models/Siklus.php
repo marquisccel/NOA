@@ -29,6 +29,17 @@ class Siklus extends Model
         ];
     }
 
+    /** Nomor siklus bergantung pada tanggal masuk dan keberadaan siklus: memo dibuang bila salah satunya berubah. */
+    protected static function booted(): void
+    {
+        $buang = static fn () => app('siklus.nomor')->exchangeArray([]);
+
+        static::saved($buang);
+        static::deleted($buang);
+        static::restored($buang);
+        static::forceDeleted($buang);
+    }
+
     public const STATUS_BERJALAN = 'berjalan';
 
     public const STATUS_PANEN_SELESAI = 'panen_selesai';
@@ -103,9 +114,38 @@ class Siklus extends Model
      */
     public static function nomorMap(iterable $kandangIds): array
     {
+        $ids = collect($kandangIds)->all();
+
+        // Memo per-request (dibersihkan saat siklus berubah dan di akhir request). Hanya untuk id biasa.
+        $memo = null;
+        $kunci = null;
+        if (collect($ids)->every(fn ($v) => is_int($v) || is_string($v))) {
+            $memo = app('siklus.nomor');
+            $kunci = collect($ids)->unique()->sort()->implode(',');
+
+            if (isset($memo[$kunci])) {
+                return $memo[$kunci];
+            }
+        }
+
+        $peta = static::hitungNomorMap($ids);
+
+        if ($memo !== null) {
+            $memo[$kunci] = $peta;
+        }
+
+        return $peta;
+    }
+
+    /**
+     * @param  array<int, mixed>  $kandangIds
+     * @return array<int, int>
+     */
+    private static function hitungNomorMap(array $kandangIds): array
+    {
         $peta = [];
 
-        $perKandang = static::whereIn('kandang_id', collect($kandangIds)->all())
+        $perKandang = static::whereIn('kandang_id', $kandangIds)
             ->orderBy('kandang_id')->orderBy('tanggal_masuk')->orderBy('id')
             ->get(['id', 'kandang_id'])
             ->groupBy('kandang_id');

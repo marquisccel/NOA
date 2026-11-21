@@ -22,18 +22,34 @@ class RingkasanDashboard
     /** Jenis aktivitas yang dicatat, dipakai sebagai pilihan filter. */
     public const JENIS = ['Recording harian', 'Sampling bobot', 'Pemberian OVK', 'Panen'];
 
+    /** Daftar id kandang dan siklus terbuka per pengguna, dimuat sekali per instance (satu request). */
+    private array $kandangIdsMemo = [];
+
+    private array $terbukaMemo = [];
+
+    /** @return Collection<int, int> */
+    private function kandangIds(User $user): Collection
+    {
+        return $this->kandangIdsMemo[$user->id] ??= Kandang::where('user_id', $user->id)->pluck('id');
+    }
+
+    /** Siklus yang belum ditutup (berjalan sampai rekonsiliasi), beserta kandangnya, urut tanggal masuk. */
+    private function terbuka(User $user): Collection
+    {
+        return $this->terbukaMemo[$user->id] ??= Siklus::whereIn('kandang_id', $this->kandangIds($user))
+            ->whereIn('status', Siklus::TERBUKA)
+            ->with('kandang')
+            ->orderBy('tanggal_masuk')
+            ->get();
+    }
+
     /**
      * @return array{total_kandang: int, kandang_aktif: int, siklus_berjalan: int, populasi_aktif: int, siklus: Collection<int, array<string, mixed>>}
      */
     public function peternak(User $user): array
     {
-        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
-
-        $berjalan = Siklus::whereIn('kandang_id', $kandangIds)
-            ->whereIn('status', Siklus::TERBUKA)
-            ->with('kandang')
-            ->orderBy('tanggal_masuk')
-            ->get();
+        $kandangIds = $this->kandangIds($user);
+        $berjalan = $this->terbuka($user);
 
         $nomor = Siklus::nomorMap($kandangIds);
         $deplesi = RecordingHarian::whereIn('siklus_id', $berjalan->pluck('id'))
@@ -69,8 +85,10 @@ class RingkasanDashboard
     public function aktivitas(User $user, int $batas = 5, ?string $jenisFilter = null, ?int $kandangFilter = null): Collection
     {
         $kandangIds = Kandang::where('user_id', $user->id)->when($kandangFilter, fn ($q) => $q->whereKey($kandangFilter))->pluck('id');
-        $siklusIds = Siklus::whereIn('kandang_id', $kandangIds)->pluck('id');
-        $nomor = Siklus::nomorMap(Kandang::where('user_id', $user->id)->pluck('id'));
+        // Siklus dan kandangnya dimuat sekali lalu dipasang ke tiap catatan (sebelumnya dimuat ulang per jenis catatan).
+        $siklusMap = Siklus::whereIn('kandang_id', $kandangIds)->with('kandang')->get()->keyBy('id');
+        $siklusIds = $siklusMap->keys();
+        $nomor = Siklus::nomorMap($this->kandangIds($user));
 
         $sumber = [
             ['Recording harian', 'clipboard-list', RecordingHarian::class, fn ($r) => 'Hari ke-'.$r->hari_ke, 'recording.index', fn ($r) => 'Pakan '.Format::angka($r->pakan_pakai_sak).' sak · mati '.$r->mati.' · afkir '.$r->afkir],
@@ -86,10 +104,10 @@ class RingkasanDashboard
             }
 
             $model::whereIn('siklus_id', $siklusIds)
-                ->with('siklus.kandang')
                 ->orderByDesc('tanggal')->orderByDesc('id')
                 ->limit($batas)
                 ->get()
+                ->each(fn ($r) => $r->setRelation('siklus', $siklusMap[$r->siklus_id]))
                 ->each(fn ($r) => $semua->push([
                     'jenis' => $jenis,
                     'ikon' => $ikon,
@@ -112,12 +130,11 @@ class RingkasanDashboard
      */
     public function perhatian(User $user, int $batas = 6): Collection
     {
-        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
-        $nomor = Siklus::nomorMap($kandangIds);
+        $nomor = Siklus::nomorMap($this->kandangIds($user));
         $ringkasan = app(RingkasanSiklus::class);
 
         $semua = collect();
-        Siklus::whereIn('kandang_id', $kandangIds)->where('status', Siklus::STATUS_BERJALAN)->with('kandang')->orderBy('tanggal_masuk')->get()
+        $this->terbuka($user)->filter(fn (Siklus $s) => $s->status === Siklus::STATUS_BERJALAN)
             ->each(function (Siklus $s) use ($ringkasan, $nomor, $semua) {
                 foreach ($ringkasan->hitung($s)['perhatian'] as $h) {
                     $mendesak = str_contains($h['judul'], 'belum diisi') || str_starts_with($h['judul'], 'Stok pakan');
@@ -135,9 +152,10 @@ class RingkasanDashboard
      */
     public function langkahAwal(User $user): array
     {
-        $kandangIds = Kandang::where('user_id', $user->id)->pluck('id');
-        $siklusIds = Siklus::whereIn('kandang_id', $kandangIds)->pluck('id');
-        $pertama = Siklus::whereIn('id', $siklusIds)->orderBy('id')->first();
+        $kandangIds = $this->kandangIds($user);
+        $semuaSiklus = Siklus::whereIn('kandang_id', $kandangIds)->orderBy('id')->get(['id']);
+        $siklusIds = $semuaSiklus->pluck('id');
+        $pertama = $semuaSiklus->first();
 
         return [
             ['judul' => 'Daftarkan kandang', 'teks' => 'Nama, alamat, dan kapasitas kandang.', 'selesai' => $kandangIds->isNotEmpty(), 'tautan' => route('kandang.create'), 'label' => 'Tambah kandang'],

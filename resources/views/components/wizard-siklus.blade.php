@@ -47,7 +47,6 @@
                 <p class="text-[11px] font-bold uppercase tracking-[1.2px] text-ink-muted">Periode untuk</p>
                 <dl class="space-y-3 text-[13px]">
                     <div><dt class="text-ink-muted">Kandang</dt><dd class="mt-0.5 font-semibold">{{ $kandang->nama_farm }}</dd></div>
-                    <div><dt class="text-ink-muted">Tipe</dt><dd class="mt-0.5 font-semibold">{{ $kandang->labelTipe() ?? '–' }}</dd></div>
                     <div><dt class="text-ink-muted">Alamat</dt><dd class="mt-0.5 font-semibold">{{ $kandang->alamat ?: '–' }}</dd></div>
                     <div><dt class="text-ink-muted">Kapasitas</dt><dd class="mt-0.5 font-semibold">{{ number_format($kandang->kapasitas, 0, ',', '.') }} ekor</dd></div>
                     <div><dt class="text-ink-muted">Periode berikutnya</dt><dd class="mt-0.5 font-semibold">Periode {{ $konteks['berikutnya'] }}</dd></div>

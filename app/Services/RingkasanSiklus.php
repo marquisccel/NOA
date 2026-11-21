@@ -27,15 +27,17 @@ class RingkasanSiklus
         $standar = $siklus->standarHarian()->get();
         $stdPerHari = $standar->keyBy('hari_ke');
 
+        $samplings = $siklus->samplings()->get();
+
         $baris = $this->recording->baris(
             $siklus,
             $siklus->recordings()->orderBy('hari_ke')->get(),
             $standar,
             collect(),
-            $siklus->samplings()->get(),
+            $samplings,
         );
         $akhir = $baris ? end($baris) : null;
-        $samplingBaris = $this->sampling->baris($siklus, $siklus->samplings()->get(), $standar);
+        $samplingBaris = $this->sampling->baris($siklus, $samplings, $standar);
         $samplingAkhir = $samplingBaris ? end($samplingBaris) : null;
 
         $deplesiStd = $akhir ? $this->angkaStd($stdPerHari->get($akhir['hari_ke'])?->deplesi_std_persen) : null;

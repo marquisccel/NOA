@@ -56,11 +56,8 @@ class UiPutaran2Test extends TestCase
         $this->assertStringNotContainsString('sm:grid-cols-2', substr($html, (int) strpos($html, 'data-demo'), 1200));
     }
 
-    public function test_istilah_awam_periode_dan_tipe_kandang(): void
+    public function test_istilah_awam_periode(): void
     {
-        $this->assertSame('Kandang terbuka', Kandang::TIPE[Kandang::TIPE_OPEN_HOUSE][0]);
-        $this->assertSame('Kandang tertutup', Kandang::TIPE[Kandang::TIPE_CLOSED_HOUSE][0]);
-
         $html = $this->actingAs($this->peternak)->get(route('bantuan'))->assertOk()->getContent();
         $this->assertStringContainsString('Periode', $html);
         $this->assertStringNotContainsString('Siklus', $html);
@@ -101,7 +98,7 @@ class UiPutaran2Test extends TestCase
 
     public function test_detail_kandang_menampilkan_peta_dan_riwayat_ayam_dipanen(): void
     {
-        $kandang = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Peta', 'alamat' => 'Desa Uji, Kec. Uji', 'kapasitas' => 5000, 'tipe' => Kandang::TIPE_CLOSED_HOUSE]);
+        $kandang = Kandang::create(['user_id' => $this->peternak->id, 'nama_farm' => 'Kandang Peta', 'alamat' => 'Desa Uji, Kec. Uji', 'kapasitas' => 5000]);
 
         $html = $this->actingAs($this->peternak)->get(route('kandang.show', $kandang))->assertOk()->getContent();
 

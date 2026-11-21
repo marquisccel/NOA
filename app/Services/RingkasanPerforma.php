@@ -17,11 +17,14 @@ class RingkasanPerforma
      */
     public function hitung(Siklus $siklus): array
     {
-        $recordings = $siklus->recordings();
-        $mati = (int) (clone $recordings)->sum('mati');
-        $afkir = (int) (clone $recordings)->sum('afkir');
-        $pakanTerpakaiSak = (float) (clone $recordings)->sum('pakan_pakai_sak');
-        $pakanMasukSak = (float) (clone $recordings)->sum('pakan_masuk_sak');
+        // Satu query agregat (sebelumnya empat SUM terpisah); nilai yang dihasilkan sama.
+        $jumlah = $siklus->recordings()
+            ->selectRaw('sum(mati) as mati, sum(afkir) as afkir, sum(pakan_pakai_sak) as pakan_pakai_sak, sum(pakan_masuk_sak) as pakan_masuk_sak')
+            ->toBase()->first();
+        $mati = (int) ($jumlah->mati ?? 0);
+        $afkir = (int) ($jumlah->afkir ?? 0);
+        $pakanTerpakaiSak = (float) ($jumlah->pakan_pakai_sak ?? 0);
+        $pakanMasukSak = (float) ($jumlah->pakan_masuk_sak ?? 0);
 
         $panen = $siklus->panen()->orderBy('tanggal')->orderBy('id')->get();
         $totalEkor = (int) $panen->sum('jumlah_ekor');

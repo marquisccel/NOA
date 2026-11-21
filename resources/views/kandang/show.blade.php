@@ -26,19 +26,23 @@
                 <dl class="mt-3 grid gap-x-6 gap-y-4 sm:grid-cols-2">
                     <div><dt class="text-xs text-ink-muted">Nama kandang</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->nama_farm }}</dd></div>
                     <div><dt class="text-xs text-ink-muted">Kapasitas</dt><dd class="mt-0.5 text-sm font-semibold">{{ F::angka($kandang->kapasitas, 0) }} ekor</dd></div>
-                    <div><dt class="text-xs text-ink-muted">Tipe kandang</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->labelTipe() ?? '—' }}</dd></div>
                     <div><dt class="text-xs text-ink-muted">Pemilik</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->user->name }}</dd></div>
                     <div class="sm:col-span-2"><dt class="text-xs text-ink-muted">Alamat</dt><dd class="mt-0.5 text-sm font-semibold">{{ $kandang->alamat ?: 'Belum diisi' }}</dd></div>
                 </dl>
 
-                @if ($kandang->alamat)
-                    {{-- Peta langsung dari Google Maps berdasarkan alamat (tanpa kunci API); dimuat saat terlihat. --}}
+                @php
+                    // Peta mengikuti link Google Maps kandang bila ada (koordinat atau nama tempat), jika tidak memakai alamat.
+                    $kueriPeta = $kandang->peta_query ?: $kandang->alamat;
+                    $tautanPeta = $kandang->link_gmaps ?: 'https://www.google.com/maps/search/?api=1&query='.rawurlencode((string) $kandang->alamat);
+                @endphp
+                @if ($kueriPeta)
+                    {{-- Peta langsung dari Google Maps (tanpa kunci API); dimuat saat terlihat. --}}
                     <div class="mt-4 space-y-2" data-peta>
                         <div class="overflow-hidden rounded-md border border-line-subtle">
                             <iframe title="Lokasi {{ $kandang->nama_farm }} di Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block h-52 w-full border-0"
-                                src="https://maps.google.com/maps?q={{ rawurlencode($kandang->alamat) }}&amp;z=14&amp;output=embed"></iframe>
+                                src="https://maps.google.com/maps?q={{ rawurlencode($kueriPeta) }}&amp;z={{ $kandang->peta_query ? 16 : 14 }}&amp;output=embed"></iframe>
                         </div>
-                        <a href="https://www.google.com/maps/search/?api=1&amp;query={{ rawurlencode($kandang->alamat) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
+                        <a href="{{ $tautanPeta }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
                             <x-icon name="map-pin" class="size-4" /> Buka di Google Maps
                         </a>
                     </div>
@@ -109,7 +113,7 @@
                 <p class="text-sm leading-[21px] text-ink-secondary">Periode baru akan dibuat untuk kandang berikut. Setelah dibuka, kandang ini tidak dapat membuka periode lain sampai periodenya ditutup.</p>
                 <div class="rounded-md border border-line bg-page p-3.5">
                     <p class="text-sm font-bold">{{ $kandang->nama_farm }}</p>
-                    <p class="mt-0.5 text-[13px] text-ink-secondary">{{ F::angka($kandang->kapasitas, 0) }} ekor · {{ $kandang->labelTipe() ?? 'Tipe belum diisi' }} · Berikutnya: Periode {{ $nomorBerikutnya }}</p>
+                    <p class="mt-0.5 text-[13px] text-ink-secondary">{{ F::angka($kandang->kapasitas, 0) }} ekor · Berikutnya: Periode {{ $nomorBerikutnya }}</p>
                 </div>
                 <p class="text-[13px] leading-[19px] text-ink-secondary">Langkah berikutnya adalah inisialisasi periode: data DOC, kontrak, skema bonus, dan tabel standar harian.</p>
                 <div class="flex justify-end gap-2.5 pt-2">

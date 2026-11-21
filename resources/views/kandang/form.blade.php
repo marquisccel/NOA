@@ -1,6 +1,5 @@
 @php
     $ada = $kandang->exists;
-    $tipeTerpilih = old('tipe', $kandang->tipe);
     $judul = $ada ? 'Ubah Kandang · '.$kandang->nama_farm : 'Tambah Kandang';
     $banyakGalat = $errors->count();
     $kelasArea = 'mt-2 block w-full rounded-md bg-surface px-3.5 py-3 text-base text-ink placeholder:text-ink-muted focus:ring-1 ';
@@ -13,7 +12,7 @@
             <a href="{{ $ada ? route('kandang.show', $kandang) : route('kandang.index') }}" class="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-semibold text-ink-brand hover:underline">
                 <x-icon name="arrow-left" class="size-4" /> {{ $ada ? 'Kembali ke detail kandang' : 'Kembali ke daftar kandang' }}
             </a>
-            <x-page-header :title="$judul" :subtitle="$ada ? 'Perbarui nama, alamat, kapasitas, atau tipe kandang.' : 'Daftarkan kandang baru. Periode pemeliharaan dibuka terpisah.'" />
+            <x-page-header :title="$judul" :subtitle="$ada ? 'Perbarui nama, alamat, atau kapasitas kandang.' : 'Daftarkan kandang baru. Periode pemeliharaan dibuka terpisah.'" />
         </div>
 
         <div class="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -40,25 +39,12 @@
                     </div>
                 </div>
 
+                <x-field name="link_gmaps" label="Link Google Maps (opsional)" type="url" inputmode="url" :value="$kandang->link_gmaps" placeholder="https://maps.app.goo.gl/..."
+                         hint="Di Google Maps, pilih lokasi kandang, tekan Bagikan, salin link, lalu tempel di sini. Peta di detail kandang mengikuti link ini." />
+
                 <x-field name="kapasitas" label="Kapasitas (ekor) *" type="number" min="1" step="1" inputmode="numeric" :value="$kandang->kapasitas" placeholder="4000" required
                          hint="Jumlah maksimal ayam yang dapat ditampung kandang." />
 
-                <fieldset>
-                    <legend class="block text-sm font-semibold text-ink">Tipe kandang *</legend>
-                    <div class="mt-2 grid gap-3 sm:grid-cols-2">
-                        @foreach (\App\Models\Kandang::TIPE as $kunci => [$label, $ket])
-                            <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-md border p-3.5 transition-colors has-[:checked]:border-brand has-[:checked]:bg-tint {{ $errors->has('tipe') ? 'border-danger' : 'border-line-control' }}">
-                                <input type="radio" name="tipe" value="{{ $kunci }}" @checked($tipeTerpilih === $kunci)
-                                       class="mt-0.5 size-[18px] border-line-control text-brand focus:ring-brand" @if ($errors->has('tipe')) aria-invalid="true" @endif>
-                                <span>
-                                    <span class="block text-sm font-semibold text-ink">{{ $label }}</span>
-                                    <span class="block text-xs text-ink-secondary">{{ $ket }}</span>
-                                </span>
-                            </label>
-                        @endforeach
-                    </div>
-                    <x-input-error class="mt-1.5" :messages="$errors->get('tipe')" />
-                </fieldset>
 
                 <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-4">
                     <p class="text-xs text-ink-muted">* wajib diisi</p>
@@ -74,7 +60,7 @@
                     <h2 class="text-sm font-bold text-ink">{{ $ada ? 'Tentang perubahan' : 'Setelah kandang tersimpan' }}</h2>
                     <ol class="mt-3 space-y-3 text-[13px] leading-[19px] text-ink-secondary">
                         @foreach ($ada
-                            ? ['Nama, alamat, kapasitas, dan tipe dapat diubah kapan saja.', 'Riwayat periode tetap tersimpan di halaman detail kandang.', 'Kandang tetap terhubung dengan akun pemilik Anda.']
+                            ? ['Nama, alamat, dan kapasitas dapat diubah kapan saja.', 'Riwayat periode tetap tersimpan di halaman detail kandang.', 'Kandang tetap terhubung dengan akun pemilik Anda.']
                             : ['Kandang otomatis terhubung dengan akun Anda sebagai pemilik.', 'Periode pemeliharaan tidak dibuat otomatis.', 'Buka periode baru dari halaman detail kandang.'] as $i => $teks)
                             <li class="flex gap-3">
                                 <span class="grid size-5 shrink-0 place-items-center rounded-full bg-tint text-[11px] font-bold text-ink-brand">{{ $i + 1 }}</span>

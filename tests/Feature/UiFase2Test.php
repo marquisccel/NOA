@@ -164,7 +164,9 @@ class UiFase2Test extends TestCase
         $this->actingAs($this->peternak)->get(route('kandang.index'))
             ->assertSee('2 kandang · 1 punya periode terbuka');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['q' => 'suka']))->assertSee('Sukamaju')->assertDontSee('Pujon')->assertSee('1 hasil');
-        $this->actingAs($this->peternak)->get(route('kandang.index', ['tipe' => 'closed_house']))->assertSee('Pujon')->assertDontSee('Sukamaju');
+        // Tipe kandang sudah dihapus: tidak ada filternya, dan parameter lama diabaikan.
+        $this->actingAs($this->peternak)->get(route('kandang.index'))->assertDontSee('Tipe: Semua');
+        $this->actingAs($this->peternak)->get(route('kandang.index', ['tipe' => 'closed_house']))->assertSee('Pujon')->assertSee('Sukamaju');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['status' => 'berjalan']))->assertSee('Pujon')->assertDontSee('Sukamaju');
         $this->actingAs($this->peternak)->get(route('kandang.index', ['status' => 'tanpa']))->assertSee('Sukamaju')->assertDontSee('Pujon');
     }
@@ -190,37 +192,38 @@ class UiFase2Test extends TestCase
         $this->actingAs($this->peternak)->get(route('kandang.index'))->assertDontSee('Milik Orang Lain');
     }
 
-    public function test_form_kandang_alamat_dan_tipe_wajib_dengan_pesan_desain(): void
+    public function test_form_kandang_nama_alamat_dan_kapasitas_wajib_dengan_pesan_desain(): void
     {
         $this->actingAs($this->peternak)->post(route('kandang.store'), ['nama_farm' => '', 'alamat' => '', 'kapasitas' => -500])
             ->assertSessionHasErrors([
                 'nama_farm' => 'Nama kandang wajib diisi.',
                 'alamat' => 'Alamat kandang wajib diisi.',
                 'kapasitas' => 'Kapasitas harus berupa angka lebih dari 0.',
-                'tipe' => 'Pilih salah satu tipe kandang.',
-            ]);
+            ])->assertSessionDoesntHaveErrors('tipe');
+        // Tipe kandang tidak lagi diminta; kiriman lama tidak menyebabkan galat dan tidak disimpan.
         $this->actingAs($this->peternak)->post(route('kandang.store'), ['nama_farm' => 'X', 'alamat' => 'Y', 'kapasitas' => 10, 'tipe' => 'panggung'])
-            ->assertSessionHasErrors('tipe');
+            ->assertSessionHasNoErrors();
+        $this->assertNull(Kandang::where('nama_farm', 'X')->firstOrFail()->tipe);
     }
 
     public function test_tambah_dan_ubah_kandang_dengan_pesan_sukses(): void
     {
-        $this->actingAs($this->peternak)->post(route('kandang.store'), ['nama_farm' => 'Kandang 4', 'alamat' => 'Desa X', 'kapasitas' => 4000, 'tipe' => 'open_house'])
+        $this->actingAs($this->peternak)->post(route('kandang.store'), ['nama_farm' => 'Kandang 4', 'alamat' => 'Desa X', 'kapasitas' => 4000])
             ->assertRedirect(route('kandang.index'))
             ->assertSessionHas('status', 'Kandang “Kandang 4” berhasil ditambahkan. Buka periode baru dari halaman detail kandang.');
 
         $k = Kandang::firstOrFail();
-        $this->assertSame('Kandang terbuka', $k->labelTipe());
+        $this->assertNull($k->tipe);
 
-        $this->actingAs($this->peternak)->put(route('kandang.update', $k), ['nama_farm' => 'Kandang 4B', 'alamat' => 'Desa Y', 'kapasitas' => 4500, 'tipe' => 'closed_house'])
+        $this->actingAs($this->peternak)->put(route('kandang.update', $k), ['nama_farm' => 'Kandang 4B', 'alamat' => 'Desa Y', 'kapasitas' => 4500])
             ->assertRedirect(route('kandang.show', $k))->assertSessionHas('status', 'Perubahan data kandang berhasil disimpan.');
-        $this->assertSame('Kandang tertutup', $k->fresh()->labelTipe());
+        $this->assertSame('Kandang 4B', $k->fresh()->nama_farm);
     }
 
-    public function test_form_menampilkan_pilihan_tipe_dan_panel_info(): void
+    public function test_form_menampilkan_panel_info_tanpa_pilihan_tipe(): void
     {
         $this->actingAs($this->peternak)->get(route('kandang.create'))
-            ->assertSee('Kandang terbuka')->assertSee('Kandang tertutup')->assertSee('udara mengalir alami')->assertSee('Setelah kandang tersimpan')->assertSee('Alamat kandang *');
+            ->assertDontSee('Tipe kandang')->assertDontSee('Kandang terbuka')->assertDontSee('Kandang tertutup')->assertSee('Setelah kandang tersimpan')->assertSee('Alamat kandang *');
 
         $k = $this->kandang();
         $this->actingAs($this->peternak)->get(route('kandang.edit', $k))->assertSee('Tentang perubahan')->assertSee('Hapus kandang');
