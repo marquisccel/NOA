@@ -4,12 +4,11 @@
     <x-page>
         @if ($ringkasan['total_kandang'] === 0)
             {{-- Sapaan pertama: maskot menyambut, lalu ajakan mendaftarkan kandang. --}}
-            <section class="kartu-hero mt-2 flex flex-wrap items-center gap-6 p-6 sm:p-8 lg:mt-12 lg:min-h-[250px] lg:pr-[300px]">
+            <section class="kartu-hero mt-2 flex flex-wrap items-center gap-6 p-6 sm:p-8 lg:min-h-[250px]">
                 <div class="min-w-0 flex-1 basis-72 space-y-3">
                     <h1 class="font-heading text-[clamp(1.8rem,3.2vw,2.6rem)] font-semibold leading-[1.06] tracking-[-0.035em]">Selamat datang di NOA</h1>
                     <p class="max-w-md text-[15px] leading-[24px] text-ink-secondary">Mulai dengan mendaftarkan kandang pertama Anda.</p>
                 </div>
-                <div class="sorot-ayam absolute -top-12 bottom-0 right-6 hidden w-[240px] lg:block"><x-ayam class="inset-y-0" /></div>
             </section>
 
             <x-empty-state icon="warehouse" title="Belum ada kandang terdaftar"
@@ -17,23 +16,16 @@
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-empty-state>
         @else
-            <section class="kartu-hero mt-2 flex flex-col justify-center gap-5 p-6 sm:p-8 lg:mt-12 lg:min-h-[250px] lg:pr-[300px]">
+            <section class="kartu-hero mt-2 flex flex-col justify-center gap-5 p-6 sm:p-8 lg:min-h-[250px]">
                 <div class="space-y-2.5">
                     <p class="text-[11px] font-bold uppercase tracking-[1.4px] text-ink-brand">Dashboard peternak</p>
                     <h1 class="font-heading text-[clamp(1.8rem,3.2vw,2.6rem)] font-semibold leading-[1.06] tracking-[-0.035em]">{{ $sapaan }}, {{ auth()->user()->name }}</h1>
                     <p class="max-w-lg text-[15px] leading-[24px] text-ink-secondary">{{ 'Ringkasan peternakan per '.now()->translatedFormat('j M Y').'.' }}</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <span class="kaca-chip inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold"><x-icon name="house" class="size-4 text-ink-brand" /> {{ F::angka($ringkasan['kandang_aktif'], 0) }} kandang aktif</span>
-                    @if ($perhatian->isNotEmpty())
-                        <span class="kaca-chip inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold"><x-icon name="triangle-alert" class="size-4 text-warning-text" /> {{ $perhatian->count() }} hal yang perlu diurus</span>
-                    @endif
-                </div>
-                <div class="flex flex-wrap items-center gap-2.5">
                     <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
                     <x-button variant="secondary" :href="route('kandang.index')">Lihat semua kandang</x-button>
                 </div>
-                <div class="sorot-ayam absolute -top-12 bottom-0 right-6 hidden w-[240px] lg:block"><x-ayam class="inset-y-0" /></div>
             </section>
 
             @php

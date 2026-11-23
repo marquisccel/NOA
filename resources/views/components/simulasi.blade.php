@@ -6,7 +6,8 @@
 
 @if ($b)
     {{-- Kalkulator "bagaimana kalau": hitung penghematan atau tambahan hasil bila FCR atau deplesi berbeda. Hanya perkiraan; tidak disimpan. --}}
-    <section aria-labelledby="judul-simulasi" class="space-y-4 kartu p-5"
+    {{-- Disembunyikan dari tampilan (atribut hidden) sementara; kodenya tetap ada. Hapus atribut `hidden` dan `aria-hidden` untuk menampilkannya lagi. --}}
+    <section hidden aria-hidden="true" aria-labelledby="judul-simulasi" class="space-y-4 kartu p-5"
         x-data="{
             d: @js($b),
             fcr: @js($b['fcr']),

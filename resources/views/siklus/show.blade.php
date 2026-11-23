@@ -68,19 +68,6 @@
             </div>
         @endif
 
-        <div class="grid gap-4 lg:grid-cols-2">
-            <x-bar-chart judul="Bobot rata-rata (g)"
-                :sub="$r['standar_ada'] ? 'Hasil sampling vs standar' : 'Hasil sampling · standar belum ada'"
-                :item="$r['grafik_bobot']" :std-ada="$r['standar_ada']" satuan=" g"
-                :kosong="$r['standar_ada'] ? 'Grafik muncul setelah sampling bobot pertama.' : 'Grafik muncul setelah sampling bobot pertama. Standar belum diunggah.'">
-                @if ($r['abw'] && $r['abw']['adg'] !== null)<p class="mt-3 text-xs text-ink-secondary">ADG sampling terakhir: {{ F::angka($r['abw']['adg'], 0) }} g/hari</p>@endif
-            </x-bar-chart>
-
-            <x-bar-chart judul="Deplesi kumulatif (%)" sub="Ayam mati + ayam afkir ÷ DOC"
-                :item="$r['grafik_deplesi']" :std-ada="$r['standar_ada']" :desimal="2" satuan="%"
-                kosong="Grafik muncul setelah recording harian pertama." />
-        </div>
-
             @if (collect($kurva['labels'])->isNotEmpty())
                 <section aria-labelledby="kurva-harian" class="space-y-3">
                     <div>

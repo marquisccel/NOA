@@ -14,7 +14,7 @@
         <dl class="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-[12px]">
             <div><dt class="inline font-semibold">Peternak:</dt> <dd class="inline">{{ $siklus->kandang->user->name }}</dd></div>
             <div><dt class="inline font-semibold">Inti / PPL:</dt> <dd class="inline">{{ $inti }} / {{ $siklus->nama_ppl ?: '–' }}</dd></div>
-            <div><dt class="inline font-semibold">Kandang:</dt> <dd class="inline">{{ $siklus->kandang->nama_farm }}@if ($siklus->kandang->labelTipe()) · {{ $siklus->kandang->labelTipe() }}@endif</dd></div>
+            <div><dt class="inline font-semibold">Kandang:</dt> <dd class="inline">{{ $siklus->kandang->nama_farm }}</dd></div>
             <div><dt class="inline font-semibold">Strain:</dt> <dd class="inline">{{ $siklus->strain_doc ?: '–' }}</dd></div>
             <div><dt class="inline font-semibold">Alamat:</dt> <dd class="inline">{{ $siklus->kandang->alamat ?: '–' }}</dd></div>
             <div><dt class="inline font-semibold">DOC masuk:</dt> <dd class="inline">{{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}</dd></div>

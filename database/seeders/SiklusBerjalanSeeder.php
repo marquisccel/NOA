@@ -26,7 +26,6 @@ class SiklusBerjalanSeeder extends Seeder
             'nama_farm' => 'Kandang Contoh 2',
             'alamat' => 'Desa Pujon Kidul, Kec. Pujon, Kab. Malang',
             'kapasitas' => 6000,
-            'tipe' => Kandang::TIPE_OPEN_HOUSE,
         ]);
 
         $masuk = now()->startOfDay()->subDays(16);

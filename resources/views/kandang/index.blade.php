@@ -10,7 +10,7 @@
 
         @if ($totalKandang === 0)
             <x-empty-state icon="warehouse" title="Belum ada kandang"
-                text="Daftarkan kandang dengan nama, alamat, kapasitas, dan tipe kandang. Setelah tersimpan, periode pemeliharaan dibuka terpisah dari halaman detail kandang.">
+                text="Daftarkan kandang dengan nama, alamat, dan kapasitas kandang. Setelah tersimpan, periode pemeliharaan dibuka terpisah dari halaman detail kandang.">
                 <x-button :href="route('kandang.create')"><x-icon name="plus" class="size-4" /> Tambah Kandang</x-button>
             </x-empty-state>
         @else
@@ -26,13 +26,6 @@
                         <option value="">Status periode: Semua</option>
                         <option value="berjalan" @selected($status === 'berjalan')>Punya periode terbuka</option>
                         <option value="tanpa" @selected($status === 'tanpa')>Tanpa periode</option>
-                    </select>
-                    <select name="tipe" aria-label="Tipe kandang" onchange="this.form.requestSubmit()"
-                            class="min-h-11 rounded-md border-line-control bg-surface text-sm focus:border-brand focus:ring-1 focus:ring-brand">
-                        <option value="">Tipe: Semua</option>
-                        @foreach (\App\Models\Kandang::TIPE as $kunci => [$label])
-                            <option value="{{ $kunci }}" @selected($tipe === $kunci)>{{ $label }}</option>
-                        @endforeach
                     </select>
                     <x-button variant="secondary" class="min-h-11">Cari</x-button>
                     <p class="ms-auto text-[13px] text-ink-secondary" role="status">
@@ -62,7 +55,6 @@
                                 <tr>
                                     <th scope="col">Nama kandang · Alamat</th>
                                     <th scope="col">Kapasitas</th>
-                                    <th scope="col">Jenis</th>
                                     <th scope="col">Periode</th>
                                     <th scope="col">Status periode</th>
                                     <th scope="col">DOC masuk</th>
@@ -79,7 +71,6 @@
                                             <span class="mt-0.5 block text-xs text-ink-secondary">{{ $k->alamat ?: 'Alamat belum diisi' }}</span>
                                         </th>
                                         <td class="whitespace-nowrap">{{ F::angka($k->kapasitas, 0) }} ekor</td>
-                                        <td class="whitespace-nowrap">{{ $k->labelTipe() ?? '—' }}</td>
                                         <td class="whitespace-nowrap">{{ $s ? 'Periode '.($nomor[$s->id] ?? 1) : '—' }}</td>
                                         <td>@if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada periode</x-badge>@endif</td>
                                         <td class="whitespace-nowrap">{{ $s ? $s->tanggal_masuk->translatedFormat('j M Y') : '—' }}</td>
@@ -101,7 +92,7 @@
                                         <span class="font-heading text-base font-semibold">{{ $k->nama_farm }}</span>
                                         @if ($s)<x-status-siklus :siklus="$s" />@else<x-badge variant="neutral">Tidak ada periode</x-badge>@endif
                                     </span>
-                                    <span class="text-[13px] text-ink-secondary">{{ F::angka($k->kapasitas, 0) }} ekor · {{ $k->labelTipe() ?? 'Tipe belum diisi' }}</span>
+                                    <span class="text-[13px] text-ink-secondary">{{ F::angka($k->kapasitas, 0) }} ekor</span>
                                     <span class="text-[13px] text-ink-secondary">
                                         @if ($s) Periode {{ $nomor[$s->id] ?? 1 }} · DOC {{ $s->tanggal_masuk->translatedFormat('j M Y') }} · Hari ke-{{ $s->umurHari() }}
                                         @else Belum ada periode terbuka @endif

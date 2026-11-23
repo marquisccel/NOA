@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Kandang;
+use App\Services\LinkPeta;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class KandangRequest extends FormRequest
 {
@@ -20,8 +19,19 @@ class KandangRequest extends FormRequest
             'nama_farm' => ['required', 'string', 'max:255'],
             'alamat' => ['required', 'string', 'max:1000'],
             'kapasitas' => ['required', 'integer', 'min:1', 'max:1000000'],
-            'tipe' => ['required', Rule::in(array_keys(Kandang::TIPE))],
+            'link_gmaps' => ['nullable', 'string', 'max:2048', function (string $atribut, mixed $nilai, \Closure $gagal) {
+                if (! LinkPeta::hostGoogle(trim((string) $nilai)) || ! filter_var(trim((string) $nilai), FILTER_VALIDATE_URL)) {
+                    $gagal('Link Google Maps tidak valid. Salin dari tombol Bagikan di Google Maps (diawali https://).');
+                }
+            }],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->link_gmaps)) {
+            $this->merge(['link_gmaps' => trim($this->link_gmaps)]);
+        }
     }
 
     /** @return array<string, string> */
@@ -33,8 +43,6 @@ class KandangRequest extends FormRequest
             'kapasitas.required' => 'Kapasitas wajib diisi.',
             'kapasitas.integer' => 'Kapasitas harus berupa angka lebih dari 0.',
             'kapasitas.min' => 'Kapasitas harus berupa angka lebih dari 0.',
-            'tipe.required' => 'Pilih salah satu tipe kandang.',
-            'tipe.in' => 'Pilih salah satu tipe kandang.',
         ];
     }
 
@@ -45,7 +53,7 @@ class KandangRequest extends FormRequest
             'nama_farm' => 'nama kandang',
             'alamat' => 'alamat kandang',
             'kapasitas' => 'kapasitas',
-            'tipe' => 'tipe kandang',
+            'link_gmaps' => 'link Google Maps',
         ];
     }
 }

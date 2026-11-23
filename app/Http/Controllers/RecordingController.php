@@ -198,9 +198,13 @@ class RecordingController extends Controller
     /** @return array<int, array<string, mixed>> */
     private function hitung(Siklus $siklus): array
     {
+        // Tiap baris memakai objek siklus yang sudah dimuat; policy di view memanggil $recording->siklus->kandang per baris.
+        $recordings = $siklus->recordings()->orderBy('hari_ke')->get()
+            ->each(fn (RecordingHarian $r) => $r->setRelation('siklus', $siklus));
+
         return $this->ringkasan->baris(
             $siklus,
-            $siklus->recordings()->orderBy('hari_ke')->get(),
+            $recordings,
             $siklus->standarHarian()->get(),
             $siklus->parameterUmur()->get(),
             $siklus->samplings()->get(),

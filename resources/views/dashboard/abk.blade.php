@@ -3,7 +3,7 @@
 <x-app-layout title="Periode Ditugaskan" :crumbs="[['Beranda', route('dashboard')], ['Periode Ditugaskan']]">
     <x-page>
         {{-- Sapaan ABK: ringkas, satu tujuan (isi catatan harian). Maskot menemani. --}}
-        <section class="kartu-hero mt-2 flex flex-col justify-center gap-5 p-6 sm:p-8 lg:mt-12 lg:min-h-[250px] lg:pr-[300px]">
+        <section class="kartu-hero mt-2 flex flex-col justify-center gap-5 p-6 sm:p-8 lg:min-h-[250px]">
             <div class="space-y-2.5">
                 <p class="text-[11px] font-bold uppercase tracking-[1.4px] text-ink-brand">Akses ABK</p>
                 <h1 class="font-heading text-[clamp(1.8rem,3.2vw,2.6rem)] font-semibold leading-[1.06] tracking-[-0.035em]">Periode <span class="text-ink-brand">Ditugaskan</span></h1>
@@ -15,7 +15,6 @@
                     <span class="kaca-chip inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold"><x-icon name="calendar-plus" class="size-4 text-ink-brand" /> Hari ke-{{ $siklus->umurHari() }}</span>
                 </div>
             @endif
-            <div class="sorot-ayam absolute -top-12 bottom-0 right-6 hidden w-[240px] lg:block"><x-ayam class="inset-y-0" /></div>
         </section>
 
         @if (! $siklus)

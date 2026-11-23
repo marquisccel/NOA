@@ -115,7 +115,17 @@
                 @if ($grup)
                     <aside data-tur="Menu utama|Semua fitur ada di sini: Dashboard, Aktivitas, Kandang, Performa, Pengguna & Akses, dan Bantuan berisi arti istilah." data-tur-urut="1" class="kaca-bar sticky top-[6.25rem] hidden h-[calc(100vh-6.25rem-1.5rem)] shrink-0 flex-col justify-between self-start rounded-[26px] p-3 md:flex md:w-[68px] xl:p-3.5 print:hidden"
                            :class="collapsed ? 'xl:w-[68px]' : 'xl:w-64'">
+                    <div class="space-y-2">
+                        {{-- Ciutkan sidebar di atas --}}
+                        <button type="button" @click="alternatif()" :aria-label="collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'"
+                            class="hidden h-11 w-full items-center gap-2.5 rounded-md border-b border-line-subtle px-3 text-[13px] font-medium text-ink-muted hover:bg-state-hover xl:flex"
+                            :class="collapsed ? 'justify-center' : ''">
+                            <x-icon name="panel-left-close" class="size-[18px]" x-show="! collapsed" />
+                            <x-icon name="panel-left-open" class="size-[18px]" x-show="collapsed" x-cloak />
+                            <span :class="collapsed ? 'xl:hidden' : ''">Ciutkan sidebar</span>
+                        </button>
                         <x-shell-menu :grup="$grup" />
+                    </div>
                         <div class="space-y-1 border-t border-line-subtle pt-2">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -124,13 +134,6 @@
                                     <span class="hidden xl:inline" :class="collapsed ? '!hidden' : ''">Keluar</span>
                                 </button>
                             </form>
-                        <button type="button" @click="alternatif()" :aria-label="collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'"
-                            class="hidden h-11 items-center gap-2.5 rounded-md border-t border-line-subtle px-3 text-[13px] font-medium text-ink-muted hover:bg-state-hover xl:flex"
-                            :class="collapsed ? 'justify-center' : ''">
-                            <x-icon name="panel-left-close" class="size-[18px]" x-show="! collapsed" />
-                            <x-icon name="panel-left-open" class="size-[18px]" x-show="collapsed" x-cloak />
-                            <span :class="collapsed ? 'xl:hidden' : ''">Ciutkan sidebar</span>
-                        </button>
                         </div>
                     </aside>
                 @endif

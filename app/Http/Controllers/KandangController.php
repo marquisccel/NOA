@@ -6,6 +6,7 @@ use App\Http\Requests\KandangRequest;
 use App\Models\Kandang;
 use App\Models\Panen;
 use App\Models\Siklus;
+use App\Services\LinkPeta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -15,21 +16,19 @@ use Illuminate\View\View;
 
 class KandangController extends Controller
 {
-    /** Daftar kandang dengan pencarian nama atau alamat, dan filter status siklus serta tipe. */
+    /** Daftar kandang dengan pencarian nama atau alamat, dan dan filter status siklus. */
     public function index(Request $request): View
     {
         Gate::authorize('viewAny', Kandang::class);
 
         $q = trim((string) $request->query('q'));
         $status = in_array($request->query('status'), ['berjalan', 'tanpa'], true) ? $request->query('status') : null;
-        $tipe = array_key_exists((string) $request->query('tipe'), Kandang::TIPE) ? $request->query('tipe') : null;
 
         $totalKandang = Kandang::where('user_id', $request->user()->id)->count();
 
         $kandang = Kandang::where('user_id', $request->user()->id)
             ->with('siklusBerjalan')
             ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('nama_farm', 'ilike', "%{$q}%")->orWhere('alamat', 'ilike', "%{$q}%")))
-            ->when($tipe, fn ($w) => $w->where('tipe', $tipe))
             ->when($status === 'berjalan', fn ($w) => $w->whereHas('siklusBerjalan'))
             ->when($status === 'tanpa', fn ($w) => $w->whereDoesntHave('siklusBerjalan'))
             ->orderBy('nama_farm')
@@ -42,8 +41,7 @@ class KandangController extends Controller
             'aktif' => $kandang->filter(fn ($k) => $k->siklusBerjalan)->count(),
             'q' => $q,
             'status' => $status,
-            'tipe' => $tipe,
-            'adaFilter' => $q !== '' || $status || $tipe,
+            'adaFilter' => $q !== '' || $status,
         ]);
     }
 
@@ -56,7 +54,7 @@ class KandangController extends Controller
 
     public function store(KandangRequest $request): RedirectResponse
     {
-        $kandang = $request->user()->kandang()->create($request->validated());
+        $kandang = $request->user()->kandang()->create($this->dataKandang($request));
 
         return redirect()->route('kandang.index')
             ->with('status', "Kandang “{$kandang->nama_farm}” berhasil ditambahkan. Buka periode baru dari halaman detail kandang.");
@@ -114,9 +112,19 @@ class KandangController extends Controller
     {
         Gate::authorize('update', $kandang);
 
-        $kandang->update($request->validated());
+        $kandang->update($this->dataKandang($request));
 
         return redirect()->route('kandang.show', $kandang)->with('status', 'Perubahan data kandang berhasil disimpan.');
+    }
+
+    /** Isian form ditambah kueri peta hasil olahan link Google Maps (kosong bila link dikosongkan). */
+    private function dataKandang(KandangRequest $request): array
+    {
+        $data = $request->validated();
+        $data['link_gmaps'] = ($data['link_gmaps'] ?? null) ?: null;
+        $data['peta_query'] = app(LinkPeta::class)->kueri($data['link_gmaps']);
+
+        return $data;
     }
 
     public function destroy(Kandang $kandang): RedirectResponse

@@ -4,7 +4,11 @@
  */
 const gerakMinimal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-if (!gerakMinimal && window.matchMedia('(pointer: fine)').matches) {
+// Paralaks hanya di halaman tamu. Di dalam aplikasi (body.isi-kaca) latar diam: mengubah variabel CSS di <body>
+// pada tiap gerakan kursor memaksa gaya seluruh halaman dihitung ulang.
+const diDalamAplikasi = document.body.classList.contains('isi-kaca');
+
+if (!diDalamAplikasi && !gerakMinimal && window.matchMedia('(pointer: fine)').matches) {
     const sasaran = { x: 0, y: 0 };
     const kini = { x: 0, y: 0 };
     let jalan = false;

@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import { mulaiDropdown } from './dropdown.js';
 
 window.Alpine = Alpine;
 
@@ -29,25 +30,81 @@ Alpine.data('shell', () => ({
 }));
 
 // Jam dan tanggal di topbar, mengikuti zona waktu aplikasi (bukan jam perangkat yang bisa keliru).
+// Satu pewaktu dipakai bersama oleh semua jam (topbar desktop dan ponsel), berhenti saat tab tersembunyi,
+// dan hanya jam yang tampak yang diperbarui. Formatter dibuat sekali, bukan tiap detik.
+const pelangganJam = new Set();
+let pewaktuJam = null;
+
+const jalankanJam = () => pelangganJam.forEach((perbarui) => perbarui());
+
+const mulaiJam = () => {
+    if (!pewaktuJam && !document.hidden && pelangganJam.size) {
+        pewaktuJam = setInterval(jalankanJam, 1000);
+    }
+};
+
+const hentikanJam = () => {
+    clearInterval(pewaktuJam);
+    pewaktuJam = null;
+};
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        hentikanJam();
+    } else {
+        jalankanJam();
+        mulaiJam();
+    }
+});
+
+const formatJam = (zona) => {
+    const opsiWaktu = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+    const opsiTanggal = { weekday: 'short', day: 'numeric', month: 'short' };
+
+    try {
+        return {
+            waktu: new Intl.DateTimeFormat('id-ID', { ...opsiWaktu, timeZone: zona }),
+            tanggal: new Intl.DateTimeFormat('id-ID', { ...opsiTanggal, timeZone: zona }),
+            titik: true,
+        };
+    } catch (e) {
+        return {
+            waktu: new Intl.DateTimeFormat('id-ID', opsiWaktu),
+            tanggal: new Intl.DateTimeFormat('id-ID', opsiTanggal),
+            titik: false,
+        };
+    }
+};
+
 Alpine.data('jam', (zona = 'Asia/Jakarta') => ({
     waktu: '',
     tanggal: '',
-    penghitung: null,
+    perbarui: null,
 
     init() {
+        const f = formatJam(zona);
+
+        this.perbarui = () => {
+            // Jam yang sedang disembunyikan (desktop vs ponsel) tidak perlu disentuh.
+            if (!this.$el.getClientRects().length) {
+                return;
+            }
+
+            const sekarang = new Date();
+            this.waktu = f.waktu.format(sekarang);
+            this.tanggal = f.titik ? f.tanggal.format(sekarang).replace(/\./g, '') : f.tanggal.format(sekarang);
+        };
+
         this.perbarui();
-        this.penghitung = setInterval(() => this.perbarui(), 1000);
+        pelangganJam.add(this.perbarui);
+        mulaiJam();
     },
 
-    perbarui() {
-        const sekarang = new Date();
+    destroy() {
+        pelangganJam.delete(this.perbarui);
 
-        try {
-            this.waktu = sekarang.toLocaleTimeString('id-ID', { timeZone: zona, hour12: false });
-            this.tanggal = sekarang.toLocaleDateString('id-ID', { timeZone: zona, weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, '');
-        } catch (e) {
-            this.waktu = sekarang.toLocaleTimeString('id-ID', { hour12: false });
-            this.tanggal = sekarang.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+        if (!pelangganJam.size) {
+            hentikanJam();
         }
     },
 }));
@@ -200,3 +257,4 @@ window.addEventListener('pageshow', () => {
 });
 
 Alpine.start();
+mulaiDropdown();

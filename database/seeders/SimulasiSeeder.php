@@ -42,10 +42,10 @@ class SimulasiSeeder extends Seeder
 
         $peternak = $this->akun();
         $kandang = [
-            'A' => $this->kandang($peternak, 'Kandang A', 'Desa Sumberejo, Kec. Pujon, Kab. Malang', 8000, Kandang::TIPE_CLOSED_HOUSE),
-            'B' => $this->kandang($peternak, 'Kandang B', 'Desa Pandesari, Kec. Pujon, Kab. Malang', 5000, Kandang::TIPE_OPEN_HOUSE),
-            'C' => $this->kandang($peternak, 'Kandang C', 'Desa Ngroto, Kec. Pujon, Kab. Malang', 6000, Kandang::TIPE_CLOSED_HOUSE),
-            'D' => $this->kandang($peternak, 'Kandang D (Baru)', 'Desa Tawangsari, Kec. Pujon, Kab. Malang', 4000, Kandang::TIPE_OPEN_HOUSE),
+            'A' => $this->kandang($peternak, 'Kandang A', 'Desa Sumberejo, Kec. Pujon, Kab. Malang', 8000),
+            'B' => $this->kandang($peternak, 'Kandang B', 'Desa Pandesari, Kec. Pujon, Kab. Malang', 5000),
+            'C' => $this->kandang($peternak, 'Kandang C', 'Desa Ngroto, Kec. Pujon, Kab. Malang', 6000),
+            'D' => $this->kandang($peternak, 'Kandang D (Baru)', 'Desa Tawangsari, Kec. Pujon, Kab. Malang', 4000),
         ];
 
         // Kandang A
@@ -99,9 +99,9 @@ class SimulasiSeeder extends Seeder
         return $p;
     }
 
-    private function kandang(User $p, string $nama, string $alamat, int $kapasitas, string $tipe): Kandang
+    private function kandang(User $p, string $nama, string $alamat, int $kapasitas): Kandang
     {
-        return Kandang::create(['user_id' => $p->id, 'nama_farm' => $nama, 'alamat' => $alamat, 'kapasitas' => $kapasitas, 'tipe' => $tipe]);
+        return Kandang::create(['user_id' => $p->id, 'nama_farm' => $nama, 'alamat' => $alamat, 'kapasitas' => $kapasitas]);
     }
 
     /** Bobot standar (g) pada hari d untuk siklus berumur akhir $umur dan bobot akhir $kg. */

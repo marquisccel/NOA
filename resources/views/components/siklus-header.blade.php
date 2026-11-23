@@ -28,7 +28,7 @@
                 <x-status-siklus :siklus="$siklus" />
             </div>
             <p class="mt-0.5 text-[13px] text-ink-secondary">
-                {{ $siklus->kandang->nama_farm }}@if ($siklus->kandang->labelTipe()) · {{ $siklus->kandang->labelTipe() }}@endif
+                {{ $siklus->kandang->nama_farm }}
                 · DOC masuk {{ $siklus->tanggal_masuk->translatedFormat('j M Y') }}
                 @if ($siklus->isTerbuka()) · Hari ke-{{ $siklus->umurHari() }} @elseif ($siklus->tanggal_panen) · Panen terakhir {{ $siklus->tanggal_panen->translatedFormat('j M Y') }} @endif
                 · Jumlah ayam awal {{ F::angka($siklus->populasi, 0) }} ekor
@@ -41,7 +41,7 @@
     @endif
 
     @if ($user->isPeternak())
-        <nav aria-label="Tab periode" class="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+        <nav aria-label="Tab periode" class="-mx-4 -mb-3 -mt-1 overflow-x-auto px-4 pb-4 pt-1 md:mx-0 md:px-1">
             <ul class="flex gap-1.5 whitespace-nowrap">
                 @foreach ($tab as [$label, $rute, $pola])
                     @php $aktif = request()->routeIs(...$pola); @endphp

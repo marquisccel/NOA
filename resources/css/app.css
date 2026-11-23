@@ -190,6 +190,17 @@ input[type='radio'] {
     background-color: var(--bg-surface);
 }
 
+/* Yang tercentang harus hijau: aturan di atas tidak berlapis sehingga menimpa warna centang bawaan plugin formulir. */
+input[type='checkbox']:checked,
+input[type='radio']:checked,
+input[type='checkbox']:checked:hover,
+input[type='radio']:checked:hover,
+input[type='checkbox']:checked:focus,
+input[type='radio']:checked:focus {
+    background-color: var(--brand-primary);
+    border-color: transparent;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -221,34 +232,41 @@ select:not([multiple]) {
 
 /* ===== Halaman tamu (masuk/daftar): latar aurora, panel gambar berisi ayam 3D, dan kartu kaca ===== */
 .latar {
-    --a1: #bfe9d6;
-    --a2: #ffe4b3;
-    --a3: #ffc9b0;
-    --a4: #8fd4c0;
+    --a1: #d9ece3;
+    --a2: #f0e7d0;
+    --a3: #f1ddd2;
+    --a4: #cfe5dc;
     position: fixed;
     inset: 0;
     overflow: hidden;
-    background: linear-gradient(135deg, #e6f6ee 0%, #fff3da 52%, #ffe3d0 100%);
+    background: linear-gradient(135deg, #f2f8f5 0%, #f9f7f0 52%, #f8efe8 100%);
 }
 
 .latar i {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(80px);
+    /*
+     * Tepi lembut memakai gradasi radial, bukan filter: blur(80px). Filter blur pada empat lapisan besar yang
+     * bergerak terus memaksa GPU menghitung ulang blur tiap bingkai di setiap halaman; gradasi tampil nyaris sama.
+     */
+    background: radial-gradient(closest-side, var(--c) 36%, color-mix(in srgb, var(--c) 45%, transparent) 68%, transparent 100%);
     will-change: transform;
     translate: calc(var(--px, 0) * var(--k, 10) * 1px) calc(var(--py, 0) * var(--k, 10) * 1px);
 }
 
-.latar i:nth-child(1) { width: 52vmax; height: 52vmax; left: -14vmax; top: -18vmax; background: var(--a1); opacity: 0.85; --k: 14; animation: hanyut-a 26s ease-in-out infinite alternate; }
-.latar i:nth-child(2) { width: 46vmax; height: 46vmax; right: -12vmax; top: -10vmax; background: var(--a2); opacity: 0.9; --k: 20; animation: hanyut-b 32s ease-in-out infinite alternate; }
-.latar i:nth-child(3) { width: 50vmax; height: 50vmax; right: 8vmax; bottom: -26vmax; background: var(--a3); opacity: 0.7; --k: 12; animation: hanyut-a 38s ease-in-out infinite alternate-reverse; }
-.latar i:nth-child(4) { width: 36vmax; height: 36vmax; left: 6vmax; bottom: -18vmax; background: var(--a4); opacity: 0.6; --k: 24; animation: hanyut-b 30s ease-in-out infinite alternate; }
+.latar i:nth-child(1) { width: 52vmax; height: 52vmax; left: -14vmax; top: -18vmax; --c: var(--a1); opacity: 0.6; --k: 14; animation: hanyut-a 26s ease-in-out infinite alternate; }
+.latar i:nth-child(2) { width: 46vmax; height: 46vmax; right: -12vmax; top: -10vmax; --c: var(--a2); opacity: 0.6; --k: 20; animation: hanyut-b 32s ease-in-out infinite alternate; }
+.latar i:nth-child(3) { width: 50vmax; height: 50vmax; right: 8vmax; bottom: -26vmax; --c: var(--a3); opacity: 0.5; --k: 12; animation: hanyut-a 38s ease-in-out infinite alternate-reverse; }
+.latar i:nth-child(4) { width: 36vmax; height: 36vmax; left: 6vmax; bottom: -18vmax; --c: var(--a4); opacity: 0.45; --k: 24; animation: hanyut-b 30s ease-in-out infinite alternate; }
+
+/* Di dalam aplikasi, latar diam: kaca di atasnya tidak perlu dihitung ulang tiap bingkai, dan halaman kerja tidak butuh gerak latar. */
+body.isi-kaca .latar i { animation: none; will-change: auto; }
 
 [data-theme='dark'] .latar {
-    --a1: #0f4a3b;
-    --a2: #6b5518;
-    --a3: #1d3b57;
-    --a4: #0c5a49;
+    --a1: #123a30;
+    --a2: #3d3615;
+    --a3: #1b2f42;
+    --a4: #0f3f35;
     background: linear-gradient(135deg, #04100d 0%, #08201b 52%, #0b1a24 100%);
 }
 
@@ -547,10 +565,13 @@ select:not([multiple]) {
 
 /* ===== Aplikasi (setelah masuk): latar aurora, kartu kaca, dan maskot, satu aliran dengan halaman masuk ===== */
 @layer components {
+    /*
+     * Kartu tidak memakai backdrop-filter: ada puluhan per halaman dan tiap kartu memaksa blur latar dihitung ulang
+     * saat menggulir. Latar di bawahnya sudah gradasi lembut, jadi tampilannya hampir tidak berbeda.
+     * Kaca asli dipertahankan hanya pada bilah atas dan sidebar (.kaca-bar).
+     */
     .kartu {
         background: color-mix(in srgb, var(--bg-surface) 64%, transparent);
-        -webkit-backdrop-filter: blur(18px) saturate(165%);
-        backdrop-filter: blur(18px) saturate(165%);
         border: 1px solid rgb(255 255 255 / 0.62);
         border-radius: 22px;
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 1px 2px rgb(20 50 40 / 0.05), 0 18px 36px -22px rgb(20 50 40 / 0.32);
@@ -559,8 +580,6 @@ select:not([multiple]) {
     /* Kartu bernuansa hijau (langkah berikutnya, mulai di sini). */
     .kartu-merek {
         background: linear-gradient(135deg, color-mix(in srgb, var(--brand-mint) 26%, var(--bg-surface) 40%), color-mix(in srgb, var(--bg-surface) 56%, transparent));
-        -webkit-backdrop-filter: blur(18px) saturate(165%);
-        backdrop-filter: blur(18px) saturate(165%);
         border: 1px solid color-mix(in srgb, var(--brand-primary) 22%, rgb(255 255 255 / 0.6));
         border-radius: 22px;
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 18px 36px -22px rgb(20 90 70 / 0.4);
@@ -578,13 +597,10 @@ select:not([multiple]) {
     /* Sapaan di dashboard: gradasi hangat yang sama dengan panel gambar halaman masuk. */
     .kartu-hero {
         position: relative;
-        background:
-            radial-gradient(60% 90% at 92% 0%, #ffe08f 0%, transparent 70%),
-            radial-gradient(50% 80% at 0% 100%, #a9e6cb 0%, transparent 70%),
-            linear-gradient(150deg, #f4fbf6 0%, #ffeccd 62%, #ffd9bc 100%);
-        border: 1px solid rgb(255 255 255 / 0.75);
+        background: var(--bg-surface);
+        border: 1px solid color-mix(in srgb, var(--border-default) 45%, transparent);
         border-radius: 26px;
-        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.85), 0 26px 60px -30px rgb(30 70 55 / 0.45), 0 2px 6px rgb(30 70 55 / 0.08);
+        box-shadow: 0 1px 2px rgb(30 70 55 / 0.05), 0 18px 40px -28px rgb(30 70 55 / 0.28);
     }
 
     /* Isi kartu yang tadinya berlatar solid ikut tembus pandang. */
@@ -620,8 +636,8 @@ select:not([multiple]) {
 
 [data-theme='dark'] .kartu-hero {
     background:
-        radial-gradient(60% 90% at 92% 0%, rgb(214 168 60 / 0.32) 0%, transparent 70%),
-        radial-gradient(50% 80% at 0% 100%, rgb(20 120 96 / 0.5) 0%, transparent 70%),
+        radial-gradient(60% 90% at 92% 0%, rgb(214 168 60 / 0.16) 0%, transparent 70%),
+        radial-gradient(50% 80% at 0% 100%, rgb(20 120 96 / 0.3) 0%, transparent 70%),
         linear-gradient(150deg, #0a1f1a 0%, #0c2c25 62%, #0b2220 100%);
     border-color: rgb(255 255 255 / 0.1);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 26px 60px -30px rgb(0 0 0 / 0.7);
@@ -637,6 +653,7 @@ a.kartu:hover, button.kartu:hover { transform: translateY(-2px); }
 
 /* Isian dan pilihan di dalam aplikasi ikut gaya kaca halaman masuk. */
 .isi-kaca select:not([multiple]),
+.isi-kaca .dd-btn,
 .isi-kaca textarea {
     border-radius: 14px;
     border-color: var(--border-default);
@@ -645,10 +662,106 @@ a.kartu:hover, button.kartu:hover { transform: translateY(-2px); }
 }
 
 .isi-kaca select:not([multiple]):focus,
+.isi-kaca .dd-btn:focus,
+.isi-kaca .dd-btn[aria-expanded='true'],
 .isi-kaca textarea:focus {
     border-color: var(--brand-primary);
     background-color: var(--bg-surface);
     box-shadow: 0 0 0 4px var(--brand-soft) !important;
+}
+
+/*
+ * Dropdown bertema (resources/js/dropdown.js): tombol menggantikan <select>, daftarnya mengikuti tema,
+ * bukan daftar bawaan peramban yang biru dan bersudut.
+ */
+.dd-native {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0 !important;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dd-btn {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+    padding-right: 2.5rem !important;
+}
+
+.dd-btn:disabled { cursor: not-allowed; }
+.dd-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-btn.dd-kosong .dd-label { color: var(--text-muted); }
+
+.dd-chev {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin-top: -0.5rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: transform 0.2s;
+}
+
+.dd-btn[aria-expanded='true'] .dd-chev { transform: rotate(180deg); }
+
+.dd-panel {
+    position: fixed;
+    z-index: 90;
+    margin: 0;
+    padding: 0.375rem;
+    list-style: none;
+    overflow-y: auto;
+    border-radius: 18px;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
+    box-shadow: 0 2px 6px rgb(20 50 40 / 0.08), 0 22px 44px -18px rgb(20 50 40 / 0.35);
+    animation: dd-masuk 0.14s ease-out;
+}
+
+[data-theme='dark'] .dd-panel { box-shadow: 0 22px 44px -18px rgb(0 0 0 / 0.7); }
+
+.dd-opt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.12s;
+}
+
+.dd-opt[data-aktif] { background: var(--state-selected); }
+.dd-opt[aria-selected='true'] { color: var(--text-brand); font-weight: 700; }
+.dd-opt[aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
+.dd-centang { flex: none; width: 1rem; height: 1rem; }
+
+@keyframes dd-masuk {
+    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dd-panel { animation: none; }
+    .dd-chev { transition: none; }
 }
 
 /* Sorot cahaya di belakang maskot pada kartu sapaan. */
